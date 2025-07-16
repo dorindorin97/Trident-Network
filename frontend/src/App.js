@@ -289,10 +289,13 @@ function WalletPage({ wallet, login, logout }) {
   );
 }
 
+const APP_TITLE = process.env.REACT_APP_APP_TITLE || 'Trident Explorer';
+
 function NavBar({ wallet, logout }) {
   return (
     <nav className="navbar">
-      <img src="/trident-logo.svg" alt="Trident" />
+      <img src="/trident-logo.svg" alt={APP_TITLE} />
+      <span className="brand">{APP_TITLE}</span>
       <Link to="/">Latest Block</Link>
       <Link to="/account">Account Lookup</Link>
       <Link to="/validators">Validator List</Link>
