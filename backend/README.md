@@ -22,6 +22,18 @@ Available variables (defaults shown):
 - `TRIDENT_NODE_RPC_URL` (`http://localhost:8090`) - RPC endpoint used when `CHAIN_MODE=rpc`.
 - `FRONTEND_URL` (`http://localhost:3000`) - allowed CORS origin.
 
+## Quickstart
+
+Install dependencies and start the server:
+
+```bash
+cd backend
+npm install
+npm start
+```
+
+The API will be available at `http://localhost:4000`.
+
 ## API Endpoints
 
 | Method | Endpoint | Description |
@@ -33,6 +45,7 @@ Available variables (defaults shown):
 | GET | `/api/v1/transactions/:id` | Transaction details |
 | GET | `/api/v1/accounts/:address` | Account info |
 | GET | `/api/v1/validators` | Validator list |
+| any | other `/api/...` | Returns `404 { "error": "API route not found" }` |
 
 ## Development
 

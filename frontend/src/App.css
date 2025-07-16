@@ -48,6 +48,15 @@ body {
   margin-left: 0.5rem;
 }
 
+a {
+  color: var(--text-color);
+  text-decoration: none;
+}
+a:hover,
+a:focus {
+  text-decoration: underline;
+}
+
 button {
   background: transparent;
   color: var(--text-color);

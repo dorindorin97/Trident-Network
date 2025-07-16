@@ -26,6 +26,18 @@ Available variables (defaults shown):
 - `REACT_APP_DEFAULT_LANGUAGE` (`en`) - initial UI language.
 - `REACT_APP_DEFAULT_THEME` (`dark`) - initial theme mode.
 
+## Quickstart
+
+Install dependencies and run the development server:
+
+```bash
+cd frontend
+npm install
+npm start
+```
+
+The app will be available at `http://localhost:3000`.
+
 ### Multi-language Support
 
 The interface uses `react-i18next` with English and Portuguese translations built-in.

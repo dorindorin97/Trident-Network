@@ -20,6 +20,20 @@ docker build -t trident-network:latest .
 docker-compose up
 ```
 
+### Run Explorer Locally
+```bash
+# requires Docker
+docker compose -f docker-compose.dev.yml up
+```
+
+This starts the backend on port 4000 and the React frontend on port 3000 using mock data.
+
+### Deploy with Docker Compose
+```bash
+docker compose -f docker-compose.prod.yml up -d
+```
+This uses the Dockerfiles in `frontend/` and `backend/` to build production images.
+
 ## License
 
 MIT License
