@@ -66,6 +66,14 @@ const validators = [
 ];
 
 // routes
+app.get('/api/v1/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+app.get('/api/v1/env', (req, res) => {
+  res.json(process.env);
+});
+
 app.get('/api/v1/blocks/latest', (req, res) => {
   res.json(latestBlock);
 });
