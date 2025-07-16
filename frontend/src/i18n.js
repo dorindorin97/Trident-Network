@@ -36,7 +36,13 @@ const resources = {
       "Wallet Page": "Wallet",
       "Loading": "Loading...",
       "Dark Mode": "Dark Mode",
-      "Light Mode": "Light Mode"
+      "Light Mode": "Light Mode",
+      "Search": "Search",
+      "Search Placeholder": "Search by block # / tx hash / address",
+      "Transaction Details": "Transaction Details",
+      "Account": "Account",
+      "Page": "Page",
+      "of": "of"
     }
   },
   pt: {
@@ -73,7 +79,13 @@ const resources = {
       "Wallet Page": "Carteira",
       "Loading": "Carregando...",
       "Dark Mode": "Modo Escuro",
-      "Light Mode": "Modo Claro"
+      "Light Mode": "Modo Claro",
+      "Search": "Buscar",
+      "Search Placeholder": "Buscar por bloco / tx / endereço",
+      "Transaction Details": "Detalhes da Transação",
+      "Account": "Conta",
+      "Page": "Página",
+      "of": "de"
     }
   }
 };
