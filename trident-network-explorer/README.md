@@ -54,3 +54,16 @@ REACT_APP_API_URL=http://localhost:4000
 ```
 
 Docker Compose automatically loads these variables when bringing up the services.
+
+## Mock Wallet Usage
+
+Navigate to the **Wallet** page from the navigation bar. Enter any string as a
+private key and click **Login**. The application derives a deterministic mock
+address from the key and stores the key in your browser's local storage. Once
+logged in, the wallet page displays your public address, balance and recent
+transactions by querying `/api/v1/accounts/<address>`.
+
+Use the **Logout** button in the navigation bar or on the wallet page to clear
+the stored credentials. This wallet is implemented entirely on the frontend and
+is intended for demonstration purposes only&mdash;no real cryptographic key
+management or blockchain interaction occurs.

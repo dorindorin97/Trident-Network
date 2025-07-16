@@ -23,6 +23,9 @@ body {
   margin-right: 1rem;
   text-decoration: none;
 }
+.navbar button {
+  margin-left: 0.5rem;
+}
 
 .container {
   padding: 1rem;

@@ -4,6 +4,15 @@ import './App.css';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
 
+function deriveAddress(privateKey) {
+  return (
+    'T' +
+    btoa(privateKey)
+      .replace(/[^a-z0-9]/gi, '')
+      .slice(0, 10)
+  );
+}
+
 function Spinner() {
   return <div className="spinner" />;
 }
@@ -144,14 +153,103 @@ function ValidatorList() {
   );
 }
 
-function NavBar() {
+function WalletPage({ wallet, login, logout }) {
+  const [privKey, setPrivKey] = useState('');
+  const [account, setAccount] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (wallet) {
+      setLoading(true);
+      fetch(`${API_URL}/api/v1/accounts/${wallet.address}`)
+        .then(res => res.json())
+        .then(data => {
+          setAccount(data);
+          setLoading(false);
+        });
+    } else {
+      setAccount(null);
+    }
+  }, [wallet]);
+
+  const handleLogin = () => {
+    if (privKey) {
+      login(privKey);
+      setPrivKey('');
+    }
+  };
+
+  if (!wallet) {
+    return (
+      <div className="container">
+        <h2>Wallet Login</h2>
+        <input
+          type="password"
+          value={privKey}
+          onChange={e => setPrivKey(e.target.value)}
+          placeholder="Private Key"
+        />
+        <button onClick={handleLogin}>Login</button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container">
+      <h2>Wallet</h2>
+      <p>Address: {wallet.address}</p>
+      <button onClick={logout}>Logout</button>
+      {loading ? (
+        <Spinner />
+      ) : (
+        account && (
+          <div>
+            <p>Balance: {account.balance} TRI</p>
+            <h4>Transactions</h4>
+            <table style={{ width: '100%', color: 'white' }}>
+              <thead>
+                <tr>
+                  <th>TxID</th>
+                  <th>From</th>
+                  <th>To</th>
+                  <th>Amount</th>
+                  <th>Timestamp</th>
+                </tr>
+              </thead>
+              <tbody>
+                {account.transactions.map(tx => (
+                  <tr key={tx.txId}>
+                    <td>{tx.txId}</td>
+                    <td>{tx.from}</td>
+                    <td>{tx.to}</td>
+                    <td>{tx.amount}</td>
+                    <td>{tx.timestamp}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )
+      )}
+    </div>
+  );
+}
+
+function NavBar({ wallet, logout }) {
   return (
     <nav className="navbar">
       <img src="/trident-logo.svg" alt="Trident" />
       <Link to="/">Latest Block</Link>
       <Link to="/account">Account Lookup</Link>
       <Link to="/validators">Validator List</Link>
+      <Link to="/wallet">Wallet</Link>
       <Link to="/admin">Admin</Link>
+      {wallet && (
+        <span style={{ marginLeft: 'auto' }}>
+          Logged in as {wallet.address}{' '}
+          <button onClick={logout}>Logout</button>
+        </span>
+      )}
     </nav>
   );
 }
@@ -193,13 +291,33 @@ function AdminPage() {
 }
 
 function App() {
+  const [wallet, setWallet] = useState(() => {
+    const pk = localStorage.getItem('privateKey');
+    if (pk) {
+      return { privateKey: pk, address: deriveAddress(pk) };
+    }
+    return null;
+  });
+
+  const login = privKey => {
+    const addr = deriveAddress(privKey);
+    localStorage.setItem('privateKey', privKey);
+    setWallet({ privateKey: privKey, address: addr });
+  };
+
+  const logout = () => {
+    localStorage.removeItem('privateKey');
+    setWallet(null);
+  };
+
   return (
     <Router>
-      <NavBar />
+      <NavBar wallet={wallet} logout={logout} />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/account" element={<div className="container"><AccountLookup /></div>} />
         <Route path="/validators" element={<div className="container"><ValidatorList /></div>} />
+        <Route path="/wallet" element={<WalletPage wallet={wallet} login={login} logout={logout} />} />
         <Route path="/admin" element={<AdminPage />} />
       </Routes>
     </Router>
