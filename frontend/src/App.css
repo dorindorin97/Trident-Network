@@ -84,3 +84,9 @@ body {
     margin: 0.25rem 0;
   }
 }
+.ml-auto { margin-left: auto; }
+.ml-sm { margin-left: 0.5rem; }
+.full-width { width: 100%; }
+.pre-wrap { white-space: pre-wrap; }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+.pagination-controls { margin-bottom: 0.5rem; }

@@ -85,9 +85,6 @@ app.get('/api/v1/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-app.get('/api/v1/env', (req, res) => {
-  res.json(process.env);
-});
 
 app.get('/api/v1/blocks/latest', async (req, res) => {
   if (CHAIN_MODE === 'rpc') {
@@ -122,6 +119,45 @@ app.get('/api/v1/blocks', async (req, res) => {
     total: blocks.length,
     blocks: paginated
   });
+});
+
+app.get('/api/v1/blocks/:number', async (req, res) => {
+  const num = req.params.number;
+  if (CHAIN_MODE === 'rpc') {
+    try {
+      const data = await fetchRpc(`/blocks/${num}`);
+      return res.json(data);
+    } catch (err) {
+      return res.status(503).json({ error: 'Service unavailable' });
+    }
+  }
+  const block = blocks.find(b => b.number === parseInt(num, 10));
+  if (!block) return res.status(404).json({ error: 'Block not found' });
+  res.json({ ...block, transactions: (accounts.TADDRESS1?.transactions || []) });
+});
+
+app.get('/api/v1/transactions/:id', async (req, res) => {
+  const id = req.params.id;
+  if (CHAIN_MODE === 'rpc') {
+    try {
+      const data = await fetchRpc(`/transactions/${id}`);
+      return res.json(data);
+    } catch (err) {
+      return res.status(503).json({ error: 'Service unavailable' });
+    }
+  }
+  let tx;
+  let blockNumber = null;
+  for (const [addr, acc] of Object.entries(accounts)) {
+    const found = acc.transactions.find(t => t.txId === id);
+    if (found) {
+      tx = { ...found };
+      break;
+    }
+  }
+  if (!tx) return res.status(404).json({ error: 'Transaction not found' });
+  if (blockNumber) tx.blockNumber = blockNumber;
+  res.json(tx);
 });
 
 app.get('/api/v1/accounts/:address', async (req, res) => {
