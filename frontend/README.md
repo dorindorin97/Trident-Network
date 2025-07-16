@@ -42,9 +42,13 @@ The app will be available at `http://localhost:3000`.
 
 ### Multi-language Support
 
-The interface uses `react-i18next` with English and Portuguese translations built-in.
+The interface uses `react-i18next` with English, Portuguese and Spanish translations built-in.
 Use the language selector in the navbar to switch languages. The chosen language
 is saved in local storage.
+
+### Wallet Handling
+
+Private keys entered in the wallet page are stored only in memory and will be lost on refresh.
 
 ### Customizing Defaults
 

@@ -27,6 +27,26 @@ docker-compose up
 
 Copy frontend/.env.example to frontend/.env and backend/.env.example to backend/.env before starting services.
 
+### Environment Variables
+
+Frontend `.env`:
+```
+REACT_APP_BACKEND_URL=http://localhost:4000
+REACT_APP_APP_TITLE=Trident Explorer
+REACT_APP_THEME_COLOR=#001730
+REACT_APP_DEFAULT_LANGUAGE=en
+REACT_APP_DEFAULT_THEME=dark
+REACT_APP_REFRESH_INTERVAL=10000
+```
+
+Backend `.env`:
+```
+PORT=4000
+CHAIN_MODE=mock
+TRIDENT_NODE_RPC_URL=http://localhost:8090
+FRONTEND_URL=http://localhost
+```
+
 ### Run Explorer Locally
 ```bash
 # requires Docker
@@ -58,6 +78,13 @@ The backend exposes the following routes:
 docker compose -f docker-compose.prod.yml up -d
 ```
 This uses the Dockerfiles in `frontend/` and `backend/` to build production images.
+
+### Production Checklist
+
+- Set environment variables in `frontend/.env` and `backend/.env`.
+- Build images: `docker compose -f docker-compose.prod.yml build`.
+- Run services: `docker compose -f docker-compose.prod.yml up -d`.
+- Verify frontend on port 80 and backend on port 4000.
 
 ## License
 

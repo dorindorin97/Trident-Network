@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Spinner from './Spinner';
+import CopyButton from './CopyButton';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -14,7 +15,10 @@ function BlockDetails() {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`${API_URL}/api/v1/blocks/${number}`)
+    const endpoint = number.startsWith('0x') ?
+      `${API_URL}/api/v1/blocks/hash/${number}` :
+      `${API_URL}/api/v1/blocks/${number}`;
+    fetch(endpoint)
       .then(res => {
         if (!res.ok) throw new Error('bad');
         return res.json();
@@ -53,9 +57,18 @@ function BlockDetails() {
         <tbody>
           {block.transactions.map(tx => (
             <tr key={tx.txId}>
-              <td><Link to={`/tx/${tx.txId}`}>{tx.txId}</Link></td>
-              <td><Link to={`/account/${tx.from}`}>{tx.from}</Link></td>
-              <td><Link to={`/account/${tx.to}`}>{tx.to}</Link></td>
+              <td>
+                <Link to={`/tx/${tx.txId}`}>{tx.txId}</Link>
+                <CopyButton value={tx.txId} />
+              </td>
+              <td>
+                <Link to={`/account/${tx.from}`}>{tx.from}</Link>
+                <CopyButton value={tx.from} />
+              </td>
+              <td>
+                <Link to={`/account/${tx.to}`}>{tx.to}</Link>
+                <CopyButton value={tx.to} />
+              </td>
               <td>{tx.amount}</td>
               <td>{tx.timestamp}</td>
             </tr>

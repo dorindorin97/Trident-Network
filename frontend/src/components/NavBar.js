@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { parseSearch } from '../utils';
 
 const APP_TITLE = process.env.REACT_APP_APP_TITLE || 'Trident Explorer';
+
 
 function NavBar({ wallet, logout, language, setLanguage, theme, toggleTheme }) {
   const { t } = useTranslation();
@@ -13,16 +15,11 @@ function NavBar({ wallet, logout, language, setLanguage, theme, toggleTheme }) {
     e.preventDefault();
     const input = search.trim();
     if (!input) return;
-    if (/^\d+$/.test(input)) {
-      navigate(`/block/${input}`);
-    } else if (/^T\w{33}$/.test(input)) {
-      navigate(`/account/${input}`);
-    } else if (/^(0x)?[0-9a-fA-F]{64}$/.test(input)) {
-      const id = input.startsWith('0x') ? input : `0x${input}`;
-      navigate(`/tx/${id}`);
-    } else {
-      navigate('/404');
-    }
+    const { type, value } = parseSearch(input);
+    if (type === 'block') navigate(`/block/${value}`);
+    else if (type === 'account') navigate(`/account/${value}`);
+    else if (type === 'tx') navigate(`/tx/${value}`);
+    else navigate('/404');
     setSearch('');
   };
 
@@ -46,6 +43,7 @@ function NavBar({ wallet, logout, language, setLanguage, theme, toggleTheme }) {
       <select value={language} onChange={e => setLanguage(e.target.value)} className="ml-sm">
         <option value="en">EN</option>
         <option value="pt">PT</option>
+        <option value="es">ES</option>
       </select>
       <button onClick={toggleTheme} className="ml-sm">
         {theme === 'dark' ? t('Light Mode') : t('Dark Mode')}

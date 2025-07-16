@@ -2,6 +2,11 @@ const express = require('express');
 const { latestBlock, blocks, accounts } = require('../mockData');
 const router = express.Router();
 
+function isValidBlockNumber(n) {
+  const num = parseInt(n, 10);
+  return Number.isInteger(num) && num >= 0 && num <= Number.MAX_SAFE_INTEGER;
+}
+
 module.exports = (CHAIN_MODE, fetchRpc) => {
   router.get('/v1/blocks/latest', async (req, res) => {
     if (CHAIN_MODE === 'rpc') {
@@ -40,6 +45,9 @@ module.exports = (CHAIN_MODE, fetchRpc) => {
 
   router.get('/v1/blocks/:number', async (req, res) => {
     const num = req.params.number;
+    if (!isValidBlockNumber(num)) {
+      return res.status(400).json({ error: 'Invalid block number' });
+    }
     if (CHAIN_MODE === 'rpc') {
       try {
         const data = await fetchRpc(`/blocks/${num}`);
@@ -49,6 +57,24 @@ module.exports = (CHAIN_MODE, fetchRpc) => {
       }
     }
     const block = blocks.find(b => b.number === parseInt(num, 10));
+    if (!block) return res.status(404).json({ error: 'Block not found' });
+    res.json({ ...block, transactions: (accounts.TADDRESS1?.transactions || []) });
+  });
+
+  router.get('/v1/blocks/hash/:hash', async (req, res) => {
+    const hash = req.params.hash;
+    if (!/^0x[0-9a-fA-F]{16}$/.test(hash)) {
+      return res.status(400).json({ error: 'Invalid block hash' });
+    }
+    if (CHAIN_MODE === 'rpc') {
+      try {
+        const data = await fetchRpc(`/blocks/hash/${hash}`);
+        return res.json(data);
+      } catch (err) {
+        return res.status(503).json({ error: 'Service unavailable' });
+      }
+    }
+    const block = blocks.find(b => b.hash === hash);
     if (!block) return res.status(404).json({ error: 'Block not found' });
     res.json({ ...block, transactions: (accounts.TADDRESS1?.transactions || []) });
   });

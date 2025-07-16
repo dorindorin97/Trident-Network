@@ -8,6 +8,7 @@ const latestBlock = {
 
 const blocks = Array.from({ length: 100 }).map((_, i) => ({
   number: LATEST_NUMBER - i,
+  hash: `0x${(LATEST_NUMBER - i).toString(16).padStart(16, '0')}`,
   timestamp: new Date(Date.now() - i * 2000).toISOString(),
   validator: `TVALIDATOR${(i % 3) + 1}`
 }));

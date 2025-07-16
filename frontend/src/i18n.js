@@ -1,5 +1,6 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import es from './locales/es.json';
 
 const resources = {
   en: {
@@ -43,6 +44,7 @@ const resources = {
       "Account": "Account",
       "Page": "Page",
       "of": "of",
+      "Copy": "Copy",
       "Not Found": "Not Found",
       "The requested page could not be found.": "The requested page could not be found."
     }
@@ -88,9 +90,13 @@ const resources = {
       "Account": "Conta",
       "Page": "Página",
       "of": "de",
+      "Copy": "Copiar",
       "Not Found": "Não Encontrado",
       "The requested page could not be found.": "A página solicitada não foi encontrada."
     }
+  },
+  es: {
+    translation: es
   }
 };
 
