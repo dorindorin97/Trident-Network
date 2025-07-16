@@ -45,7 +45,7 @@ function AccountLookup() {
     <div>
       <h2>{t('Account Lookup')}</h2>
       <input value={address} onChange={e => setAddress(e.target.value)} placeholder={t('Address')} />
-      <button onClick={lookup} className="ml-sm">{t('Lookup')}</button>
+      <button onClick={lookup} className="ml-sm" disabled={!address.trim()}>{t('Lookup')}</button>
       {loading && <Spinner />}
       {error && !loading && <p>{t('Service unavailable')}</p>}
       {account && !loading && !error && (

@@ -42,7 +42,7 @@ function NavBar({ wallet, logout, language, setLanguage, theme, toggleTheme }) {
           autoFocus
         />
       </form>
-      <button onClick={handleSearch} className="ml-sm">{t('Search')}</button>
+      <button onClick={handleSearch} className="ml-sm" disabled={!search.trim()}>{t('Search')}</button>
       <select value={language} onChange={e => setLanguage(e.target.value)} className="ml-sm">
         <option value="en">EN</option>
         <option value="pt">PT</option>

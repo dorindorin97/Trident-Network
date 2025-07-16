@@ -34,6 +34,18 @@ app.use('/api', require('./routes/transactions')(CHAIN_MODE, fetchRpc));
 app.use('/api', require('./routes/accounts')(CHAIN_MODE, fetchRpc));
 app.use('/api', require('./routes/validators')(CHAIN_MODE, fetchRpc));
 
+// 404 handler for API routes
+app.use('/api', (req, res) => {
+  res.status(404).json({ error: 'API route not found' });
+});
+
+// Generic error handler
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ error: 'Internal server error' });
+});
+
 app.listen(PORT, () => {
   console.log(`Trident Network API server running on port ${PORT} in ${CHAIN_MODE} mode`);
 });
