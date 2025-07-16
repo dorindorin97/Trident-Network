@@ -1,0 +1,19 @@
+{
+  "config": {
+    "chainId": "0x76a81b116bfaa26e",
+    "blockTime": 2
+  },
+  "totalSupply": "1000000000",
+  "validators": [
+    {"address": "TVAL1PLACEHOLDER000000000000000000000", "stakingBalance": "50000000"},
+    {"address": "TVAL2PLACEHOLDER000000000000000000000", "stakingBalance": "50000000"},
+    {"address": "TVAL3PLACEHOLDER000000000000000000000", "stakingBalance": "50000000"}
+  ],
+  "accounts": [
+    {"address": "TACC1PLACEHOLDER000000000000000000000", "balance": "10000"},
+    {"address": "TACC2PLACEHOLDER000000000000000000000", "balance": "10000"},
+    {"address": "TACC3PLACEHOLDER000000000000000000000", "balance": "10000"},
+    {"address": "TACC4PLACEHOLDER000000000000000000000", "balance": "10000"},
+    {"address": "TACC5PLACEHOLDER000000000000000000000", "balance": "10000"}
+  ]
+}

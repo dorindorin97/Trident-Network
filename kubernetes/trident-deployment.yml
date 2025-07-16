@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trident-node
+  labels:
+    app: trident
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trident
+  template:
+    metadata:
+      labels:
+        app: trident
+    spec:
+      containers:
+      - name: trident-node
+        image: trident-network:latest
+        ports:
+        - containerPort: 8090
+        - containerPort: 50051
+        volumeMounts:
+        - name: genesis
+          mountPath: /app/genesis.json
+          subPath: genesis.json
+      volumes:
+      - name: genesis
+        configMap:
+          name: trident-genesis
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: trident-genesis
+  labels:
+    app: trident
+data:
+  genesis.json: |
+    {
+      "config": {
+        "chainId": "0x76a81b116bfaa26e",
+        "blockTime": 2
+      },
+      "totalSupply": "1000000000",
+      "validators": [
+        {"address": "TVAL1PLACEHOLDER000000000000000000000", "stakingBalance": "50000000"},
+        {"address": "TVAL2PLACEHOLDER000000000000000000000", "stakingBalance": "50000000"},
+        {"address": "TVAL3PLACEHOLDER000000000000000000000", "stakingBalance": "50000000"}
+      ],
+      "accounts": [
+        {"address": "TACC1PLACEHOLDER000000000000000000000", "balance": "10000"},
+        {"address": "TACC2PLACEHOLDER000000000000000000000", "balance": "10000"},
+        {"address": "TACC3PLACEHOLDER000000000000000000000", "balance": "10000"},
+        {"address": "TACC4PLACEHOLDER000000000000000000000", "balance": "10000"},
+        {"address": "TACC5PLACEHOLDER000000000000000000000", "balance": "10000"}
+      ]
+    }

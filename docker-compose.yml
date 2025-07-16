@@ -1,0 +1,11 @@
+version: '3'
+services:
+  trident-node:
+    build: .
+    container_name: trident-node
+    volumes:
+      - ./config/genesis.json:/app/genesis.json
+    ports:
+      - "8090:8090"  # RPC
+      - "50051:50051"  # gRPC
+    command: ["/bin/sh", "-c", "echo Starting Trident Network with genesis && cat /app/genesis.json"]
