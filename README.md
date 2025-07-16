@@ -1,6 +1,10 @@
 # Trident Network (TRI)
 
 A community-driven Trident Network fork with modified consensus and branding.
+## Release
+
+Version 1.0.0 - 2024-06-01
+
 
 ## Specifications
 - **Block Time:** 2 seconds
@@ -19,6 +23,9 @@ docker build -t trident-network:latest .
 ```bash
 docker-compose up
 ```
+
+
+Copy frontend/.env.example to frontend/.env and backend/.env.example to backend/.env before starting services.
 
 ### Run Explorer Locally
 ```bash
