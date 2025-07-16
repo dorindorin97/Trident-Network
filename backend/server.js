@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
 
@@ -9,7 +10,9 @@ const CHAIN_MODE = process.env.CHAIN_MODE || 'mock';
 const TRIDENT_NODE_RPC_URL = process.env.TRIDENT_NODE_RPC_URL || '';
 const FRONTEND_URL = process.env.FRONTEND_URL;
 
-app.use(cors({ origin: FRONTEND_URL }));
+app.use(helmet());
+const allowedOrigins = FRONTEND_URL ? FRONTEND_URL.split(',') : [];
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
 app.use('/api', limiter);
 app.use(express.json());
@@ -46,6 +49,10 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Trident Network API server running on port ${PORT} in ${CHAIN_MODE} mode`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Trident Network API server running on port ${PORT} in ${CHAIN_MODE} mode`);
+  });
+}
+
+module.exports = app;

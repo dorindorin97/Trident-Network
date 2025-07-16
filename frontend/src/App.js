@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { deriveAddress } from './utils';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
@@ -15,24 +16,10 @@ import BlockDetails from './components/BlockDetails';
 import TransactionDetails from './components/TransactionDetails';
 import AccountPage from './components/AccountPage';
 
-function deriveAddress(privateKey) {
-  return (
-    'T' +
-    btoa(privateKey)
-      .replace(/[^a-z0-9]/gi, '')
-      .slice(0, 10)
-  );
-}
 
 function App() {
   const { t } = useTranslation(); // used for initial render and language load
-  const [wallet, setWallet] = useState(() => {
-    const pk = localStorage.getItem('privateKey');
-    if (pk) {
-      return { privateKey: pk, address: deriveAddress(pk) };
-    }
-    return null;
-  });
+  const [wallet, setWallet] = useState(null);
 
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('theme') || process.env.REACT_APP_DEFAULT_THEME || 'dark';
@@ -56,12 +43,10 @@ function App() {
 
   const login = privKey => {
     const addr = deriveAddress(privKey);
-    localStorage.setItem('privateKey', privKey);
     setWallet({ privateKey: privKey, address: addr });
   };
 
   const logout = () => {
-    localStorage.removeItem('privateKey');
     setWallet(null);
   };
 

@@ -1,17 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Spinner from './Spinner';
+import CopyButton from './CopyButton';
+import { deriveAddress } from '../utils';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-function deriveAddress(privateKey) {
-  return (
-    'T' +
-    btoa(privateKey)
-      .replace(/[^a-z0-9]/gi, '')
-      .slice(0, 10)
-  );
-}
 
 function WalletPage({ wallet, login, logout }) {
   const { t } = useTranslation();
@@ -68,7 +62,7 @@ function WalletPage({ wallet, login, logout }) {
   return (
     <div className="container">
       <h2>{t('Wallet Page')}</h2>
-      <p>{t('Address')}: {wallet.address}</p>
+      <p>{t('Address')}: {wallet.address} <CopyButton value={wallet.address} /></p>
       <button onClick={logout}>{t('Logout')}</button>
       {loading ? (
         <Spinner />
@@ -92,9 +86,18 @@ function WalletPage({ wallet, login, logout }) {
               <tbody>
                 {account.transactions.map(tx => (
                   <tr key={tx.txId}>
-                    <td><a href={`/tx/${tx.txId}`}>{tx.txId}</a></td>
-                    <td><a href={`/account/${tx.from}`}>{tx.from}</a></td>
-                    <td><a href={`/account/${tx.to}`}>{tx.to}</a></td>
+                    <td>
+                      <a href={`/tx/${tx.txId}`}>{tx.txId}</a>
+                      <CopyButton value={tx.txId} />
+                    </td>
+                    <td>
+                      <a href={`/account/${tx.from}`}>{tx.from}</a>
+                      <CopyButton value={tx.from} />
+                    </td>
+                    <td>
+                      <a href={`/account/${tx.to}`}>{tx.to}</a>
+                      <CopyButton value={tx.to} />
+                    </td>
                     <td>{tx.amount}</td>
                     <td>{tx.timestamp}</td>
                   </tr>

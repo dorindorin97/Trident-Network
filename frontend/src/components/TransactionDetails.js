@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Spinner from './Spinner';
+import CopyButton from './CopyButton';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -36,9 +37,9 @@ function TransactionDetails() {
   return (
     <div className="container">
       <h2>{t('Transaction Details')}</h2>
-      <p>{t('TxID')}: {tx.txId}</p>
-      <p>{t('From')}: <Link to={`/account/${tx.from}`}>{tx.from}</Link></p>
-      <p>{t('To')}: <Link to={`/account/${tx.to}`}>{tx.to}</Link></p>
+      <p>{t('TxID')}: {tx.txId} <CopyButton value={tx.txId} /></p>
+      <p>{t('From')}: <Link to={`/account/${tx.from}`}>{tx.from}</Link> <CopyButton value={tx.from} /></p>
+      <p>{t('To')}: <Link to={`/account/${tx.to}`}>{tx.to}</Link> <CopyButton value={tx.to} /></p>
       <p>{t('Amount')}: {tx.amount}</p>
       {tx.blockNumber && <p>{t('Block')}: <Link to={`/block/${tx.blockNumber}`}>{tx.blockNumber}</Link></p>}
       <p>{t('Timestamp')}: {tx.timestamp}</p>
