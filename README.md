@@ -86,6 +86,10 @@ This uses the Dockerfiles in `frontend/` and `backend/` to build production imag
 - Run services: `docker compose -f docker-compose.prod.yml up -d`.
 - Verify frontend on port 80 and backend on port 4000.
 
+## Wallet Usage
+This explorer includes a wallet page for signing transactions. **Private keys are never stored on disk or transmitted to the backend**. Keys exist only in browser memory and are cleared on refresh. Use caution and test accounts when interacting with the wallet.
+ 
+
 ## License
 
 MIT License
