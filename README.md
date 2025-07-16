@@ -44,7 +44,7 @@ Backend `.env`:
 PORT=4000
 CHAIN_MODE=mock
 TRIDENT_NODE_RPC_URL=http://localhost:8090
-FRONTEND_URL=http://localhost
+FRONTEND_URL=http://localhost:3000
 ```
 
 ### Run Explorer Locally
@@ -82,12 +82,16 @@ This uses the Dockerfiles in `frontend/` and `backend/` to build production imag
 ### Production Checklist
 
 - Set environment variables in `frontend/.env` and `backend/.env`.
+- Ensure `FRONTEND_URL` is configured for CORS and matches your deployed domain.
 - Build images: `docker compose -f docker-compose.prod.yml build`.
 - Run services: `docker compose -f docker-compose.prod.yml up -d`.
 - Verify frontend on port 80 and backend on port 4000.
 
 ## Wallet Usage
 This explorer includes a wallet page for signing transactions. **Private keys are never stored on disk or transmitted to the backend**. Keys exist only in browser memory and are cleared on refresh. Use caution and test accounts when interacting with the wallet.
+
+### Security Disclaimer
+The built-in wallet is intended for demonstration purposes. Always verify the URL and use disposable accounts. The project maintainers are not responsible for lost funds.
  
 
 ## License
