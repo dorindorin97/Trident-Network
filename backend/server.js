@@ -8,7 +8,7 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 const CHAIN_MODE = process.env.CHAIN_MODE || 'mock';
 const TRIDENT_NODE_RPC_URL = process.env.TRIDENT_NODE_RPC_URL || '';
-const FRONTEND_URL = process.env.FRONTEND_URL;
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 
 app.use(helmet());
 const allowedOrigins = FRONTEND_URL ? FRONTEND_URL.split(',') : [];
@@ -28,7 +28,7 @@ async function fetchRpc(endpoint) {
 }
 
 // mock data
-const { latestBlock, blocks, accounts, validators } = require('./mockData');
+require('./mockData');
 
 // routes
 app.use('/api', require('./routes/health'));

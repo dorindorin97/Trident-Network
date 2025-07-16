@@ -18,7 +18,7 @@ import AccountPage from './components/AccountPage';
 
 
 function App() {
-  const { t } = useTranslation(); // used for initial render and language load
+  useTranslation(); // initialize i18n
   const [wallet, setWallet] = useState(null);
 
   const [theme, setTheme] = useState(() => {

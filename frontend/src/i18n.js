@@ -46,7 +46,8 @@ const resources = {
       "of": "of",
       "Copy": "Copy",
       "Not Found": "Not Found",
-      "The requested page could not be found.": "The requested page could not be found."
+      "The requested page could not be found.": "The requested page could not be found.",
+      "Use test accounts only. Keys stay in browser memory.": "Use test accounts only. Keys stay in browser memory."
     }
   },
   pt: {
@@ -92,7 +93,8 @@ const resources = {
       "of": "de",
       "Copy": "Copiar",
       "Not Found": "Não Encontrado",
-      "The requested page could not be found.": "A página solicitada não foi encontrada."
+      "The requested page could not be found.": "A página solicitada não foi encontrada.",
+      "Use test accounts only. Keys stay in browser memory.": "Use apenas contas de teste. Chaves ficam somente na memória do navegador."
     }
   },
   es: {

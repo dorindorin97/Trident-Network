@@ -17,7 +17,13 @@
   "root": true,
   "rules": {
     "react/prop-types": "off",
-    "no-unused-vars": "off",
-    "no-undef": "off"
-  }
+    "no-unused-vars": "error",
+    "no-undef": "error"
+  },
+  "overrides": [
+    {
+      "files": ["tests/**/*.js"],
+      "env": { "jest": true }
+    }
+  ]
 }

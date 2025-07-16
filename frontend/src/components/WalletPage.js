@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Spinner from './Spinner';
 import CopyButton from './CopyButton';
-import { deriveAddress } from '../utils';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -47,7 +46,8 @@ function WalletPage({ wallet, login, logout }) {
   if (!wallet) {
     return (
       <div className="container">
-        <h2>{t('Wallet Login')}</h2>
+      <h2>{t('Wallet Login')}</h2>
+      <p className="warning">{t('Use test accounts only. Keys stay in browser memory.')}</p>
         <input
           type="password"
           value={privKey}
