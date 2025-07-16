@@ -1,73 +1,62 @@
-# Trident Network (TRI)
+# Trident Network Explorer
 
-A community-driven Trident Network fork with modified consensus and branding.
-## Release
+A web explorer for the community-run Trident blockchain. The project provides a React frontend and an Express API server for inspecting blocks, transactions and accounts.
 
-Version 1.0.0 - 2024-06-01
+## Blockchain Specs
 
-
-## Specifications
+- **Chain ID:** `0x76a81b116bfaa26e`
 - **Block Time:** 2 seconds
-- **Total Supply:** 1,000,000,000 TRI
-- **Chain ID:** 0x76a81b116bfaa26e
+- **Consensus:** Modified BFT Proof-of-Stake
 
-## Quick Start
+## Wallet Disclaimer
 
-### Build Locally
+The explorer includes a simple in-browser wallet. It is for demonstration only. **Do not use real private keys.**
+
+- `CHAIN_MODE=mock` – backend serves mock data and no real signing occurs.
+- `CHAIN_MODE=rpc` – backend connects to a full node via `TRIDENT_NODE_RPC_URL`.
+
+Keys remain in browser memory and are cleared when the page reloads.
+
+## Environment Variables
+
+Copy `frontend/.env.example` and `backend/.env.example` to create `.env` files. The table below lists all variables.
+
+| Variable (location) | Default | Description |
+| ------------------- | ------- | ----------- |
+| `PORT` (frontend) | `3000` | Port for the React dev server |
+| `PORT` (backend) | `4000` | Port for the API server |
+| `REACT_APP_BACKEND_URL` | `http://localhost:4000` | API base URL used by the frontend |
+| `REACT_APP_APP_TITLE` | `Trident Explorer` | Browser title and branding |
+| `REACT_APP_THEME_COLOR` | `#001730` | Primary UI color |
+| `REACT_APP_DEFAULT_LANGUAGE` | `en` | Initial language |
+| `REACT_APP_DEFAULT_THEME` | `dark` | Initial theme (light or dark) |
+| `REACT_APP_REFRESH_INTERVAL` | `10000` | Polling interval in ms for latest block |
+| `CHAIN_MODE` | `mock` | `mock` serves local data, `rpc` forwards requests |
+| `TRIDENT_NODE_RPC_URL` | `http://localhost:8090` | Node RPC endpoint when `CHAIN_MODE=rpc` |
+| `FRONTEND_URL` | `http://localhost:3000` | Allowed CORS origin for the API |
+
+`REACT_APP_*` variables are baked into the frontend at build time. Rebuild the image or run the dev server again after changing them.
+
+## Quickstart
+
+### Development
+
 ```bash
-# Requires Docker
-docker build -t trident-network:latest .
-```
-
-### Launch Local Devnet
-```bash
-docker-compose up
-```
-
-
-Copy frontend/.env.example to frontend/.env and backend/.env.example to backend/.env before starting services.
-
-### Environment Variables
-
-Frontend `.env`:
-```
-REACT_APP_BACKEND_URL=http://localhost:4000
-REACT_APP_APP_TITLE=Trident Explorer
-REACT_APP_THEME_COLOR=#001730
-REACT_APP_DEFAULT_LANGUAGE=en
-REACT_APP_DEFAULT_THEME=dark
-REACT_APP_REFRESH_INTERVAL=10000
-```
-
-> **Note**: `REACT_APP_*` variables are injected at build time. To change the backend
-URL or other frontend settings you must rebuild the React app or its Docker image.
-
-Backend `.env`:
-```
-PORT=4000
-CHAIN_MODE=mock
-TRIDENT_NODE_RPC_URL=http://localhost:8090
-FRONTEND_URL=http://localhost:3000
-```
-
-`CHAIN_MODE=mock` serves a static in-memory blockchain for demos. Set
-`CHAIN_MODE=rpc` and provide `TRIDENT_NODE_RPC_URL` to connect to a real node.
-
-### Run Explorer Locally
-```bash
-# requires Docker
 docker compose -f docker-compose.dev.yml up
 ```
 
-This starts the backend on port 4000 and the React frontend on port 3000 using mock data.
+The command above starts the backend on port 4000 and the React app on port 3000 using mock data.
 
-The explorer includes dark/light themes and English/Portuguese translations. Your preferences are saved in local storage.
+### Production
 
-The search bar accepts block numbers, transaction hashes and account addresses and will navigate to the appropriate detail page.
+```bash
+docker compose -f docker-compose.prod.yml build
+docker compose -f docker-compose.prod.yml up -d
+```
 
-### API Endpoints
+Images are built from `frontend/` and `backend/`. Ensure your `.env` files contain the correct values before building.
 
-The backend exposes the following routes:
+## API Reference
 
 | Method | Endpoint | Description |
 | ------ | -------- | ----------- |
@@ -79,26 +68,15 @@ The backend exposes the following routes:
 | GET | `/api/v1/accounts/:address` | Account info |
 | GET | `/api/v1/validators` | Validator list |
 
-### Deploy with Docker Compose
-```bash
-docker compose -f docker-compose.prod.yml up -d
-```
-This uses the Dockerfiles in `frontend/` and `backend/` to build production images.
+Non‑listed routes under `/api` return `404`.
 
-### Production Checklist
+## CI/CD
 
-- Set environment variables in `frontend/.env` and `backend/.env`.
-- Ensure `FRONTEND_URL` is configured for CORS and matches your deployed domain.
-- Build images: `docker compose -f docker-compose.prod.yml build`.
-- Run services: `docker compose -f docker-compose.prod.yml up -d`.
-- Verify frontend on port 80 and backend on port 4000.
+GitHub Actions run automated checks on pushes to `main` and `work`. Separate workflows build and publish Docker images when a release tag is published.
 
-## Wallet Usage
-This explorer includes a wallet page for signing transactions. **Private keys are never stored on disk or transmitted to the backend**. Keys exist only in browser memory and are cleared on refresh. Use caution and test accounts when interacting with the wallet.
-
-### Security Disclaimer
-The built-in wallet is intended for demonstration purposes. Always verify the URL and use disposable accounts. The project maintainers are not responsible for lost funds.
- 
+- `build.yml` – lints, tests and builds both projects on push.
+- `frontend.yml` – builds and pushes the frontend image on release.
+- `backend.yml` – builds and pushes the backend image on release.
 
 ## License
 
