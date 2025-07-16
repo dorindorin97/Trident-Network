@@ -4,10 +4,21 @@ const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
+const CHAIN_MODE = process.env.CHAIN_MODE || 'mock';
+const TRIDENT_NODE_RPC_URL = process.env.TRIDENT_NODE_RPC_URL || '';
 
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+
+async function fetchRpc(endpoint) {
+  const url = `${TRIDENT_NODE_RPC_URL}${endpoint}`;
+  const resp = await fetch(url);
+  if (!resp.ok) {
+    throw new Error(`RPC request failed: ${resp.status}`);
+  }
+  return resp.json();
+}
 
 // mock data
 const LATEST_NUMBER = 123456;
@@ -74,11 +85,28 @@ app.get('/api/v1/env', (req, res) => {
   res.json(process.env);
 });
 
-app.get('/api/v1/blocks/latest', (req, res) => {
+app.get('/api/v1/blocks/latest', async (req, res) => {
+  if (CHAIN_MODE === 'rpc') {
+    try {
+      const data = await fetchRpc('/blocks/latest');
+      return res.json(data);
+    } catch (err) {
+      return res.status(503).json({ error: 'Service unavailable' });
+    }
+  }
   res.json(latestBlock);
 });
 
-app.get('/api/v1/blocks', (req, res) => {
+app.get('/api/v1/blocks', async (req, res) => {
+  if (CHAIN_MODE === 'rpc') {
+    try {
+      const q = `?page=${req.query.page || 1}&limit=${req.query.limit || 10}`;
+      const data = await fetchRpc(`/blocks${q}`);
+      return res.json(data);
+    } catch (err) {
+      return res.status(503).json({ error: 'Service unavailable' });
+    }
+  }
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 10;
   const start = (page - 1) * limit;
@@ -92,16 +120,32 @@ app.get('/api/v1/blocks', (req, res) => {
   });
 });
 
-app.get('/api/v1/accounts/:address', (req, res) => {
+app.get('/api/v1/accounts/:address', async (req, res) => {
+  if (CHAIN_MODE === 'rpc') {
+    try {
+      const data = await fetchRpc(`/accounts/${req.params.address}`);
+      return res.json(data);
+    } catch (err) {
+      return res.status(503).json({ error: 'Service unavailable' });
+    }
+  }
   const addr = req.params.address;
   const data = accounts[addr] || { balance: 0, transactions: [] };
   res.json(data);
 });
 
-app.get('/api/v1/validators', (req, res) => {
+app.get('/api/v1/validators', async (req, res) => {
+  if (CHAIN_MODE === 'rpc') {
+    try {
+      const data = await fetchRpc('/validators');
+      return res.json(data);
+    } catch (err) {
+      return res.status(503).json({ error: 'Service unavailable' });
+    }
+  }
   res.json(validators);
 });
 
 app.listen(PORT, () => {
-  console.log(`Trident Network mock API server running on port ${PORT}`);
+  console.log(`Trident Network API server running on port ${PORT} in ${CHAIN_MODE} mode`);
 });

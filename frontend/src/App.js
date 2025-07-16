@@ -20,16 +20,26 @@ function Spinner() {
 function LatestBlock() {
   const [block, setBlock] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   useEffect(() => {
     setLoading(true);
     fetch(`${API_URL}/api/v1/blocks/latest`)
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error('bad');
+        return res.json();
+      })
       .then(data => {
         setBlock(data);
+        setError(false);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError(true);
         setLoading(false);
       });
   }, []);
   if (loading) return <Spinner />;
+  if (error) return <p>Service unavailable</p>;
   return (
     <div>
       <h2>Latest Block</h2>
@@ -45,13 +55,22 @@ function BlockHistory() {
   const [blocks, setBlocks] = useState([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     setLoading(true);
     fetch(`${API_URL}/api/v1/blocks?page=${page}&limit=10`)
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error('bad');
+        return res.json();
+      })
       .then(data => {
         setBlocks(data.blocks);
+        setError(false);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError(true);
         setLoading(false);
       });
   }, [page]);
@@ -63,6 +82,8 @@ function BlockHistory() {
       <button onClick={() => setPage(p => p + 1)} style={{ marginLeft: '0.5rem' }}>Next</button>
       {loading ? (
         <Spinner />
+      ) : error ? (
+        <p>Service unavailable</p>
       ) : (
         <ul>
           {blocks.map(b => (
@@ -78,12 +99,22 @@ function AccountLookup() {
   const [address, setAddress] = useState('');
   const [account, setAccount] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
   const lookup = () => {
     setLoading(true);
     fetch(`${API_URL}/api/v1/accounts/${address}`)
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error('bad');
+        return res.json();
+      })
       .then(data => {
         setAccount(data);
+        setError(false);
+        setLoading(false);
+      })
+      .catch(() => {
+        setAccount(null);
+        setError(true);
         setLoading(false);
       });
   };
@@ -93,7 +124,8 @@ function AccountLookup() {
       <input value={address} onChange={e => setAddress(e.target.value)} placeholder="Address" />
       <button onClick={lookup}>Lookup</button>
       {loading && <Spinner />}
-      {account && !loading && (
+      {error && !loading && <p>Service unavailable</p>}
+      {account && !loading && !error && (
         <div>
           <p>Balance: {account.balance} TRI</p>
           <h4>Transactions</h4>
@@ -128,12 +160,21 @@ function AccountLookup() {
 function ValidatorList() {
   const [vals, setVals] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   useEffect(() => {
     setLoading(true);
     fetch(`${API_URL}/api/v1/validators`)
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error('bad');
+        return res.json();
+      })
       .then(data => {
         setVals(data);
+        setError(false);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError(true);
         setLoading(false);
       });
   }, []);
@@ -142,6 +183,8 @@ function ValidatorList() {
       <h2>Validators</h2>
       {loading ? (
         <Spinner />
+      ) : error ? (
+        <p>Service unavailable</p>
       ) : (
         <ul>
           {vals.map(v => (
@@ -162,9 +205,18 @@ function WalletPage({ wallet, login, logout }) {
     if (wallet) {
       setLoading(true);
       fetch(`${API_URL}/api/v1/accounts/${wallet.address}`)
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) throw new Error('bad');
+          return res.json();
+        })
         .then(data => {
           setAccount(data);
+          setError(false);
+          setLoading(false);
+        })
+        .catch(() => {
+          setAccount(null);
+          setError(true);
           setLoading(false);
         });
     } else {
@@ -201,6 +253,8 @@ function WalletPage({ wallet, login, logout }) {
       <button onClick={logout}>Logout</button>
       {loading ? (
         <Spinner />
+      ) : error ? (
+        <p>Service unavailable</p>
       ) : (
         account && (
           <div>
@@ -266,21 +320,40 @@ function Home() {
 function AdminPage() {
   const [health, setHealth] = useState(null);
   const [env, setEnv] = useState(null);
+  const [error, setError] = useState(false);
   useEffect(() => {
     fetch(`${API_URL}/api/v1/health`)
-      .then(res => res.json())
-      .then(setHealth);
+      .then(res => {
+        if (!res.ok) throw new Error('bad');
+        return res.json();
+      })
+      .then(data => {
+        setHealth(data);
+        setError(false);
+      })
+      .catch(() => setError(true));
     fetch(`${API_URL}/api/v1/env`)
-      .then(res => res.json())
-      .then(setEnv);
+      .then(res => {
+        if (!res.ok) throw new Error('bad');
+        return res.json();
+      })
+      .then(data => {
+        setEnv(data);
+        setError(false);
+      })
+      .catch(() => setError(true));
   }, []);
   return (
     <div className="container">
       <h2>Admin Panel</h2>
-      {!health ? <Spinner /> : (
+      {!health ? <Spinner /> : error ? (
+        <p>Service unavailable</p>
+      ) : (
         <p>Status: {health.status} at {health.timestamp}</p>
       )}
-      {!env ? <Spinner /> : (
+      {!env ? <Spinner /> : error ? (
+        <p>Service unavailable</p>
+      ) : (
         <div>
           <h3>Environment</h3>
           <pre style={{ whiteSpace: 'pre-wrap' }}>{JSON.stringify(env, null, 2)}</pre>
