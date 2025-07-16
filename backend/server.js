@@ -7,7 +7,7 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 const CHAIN_MODE = process.env.CHAIN_MODE || 'mock';
 const TRIDENT_NODE_RPC_URL = process.env.TRIDENT_NODE_RPC_URL || '';
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+const FRONTEND_URL = process.env.FRONTEND_URL;
 
 app.use(cors({ origin: FRONTEND_URL }));
 const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });

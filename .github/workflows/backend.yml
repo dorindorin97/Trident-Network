@@ -16,7 +16,7 @@ jobs:
         run: |
           required_vars=(PORT CHAIN_MODE TRIDENT_NODE_RPC_URL FRONTEND_URL)
           for v in "${required_vars[@]}"; do
-            grep -q "^$v=" backend/.env || { echo "$v missing"; exit 1; }
+            grep -q "^$v=" backend/.env.example || { echo "$v missing"; exit 1; }
           done
       - name: Install dependencies
         run: |

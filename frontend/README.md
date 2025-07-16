@@ -6,11 +6,12 @@ See [deploy.md](deploy.md) for Docker Compose deployment instructions.
 
 ## Environment Variables
 
+Copy `.env.example` to `.env` and then edit the values as needed.
 Create a `.env` file with:
 
 ```
 PORT=3000
-REACT_APP_API_URL=http://localhost:4000
+REACT_APP_BACKEND_URL=
 REACT_APP_APP_TITLE=Trident Explorer
 REACT_APP_THEME_COLOR=#001730
 REACT_APP_DEFAULT_LANGUAGE=en
@@ -20,7 +21,7 @@ REACT_APP_DEFAULT_THEME=dark
 Available variables (defaults shown):
 
 - `PORT` (3000) - port for the React dev server.
-- `REACT_APP_API_URL` (`http://localhost:4000`) - backend API base URL.
+- `REACT_APP_BACKEND_URL` (e.g., http://localhost:4000) - backend API base URL.
 - `REACT_APP_APP_TITLE` (`Trident Explorer`) - page title and branding text.
 - `REACT_APP_THEME_COLOR` (`#001730`) - primary theme color.
 - `REACT_APP_DEFAULT_LANGUAGE` (`en`) - initial UI language.
@@ -35,6 +36,7 @@ cd frontend
 npm install
 npm start
 ```
+After changes run `npm run lint` and `npm run format` to keep code consistent.
 
 The app will be available at `http://localhost:3000`.
 

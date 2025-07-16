@@ -14,9 +14,9 @@ jobs:
           node-version: 18
       - name: Validate env
         run: |
-          required_vars=(PORT REACT_APP_API_URL REACT_APP_APP_TITLE REACT_APP_THEME_COLOR)
+          required_vars=(PORT REACT_APP_BACKEND_URL REACT_APP_APP_TITLE REACT_APP_THEME_COLOR)
           for v in "${required_vars[@]}"; do
-            grep -q "^$v=" frontend/.env || { echo "$v missing"; exit 1; }
+            grep -q "^$v=" frontend/.env.example || { echo "$v missing"; exit 1; }
           done
       - name: Install dependencies
         run: |

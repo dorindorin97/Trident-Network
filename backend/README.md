@@ -6,13 +6,14 @@ See [deploy.md](deploy.md) for Docker Compose deployment instructions.
 
 ## Environment Variables
 
+Copy `.env.example` to `.env` and fill in the variables.
 Create a `.env` file with the following values:
 
 ```
 PORT=4000
 CHAIN_MODE=mock
 TRIDENT_NODE_RPC_URL=http://localhost:8090
-FRONTEND_URL=http://localhost:3000
+FRONTEND_URL=
 ```
 
 Available variables (defaults shown):
@@ -20,7 +21,7 @@ Available variables (defaults shown):
 - `PORT` (4000) - port the server listens on.
 - `CHAIN_MODE` (`mock`) - use `mock` data or `rpc` to forward to `TRIDENT_NODE_RPC_URL`.
 - `TRIDENT_NODE_RPC_URL` (`http://localhost:8090`) - RPC endpoint used when `CHAIN_MODE=rpc`.
-- `FRONTEND_URL` (`http://localhost:3000`) - allowed CORS origin.
+- `FRONTEND_URL` (e.g., http://localhost:3000) - allowed CORS origin.
 
 ## Quickstart
 
@@ -31,6 +32,7 @@ cd backend
 npm install
 npm start
 ```
+After changes run `npm run lint` and `npm run format` to keep code consistent.
 
 The API will be available at `http://localhost:4000`.
 
