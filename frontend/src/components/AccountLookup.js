@@ -10,6 +10,8 @@ function AccountLookup() {
   const [account, setAccount] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [page, setPage] = useState(1);
+  const perPage = 10;
 
   const lookup = () => {
     setLoading(true);
@@ -20,6 +22,7 @@ function AccountLookup() {
       })
       .then(data => {
         setAccount(data);
+        setPage(1);
         setError(false);
         setLoading(false);
       })
@@ -29,6 +32,14 @@ function AccountLookup() {
         setLoading(false);
       });
   };
+
+  let total = 1;
+  let txs = [];
+  if (account) {
+    total = Math.ceil(account.transactions.length / perPage);
+    const start = (page - 1) * perPage;
+    txs = account.transactions.slice(start, start + perPage);
+  }
 
   return (
     <div>
@@ -41,6 +52,11 @@ function AccountLookup() {
         <div>
           <p>{t('Balance')}: {account.balance} TRI</p>
           <h4>{t('Transactions')}</h4>
+          <div className="pagination-controls">
+            <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>{t('Previous')}</button>
+            <span className="ml-sm">{t('Page')} {page} {t('of')} {total}</span>
+            <button onClick={() => setPage(p => p + 1)} disabled={page >= total} className="ml-sm">{t('Next')}</button>
+          </div>
           <table className="full-width">
             <thead>
               <tr>
@@ -52,7 +68,7 @@ function AccountLookup() {
               </tr>
             </thead>
             <tbody>
-              {account.transactions.map(tx => (
+              {txs.map(tx => (
                 <tr key={tx.txId}>
                   <td><a href={`/tx/${tx.txId}`}>{tx.txId}</a></td>
                   <td><a href={`/account/${tx.from}`}>{tx.from}</a></td>

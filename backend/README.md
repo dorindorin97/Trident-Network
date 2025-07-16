@@ -22,6 +22,18 @@ Available variables (defaults shown):
 - `TRIDENT_NODE_RPC_URL` (`http://localhost:8090`) - RPC endpoint used when `CHAIN_MODE=rpc`.
 - `FRONTEND_URL` (`http://localhost:3000`) - allowed CORS origin.
 
+## API Endpoints
+
+| Method | Endpoint | Description |
+| ------ | -------- | ----------- |
+| GET | `/api/v1/health` | Health check |
+| GET | `/api/v1/blocks/latest` | Latest block |
+| GET | `/api/v1/blocks` | Paginated block list |
+| GET | `/api/v1/blocks/:number` | Block details |
+| GET | `/api/v1/transactions/:id` | Transaction details |
+| GET | `/api/v1/accounts/:address` | Account info |
+| GET | `/api/v1/validators` | Validator list |
+
 ## Development
 
 ```
@@ -29,6 +41,11 @@ docker compose -f docker-compose.dev.yml up backend
 ```
 
 The development service mounts the code and runs `npm run dev` for hot reload.
+To start frontend and backend together run:
+
+```
+docker compose -f docker-compose.dev.yml up
+```
 
 ## Production
 
