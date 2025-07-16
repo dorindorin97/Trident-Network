@@ -32,6 +32,20 @@ The explorer includes dark/light themes and English/Portuguese translations. You
 
 The search bar accepts block numbers, transaction hashes and account addresses and will navigate to the appropriate detail page.
 
+### API Endpoints
+
+The backend exposes the following routes:
+
+| Method | Endpoint | Description |
+| ------ | -------- | ----------- |
+| GET | `/api/v1/health` | Health check |
+| GET | `/api/v1/blocks/latest` | Latest block |
+| GET | `/api/v1/blocks` | Paginated block list |
+| GET | `/api/v1/blocks/:number` | Block details |
+| GET | `/api/v1/transactions/:id` | Transaction details |
+| GET | `/api/v1/accounts/:address` | Account info |
+| GET | `/api/v1/validators` | Validator list |
+
 ### Deploy with Docker Compose
 ```bash
 docker compose -f docker-compose.prod.yml up -d
