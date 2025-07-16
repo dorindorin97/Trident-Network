@@ -70,6 +70,26 @@ button:focus {
   color: var(--background-color);
 }
 
+input,
+select,
+textarea {
+  background: var(--background-color);
+  color: var(--text-color);
+  border: 1px solid var(--text-color);
+  padding: 0.25rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border: 1px solid var(--text-color);
+  padding: 0.25rem;
+}
+
 .container {
   padding: 1rem;
 }
@@ -115,3 +135,5 @@ button:focus {
 .pre-wrap { white-space: pre-wrap; }
 button:disabled { opacity: 0.5; cursor: not-allowed; }
 .pagination-controls { margin-bottom: 0.5rem; }
+.hidden { display: none; }
+#root.hidden { display: none; }
