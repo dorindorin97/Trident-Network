@@ -10,19 +10,51 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // mock data
+const LATEST_NUMBER = 123456;
 const latestBlock = {
-  number: 123456,
+  number: LATEST_NUMBER,
   hash: '0xabcdef1234567890',
   timestamp: new Date().toISOString(),
   validator: 'TVALIDATORADDRESS'
 };
 
+// create a list of mock blocks for pagination
+const blocks = Array.from({ length: 100 }).map((_, i) => ({
+  number: LATEST_NUMBER - i,
+  timestamp: new Date(Date.now() - i * 2000).toISOString(),
+  validator: `TVALIDATOR${(i % 3) + 1}`
+}));
+
 const accounts = {
-  'TADDRESS1': {
+  TADDRESS1: {
     balance: 1000,
     transactions: [
-      { txid: '0x1', amount: 100, type: 'send', timestamp: new Date().toISOString() },
-      { txid: '0x2', amount: 50, type: 'receive', timestamp: new Date().toISOString() }
+      {
+        txId: '0x1',
+        from: 'TADDRESS1',
+        to: 'TADDRESS2',
+        amount: 100,
+        timestamp: new Date(Date.now() - 60000).toISOString()
+      },
+      {
+        txId: '0x2',
+        from: 'TADDRESS3',
+        to: 'TADDRESS1',
+        amount: 50,
+        timestamp: new Date(Date.now() - 120000).toISOString()
+      }
+    ]
+  },
+  TADDRESS2: {
+    balance: 500,
+    transactions: [
+      {
+        txId: '0x3',
+        from: 'TADDRESS2',
+        to: 'TADDRESS3',
+        amount: 20,
+        timestamp: new Date(Date.now() - 300000).toISOString()
+      }
     ]
   }
 };
@@ -36,6 +68,20 @@ const validators = [
 // routes
 app.get('/api/v1/blocks/latest', (req, res) => {
   res.json(latestBlock);
+});
+
+app.get('/api/v1/blocks', (req, res) => {
+  const page = parseInt(req.query.page, 10) || 1;
+  const limit = parseInt(req.query.limit, 10) || 10;
+  const start = (page - 1) * limit;
+  const end = start + limit;
+  const paginated = blocks.slice(start, end);
+  res.json({
+    page,
+    limit,
+    total: blocks.length,
+    blocks: paginated
+  });
 });
 
 app.get('/api/v1/accounts/:address', (req, res) => {
