@@ -20,6 +20,8 @@ function NavBar({ wallet, logout, language, setLanguage, theme, toggleTheme }) {
     } else if (/^(0x)?[0-9a-fA-F]{64}$/.test(input)) {
       const id = input.startsWith('0x') ? input : `0x${input}`;
       navigate(`/tx/${id}`);
+    } else {
+      navigate('/404');
     }
     setSearch('');
   };
@@ -32,12 +34,12 @@ function NavBar({ wallet, logout, language, setLanguage, theme, toggleTheme }) {
       <Link to="/account">{t('Account Lookup')}</Link>
       <Link to="/validators">{t('Validator List')}</Link>
       <Link to="/wallet">{t('Wallet')}</Link>
-      <Link to="/admin">{t('Admin Panel')}</Link>
       <form onSubmit={handleSearch} className="ml-auto">
         <input
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder={t('Search Placeholder')}
+          autoFocus
         />
       </form>
       <button onClick={handleSearch} className="ml-sm">{t('Search')}</button>

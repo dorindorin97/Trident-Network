@@ -41,8 +41,24 @@ body {
   margin-right: 1rem;
   text-decoration: none;
 }
+.navbar a:hover, .navbar a:focus {
+  text-decoration: underline;
+}
 .navbar button {
   margin-left: 0.5rem;
+}
+
+button {
+  background: transparent;
+  color: var(--text-color);
+  border: 1px solid var(--text-color);
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+}
+button:hover,
+button:focus {
+  background: var(--text-color);
+  color: var(--background-color);
 }
 
 .container {

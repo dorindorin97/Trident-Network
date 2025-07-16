@@ -44,7 +44,11 @@ values via the navbar controls and their preferences are persisted locally.
 docker compose -f docker-compose.dev.yml up frontend
 ```
 
-This runs the React development server with hot reload.
+This runs the React development server with hot reload. To start both frontend and backend together run:
+
+```
+docker compose -f docker-compose.dev.yml up
+```
 
 ## Production
 

@@ -42,7 +42,9 @@ const resources = {
       "Transaction Details": "Transaction Details",
       "Account": "Account",
       "Page": "Page",
-      "of": "of"
+      "of": "of",
+      "Not Found": "Not Found",
+      "The requested page could not be found.": "The requested page could not be found."
     }
   },
   pt: {
@@ -85,7 +87,9 @@ const resources = {
       "Transaction Details": "Detalhes da Transação",
       "Account": "Conta",
       "Page": "Página",
-      "of": "de"
+      "of": "de",
+      "Not Found": "Não Encontrado",
+      "The requested page could not be found.": "A página solicitada não foi encontrada."
     }
   }
 };
