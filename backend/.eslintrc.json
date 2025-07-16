@@ -13,5 +13,11 @@
     "react": {
       "version": "detect"
     }
+  },
+  "root": true,
+  "rules": {
+    "react/prop-types": "off",
+    "no-unused-vars": "off",
+    "no-undef": "off"
   }
 }
