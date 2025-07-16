@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import i18n from 'i18next';
 import './App.css';
+import './i18n';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
 
@@ -18,6 +21,7 @@ function Spinner() {
 }
 
 function LatestBlock() {
+  const { t } = useTranslation();
   const [block, setBlock] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -39,19 +43,20 @@ function LatestBlock() {
       });
   }, []);
   if (loading) return <Spinner />;
-  if (error) return <p>Service unavailable</p>;
+  if (error) return <p>{t('Service unavailable')}</p>;
   return (
     <div>
-      <h2>Latest Block</h2>
-      <p>Number: {block.number}</p>
-      <p>Hash: {block.hash}</p>
-      <p>Validator: {block.validator}</p>
-      <p>Timestamp: {block.timestamp}</p>
+      <h2>{t('Latest Block')}</h2>
+      <p>{t('Number')}: {block.number}</p>
+      <p>{t('Hash')}: {block.hash}</p>
+      <p>{t('Validator')}: {block.validator}</p>
+      <p>{t('Timestamp')}: {block.timestamp}</p>
     </div>
   );
 }
 
 function BlockHistory() {
+  const { t } = useTranslation();
   const [blocks, setBlocks] = useState([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -77,17 +82,17 @@ function BlockHistory() {
 
   return (
     <div>
-      <h2>Block History</h2>
-      <button onClick={() => setPage(p => Math.max(1, p - 1))}>Previous</button>
-      <button onClick={() => setPage(p => p + 1)} style={{ marginLeft: '0.5rem' }}>Next</button>
+      <h2>{t('Block History')}</h2>
+      <button onClick={() => setPage(p => Math.max(1, p - 1))}>{t('Previous')}</button>
+      <button onClick={() => setPage(p => p + 1)} style={{ marginLeft: '0.5rem' }}>{t('Next')}</button>
       {loading ? (
         <Spinner />
       ) : error ? (
-        <p>Service unavailable</p>
+        <p>{t('Service unavailable')}</p>
       ) : (
         <ul>
           {blocks.map(b => (
-            <li key={b.number}>Block {b.number} - {b.validator} - {b.timestamp}</li>
+            <li key={b.number}>{t('Block')} {b.number} - {b.validator} - {b.timestamp}</li>
           ))}
         </ul>
       )}
@@ -96,6 +101,7 @@ function BlockHistory() {
 }
 
 function AccountLookup() {
+  const { t } = useTranslation();
   const [address, setAddress] = useState('');
   const [account, setAccount] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -120,23 +126,23 @@ function AccountLookup() {
   };
   return (
     <div>
-      <h2>Account Lookup</h2>
-      <input value={address} onChange={e => setAddress(e.target.value)} placeholder="Address" />
-      <button onClick={lookup}>Lookup</button>
+      <h2>{t('Account Lookup')}</h2>
+      <input value={address} onChange={e => setAddress(e.target.value)} placeholder={t('Address')} />
+      <button onClick={lookup}>{t('Lookup')}</button>
       {loading && <Spinner />}
-      {error && !loading && <p>Service unavailable</p>}
+      {error && !loading && <p>{t('Service unavailable')}</p>}
       {account && !loading && !error && (
         <div>
-          <p>Balance: {account.balance} TRI</p>
-          <h4>Transactions</h4>
+          <p>{t('Balance')}: {account.balance} TRI</p>
+          <h4>{t('Transactions')}</h4>
           <table style={{ width: '100%', color: 'white' }}>
             <thead>
               <tr>
-                <th>TxID</th>
-                <th>From</th>
-                <th>To</th>
-                <th>Amount</th>
-                <th>Timestamp</th>
+                <th>{t('TxID')}</th>
+                <th>{t('From')}</th>
+                <th>{t('To')}</th>
+                <th>{t('Amount')}</th>
+                <th>{t('Timestamp')}</th>
               </tr>
             </thead>
             <tbody>
@@ -158,6 +164,7 @@ function AccountLookup() {
 }
 
 function ValidatorList() {
+  const { t } = useTranslation();
   const [vals, setVals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -180,11 +187,11 @@ function ValidatorList() {
   }, []);
   return (
     <div>
-      <h2>Validators</h2>
+      <h2>{t('Validators')}</h2>
       {loading ? (
         <Spinner />
       ) : error ? (
-        <p>Service unavailable</p>
+        <p>{t('Service unavailable')}</p>
       ) : (
         <ul>
           {vals.map(v => (
@@ -197,6 +204,7 @@ function ValidatorList() {
 }
 
 function WalletPage({ wallet, login, logout }) {
+  const { t } = useTranslation();
   const [privKey, setPrivKey] = useState('');
   const [account, setAccount] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -234,40 +242,40 @@ function WalletPage({ wallet, login, logout }) {
   if (!wallet) {
     return (
       <div className="container">
-        <h2>Wallet Login</h2>
+        <h2>{t('Wallet Login')}</h2>
         <input
           type="password"
           value={privKey}
           onChange={e => setPrivKey(e.target.value)}
-          placeholder="Private Key"
+          placeholder={t('Private Key')}
         />
-        <button onClick={handleLogin}>Login</button>
+        <button onClick={handleLogin}>{t('Login')}</button>
       </div>
     );
   }
 
   return (
     <div className="container">
-      <h2>Wallet</h2>
-      <p>Address: {wallet.address}</p>
-      <button onClick={logout}>Logout</button>
+      <h2>{t('Wallet Page')}</h2>
+      <p>{t('Address')}: {wallet.address}</p>
+      <button onClick={logout}>{t('Logout')}</button>
       {loading ? (
         <Spinner />
       ) : error ? (
-        <p>Service unavailable</p>
+        <p>{t('Service unavailable')}</p>
       ) : (
         account && (
           <div>
-            <p>Balance: {account.balance} TRI</p>
-            <h4>Transactions</h4>
+            <p>{t('Balance')}: {account.balance} TRI</p>
+            <h4>{t('Transactions')}</h4>
             <table style={{ width: '100%', color: 'white' }}>
               <thead>
                 <tr>
-                  <th>TxID</th>
-                  <th>From</th>
-                  <th>To</th>
-                  <th>Amount</th>
-                  <th>Timestamp</th>
+                  <th>{t('TxID')}</th>
+                  <th>{t('From')}</th>
+                  <th>{t('To')}</th>
+                  <th>{t('Amount')}</th>
+                  <th>{t('Timestamp')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -291,20 +299,28 @@ function WalletPage({ wallet, login, logout }) {
 
 const APP_TITLE = process.env.REACT_APP_APP_TITLE || 'Trident Explorer';
 
-function NavBar({ wallet, logout }) {
+function NavBar({ wallet, logout, language, setLanguage, theme, toggleTheme }) {
+  const { t } = useTranslation();
   return (
     <nav className="navbar">
       <img src="/trident-logo.svg" alt={APP_TITLE} />
       <span className="brand">{APP_TITLE}</span>
-      <Link to="/">Latest Block</Link>
-      <Link to="/account">Account Lookup</Link>
-      <Link to="/validators">Validator List</Link>
-      <Link to="/wallet">Wallet</Link>
-      <Link to="/admin">Admin</Link>
+      <Link to="/">{t('Latest Block')}</Link>
+      <Link to="/account">{t('Account Lookup')}</Link>
+      <Link to="/validators">{t('Validator List')}</Link>
+      <Link to="/wallet">{t('Wallet')}</Link>
+      <Link to="/admin">{t('Admin Panel')}</Link>
+      <select value={language} onChange={e => setLanguage(e.target.value)} style={{ marginLeft: 'auto' }}>
+        <option value="en">EN</option>
+        <option value="pt">PT</option>
+      </select>
+      <button onClick={toggleTheme} style={{ marginLeft: '0.5rem' }}>
+        {theme === 'dark' ? t('Light Mode') : t('Dark Mode')}
+      </button>
       {wallet && (
-        <span style={{ marginLeft: 'auto' }}>
-          Logged in as {wallet.address}{' '}
-          <button onClick={logout}>Logout</button>
+        <span style={{ marginLeft: '0.5rem' }}>
+          {wallet.address}{' '}
+          <button onClick={logout}>{t('Logout')}</button>
         </span>
       )}
     </nav>
@@ -321,6 +337,7 @@ function Home() {
 }
 
 function AdminPage() {
+  const { t } = useTranslation();
   const [health, setHealth] = useState(null);
   const [env, setEnv] = useState(null);
   const [error, setError] = useState(false);
@@ -348,17 +365,17 @@ function AdminPage() {
   }, []);
   return (
     <div className="container">
-      <h2>Admin Panel</h2>
+      <h2>{t('Admin Panel')}</h2>
       {!health ? <Spinner /> : error ? (
-        <p>Service unavailable</p>
+        <p>{t('Service unavailable')}</p>
       ) : (
-        <p>Status: {health.status} at {health.timestamp}</p>
+        <p>{t('Status')}: {health.status} {t('Timestamp')}: {health.timestamp}</p>
       )}
       {!env ? <Spinner /> : error ? (
-        <p>Service unavailable</p>
+        <p>{t('Service unavailable')}</p>
       ) : (
         <div>
-          <h3>Environment</h3>
+          <h3>{t('Environment')}</h3>
           <pre style={{ whiteSpace: 'pre-wrap' }}>{JSON.stringify(env, null, 2)}</pre>
         </div>
       )}
@@ -375,6 +392,26 @@ function App() {
     return null;
   });
 
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('theme') || process.env.REACT_APP_DEFAULT_THEME || 'dark';
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const [language, setLanguage] = useState(() => {
+    return localStorage.getItem('language') || process.env.REACT_APP_DEFAULT_LANGUAGE || 'en';
+  });
+
+  useEffect(() => {
+    i18n.changeLanguage(language);
+    localStorage.setItem('language', language);
+  }, [language]);
+
+  const toggleTheme = () => setTheme(t => (t === 'dark' ? 'light' : 'dark'));
+
   const login = privKey => {
     const addr = deriveAddress(privKey);
     localStorage.setItem('privateKey', privKey);
@@ -388,7 +425,14 @@ function App() {
 
   return (
     <Router>
-      <NavBar wallet={wallet} logout={logout} />
+      <NavBar
+        wallet={wallet}
+        logout={logout}
+        language={language}
+        setLanguage={setLanguage}
+        theme={theme}
+        toggleTheme={toggleTheme}
+      />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/account" element={<div className="container"><AccountLookup /></div>} />
