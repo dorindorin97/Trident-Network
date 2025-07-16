@@ -1,13 +1,8 @@
 name: Backend CI
 
 on:
-  push:
-    paths:
-      - 'backend/**'
-      - '.github/workflows/backend.yml'
-    branches: [ main ]
-    tags:
-      - 'v*'
+  release:
+    types: [published]
 
 jobs:
   build:
@@ -17,6 +12,12 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
+      - name: Validate env
+        run: |
+          required_vars=(PORT CHAIN_MODE TRIDENT_NODE_RPC_URL FRONTEND_URL)
+          for v in "${required_vars[@]}"; do
+            grep -q "^$v=" backend/.env || { echo "$v missing"; exit 1; }
+          done
       - name: Install dependencies
         run: |
           cd backend
@@ -32,14 +33,12 @@ jobs:
       - name: Build Docker image
         run: docker build -t trident-backend:latest ./backend
       - name: Docker Login
-        if: startsWith(github.ref, 'refs/tags/')
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Push image
-        if: startsWith(github.ref, 'refs/tags/')
         run: |
-          TAG=${GITHUB_REF#refs/tags/}
+          TAG=${{ github.event.release.tag_name }}
           docker tag trident-backend:latest ${{ secrets.DOCKERHUB_USERNAME }}/trident-backend:$TAG
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/trident-backend:$TAG
