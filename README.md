@@ -39,6 +39,9 @@ REACT_APP_DEFAULT_THEME=dark
 REACT_APP_REFRESH_INTERVAL=10000
 ```
 
+> **Note**: `REACT_APP_*` variables are injected at build time. To change the backend
+URL or other frontend settings you must rebuild the React app or its Docker image.
+
 Backend `.env`:
 ```
 PORT=4000
@@ -46,6 +49,9 @@ CHAIN_MODE=mock
 TRIDENT_NODE_RPC_URL=http://localhost:8090
 FRONTEND_URL=http://localhost:3000
 ```
+
+`CHAIN_MODE=mock` serves a static in-memory blockchain for demos. Set
+`CHAIN_MODE=rpc` and provide `TRIDENT_NODE_RPC_URL` to connect to a real node.
 
 ### Run Explorer Locally
 ```bash
