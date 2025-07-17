@@ -47,6 +47,7 @@ function WalletPage({ wallet, login, logout }) {
     return (
       <div className="container">
       <h2>{t('Wallet Login')}</h2>
+      <p className="warning">{t('This explorer is connected to a testnet. Do not use real assets.')}</p>
       <p className="warning">{t('Use test accounts only. Keys stay in browser memory.')}</p>
         <input
           type="password"
@@ -62,6 +63,7 @@ function WalletPage({ wallet, login, logout }) {
   return (
     <div className="container">
       <h2>{t('Wallet Page')}</h2>
+      <p className="warning">{t('This explorer is connected to a testnet. Do not use real assets.')}</p>
       <p>{t('Address')}: {wallet.address} <CopyButton value={wallet.address} /></p>
       <button onClick={logout}>{t('Logout')}</button>
       {loading ? (

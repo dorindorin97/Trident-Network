@@ -4,6 +4,9 @@ services:
     build: ./backend
     env_file:
       - ./backend/.env
+    environment:
+      - CHAIN_MODE=rpc
+      - TRIDENT_NODE_RPC_URL=https://testnet.rpc.trident.network
     ports:
       - "4000:4000"
 
@@ -11,11 +14,11 @@ services:
     build:
       context: ./frontend
       args:
-        REACT_APP_BACKEND_URL: ${REACT_APP_BACKEND_URL}
+        REACT_APP_BACKEND_URL: https://testnet-explorer-api.trident.network
     env_file:
       - ./frontend/.env
     environment:
-      - REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL}
+      - REACT_APP_BACKEND_URL=https://testnet-explorer-api.trident.network
     ports:
       - "80:80"
     depends_on:

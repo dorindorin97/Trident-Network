@@ -47,7 +47,8 @@ const resources = {
       "Copy": "Copy",
       "Not Found": "Not Found",
       "The requested page could not be found.": "The requested page could not be found.",
-      "Use test accounts only. Keys stay in browser memory.": "Use test accounts only. Keys stay in browser memory."
+      "Use test accounts only. Keys stay in browser memory.": "Use test accounts only. Keys stay in browser memory.",
+      "This explorer is connected to a testnet. Do not use real assets.": "This explorer is connected to a testnet. Do not use real assets."
     }
   },
   pt: {
@@ -94,7 +95,8 @@ const resources = {
       "Copy": "Copiar",
       "Not Found": "Não Encontrado",
       "The requested page could not be found.": "A página solicitada não foi encontrada.",
-      "Use test accounts only. Keys stay in browser memory.": "Use apenas contas de teste. Chaves ficam somente na memória do navegador."
+      "Use test accounts only. Keys stay in browser memory.": "Use apenas contas de teste. Chaves ficam somente na memória do navegador.",
+      "This explorer is connected to a testnet. Do not use real assets.": "Este explorador está conectado a uma testnet. Não use ativos reais."
     }
   },
   es: {
