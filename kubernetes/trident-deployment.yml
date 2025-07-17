@@ -1,3 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: trident-config
+  labels:
+    app: trident
+data:
+  CHAIN_MODE: "rpc"
+  TRIDENT_NODE_RPC_URL: "https://testnet.rpc.trident.network"
+  REACT_APP_BACKEND_URL: "https://testnet-explorer-api.trident.network"
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -17,16 +28,21 @@ spec:
       containers:
       - name: trident-node
         image: trident-network:latest
-        env:
-        - name: CHAIN_MODE
-          value: "rpc"
-        - name: TRIDENT_NODE_RPC_URL
-          value: "https://testnet.rpc.trident.network"
-        - name: REACT_APP_BACKEND_URL
-          value: "https://testnet-explorer-api.trident.network"
+        envFrom:
+        - configMapRef:
+            name: trident-config
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
         ports:
         - containerPort: 8090
+          name: http
         - containerPort: 50051
+          name: grpc
         volumeMounts:
         - name: genesis
           mountPath: /app/genesis.json
@@ -60,6 +76,44 @@ data:
         {"address": "TACC2PLACEHOLDER000000000000000000000", "balance": "10000"},
         {"address": "TACC3PLACEHOLDER000000000000000000000", "balance": "10000"},
         {"address": "TACC4PLACEHOLDER000000000000000000000", "balance": "10000"},
-        {"address": "TACC5PLACEHOLDER000000000000000000000", "balance": "10000"}
+      {"address": "TACC5PLACEHOLDER000000000000000000000", "balance": "10000"}
       ]
     }
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: trident-node
+  labels:
+    app: trident
+spec:
+  selector:
+    app: trident
+  ports:
+  - name: http
+    port: 80
+    targetPort: http
+  - name: grpc
+    port: 50051
+    targetPort: grpc
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: trident-node
+  labels:
+    app: trident
+spec:
+  rules:
+  - host: explorer.testnet.trident.network
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: trident-node
+            port:
+              name: http
