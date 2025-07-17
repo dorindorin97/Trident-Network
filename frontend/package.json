@@ -1,6 +1,6 @@
 {
   "name": "trident-frontend",
-  "version": "1.0.0",
+  "version": "1.1.0-beta",
   "private": true,
   "dependencies": {
     "i18next": "^25.3.2",
