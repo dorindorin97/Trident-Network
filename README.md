@@ -81,6 +81,13 @@ Images are built from `frontend/` and `backend/`. Ensure your `.env` files conta
 
 Non‑listed routes under `/api` return `404`.
 
+## Upcoming v1.1.0 Features (Beta)
+
+- **Live block updates** via WebSockets or polling.
+- **Wallet signing** and transaction broadcasting.
+- **Multi-chain support** for connecting to different networks.
+- **Admin dashboard** exposing basic analytics.
+
 ## CI/CD
 
 GitHub Actions run automated checks on pushes to `main` and `work`. Separate workflows build and publish Docker images when a release tag is published.

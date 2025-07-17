@@ -1,10 +1,11 @@
 # Changelog
 
-## [Unreleased]
-### Changed
-- Consolidated project documentation into a single README with unified environment variable reference and CI/CD overview.
-- Explorer configured for Trident Testnet only with testnet RPC defaults.
-
+## [Unreleased - 1.1.0]
+### Added
+- Live block updates via WebSockets or polling. *(experimental)*
+- Wallet signing and transaction broadcasting flow.
+- Multi-chain/mainnet explorer configuration.
+- Admin dashboard with basic analytics.
 
 ## [1.0.0] - 2024-06-01
 ### Added
