@@ -10,9 +10,8 @@ const CHAIN_MODE = process.env.CHAIN_MODE;
 const TRIDENT_NODE_RPC_URL = process.env.TRIDENT_NODE_RPC_URL || '';
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 
-const validModes = ['mock', 'rpc'];
-if (!CHAIN_MODE || !validModes.includes(CHAIN_MODE)) {
-  console.error('CHAIN_MODE must be set to rpc for production deployments.');
+if (CHAIN_MODE !== 'rpc') {
+  console.error('Error: CHAIN_MODE must be "rpc"');
   process.exit(1);
 }
 
@@ -33,15 +32,12 @@ async function fetchRpc(endpoint) {
   return resp.json();
 }
 
-// mock data
-require('./mockData');
-
 // routes
 app.use('/api', require('./routes/health'));
-app.use('/api', require('./routes/blocks')(CHAIN_MODE, fetchRpc));
-app.use('/api', require('./routes/transactions')(CHAIN_MODE, fetchRpc));
-app.use('/api', require('./routes/accounts')(CHAIN_MODE, fetchRpc));
-app.use('/api', require('./routes/validators')(CHAIN_MODE, fetchRpc));
+app.use('/api', require('./routes/blocks')(fetchRpc));
+app.use('/api', require('./routes/transactions')(fetchRpc));
+app.use('/api', require('./routes/accounts')(fetchRpc));
+app.use('/api', require('./routes/validators')(fetchRpc));
 
 // 404 handler for API routes
 app.use('/api', (req, res) => {

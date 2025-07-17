@@ -21,8 +21,10 @@ A web explorer for the community-run Trident blockchain. The project provides a 
 
 This explorer is connected to the **Trident Testnet only**. Do not use real assets or private keys.
 
-- `CHAIN_MODE=mock` – backend serves mock data and no real signing occurs (development only).
-- `CHAIN_MODE=rpc` – backend connects to a full node via `TRIDENT_NODE_RPC_URL`.
+This explorer connects directly to a Trident RPC node.
+`CHAIN_MODE` must be set to `rpc` and mock mode is no longer available.
+
+Local development requires access to a running Trident testnet RPC node.
 
 Keys remain in browser memory and are cleared when the page reloads.
 
@@ -40,7 +42,7 @@ Copy `frontend/.env.example` and `backend/.env.example` to create `.env` files. 
 | `REACT_APP_DEFAULT_LANGUAGE` | `en` | Initial language |
 | `REACT_APP_DEFAULT_THEME` | `dark` | Initial theme (light or dark) |
 | `REACT_APP_REFRESH_INTERVAL` | `10000` | Polling interval in ms for latest block |
-| `CHAIN_MODE` | `rpc` | `mock` serves local data, `rpc` forwards requests |
+| `CHAIN_MODE` | `rpc` | Backend operating mode (must be `rpc`) |
 | `TRIDENT_NODE_RPC_URL` | `https://testnet.rpc.trident.network` | Node RPC endpoint when `CHAIN_MODE=rpc` |
 | `FRONTEND_URL` | `http://localhost:3000` | Allowed CORS origin for the API |
 
@@ -54,7 +56,7 @@ Copy `frontend/.env.example` and `backend/.env.example` to create `.env` files. 
 docker compose -f docker-compose.dev.yml up
 ```
 
-The command above starts the backend on port 4000 and the React app on port 3000 with `CHAIN_MODE=mock` for local development.
+The command above starts the backend on port 4000 and the React app on port 3000 using `CHAIN_MODE=rpc`.
 
 ### Production
 

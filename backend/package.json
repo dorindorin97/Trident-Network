@@ -8,7 +8,7 @@
     "dev": "nodemon server.js",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "test": "CHAIN_MODE=mock jest"
+    "test": "jest"
   },
   "dependencies": {
     "cors": "^2.8.5",
