@@ -2,17 +2,26 @@
 
 A web explorer for the community-run Trident blockchain. The project provides a React frontend and an Express API server for inspecting blocks, transactions and accounts.
 
+**Note:** this explorer operates against the Trident Testnet only.
+
 ## Blockchain Specs
 
 - **Chain ID:** `0x76a81b116bfaa26e`
 - **Block Time:** 2 seconds
 - **Consensus:** Modified BFT Proof-of-Stake
 
+## Testnet Details
+
+- **RPC Endpoint:** `https://testnet.rpc.trident.network`
+- **Explorer API:** `https://testnet-explorer-api.trident.network`
+- **Example Addresses:** `TACC1PLACEHOLDER000000000000000000000`, `TACC2PLACEHOLDER000000000000000000000`
+- **Validators:** `TVAL1PLACEHOLDER000000000000000000000`, `TVAL2PLACEHOLDER000000000000000000000`
+
 ## Wallet Disclaimer
 
-The explorer includes a simple in-browser wallet. It is for demonstration only. **Do not use real private keys.**
+This explorer is connected to the **Trident Testnet only**. Do not use real assets or private keys.
 
-- `CHAIN_MODE=mock` – backend serves mock data and no real signing occurs.
+- `CHAIN_MODE=mock` – backend serves mock data and no real signing occurs (development only).
 - `CHAIN_MODE=rpc` – backend connects to a full node via `TRIDENT_NODE_RPC_URL`.
 
 Keys remain in browser memory and are cleared when the page reloads.
@@ -25,14 +34,14 @@ Copy `frontend/.env.example` and `backend/.env.example` to create `.env` files. 
 | ------------------- | ------- | ----------- |
 | `PORT` (frontend) | `3000` | Port for the React dev server |
 | `PORT` (backend) | `4000` | Port for the API server |
-| `REACT_APP_BACKEND_URL` | `http://localhost:4000` | API base URL used by the frontend |
+| `REACT_APP_BACKEND_URL` | `https://testnet-explorer-api.trident.network` | API base URL used by the frontend |
 | `REACT_APP_APP_TITLE` | `Trident Explorer` | Browser title and branding |
 | `REACT_APP_THEME_COLOR` | `#001730` | Primary UI color |
 | `REACT_APP_DEFAULT_LANGUAGE` | `en` | Initial language |
 | `REACT_APP_DEFAULT_THEME` | `dark` | Initial theme (light or dark) |
 | `REACT_APP_REFRESH_INTERVAL` | `10000` | Polling interval in ms for latest block |
-| `CHAIN_MODE` | `mock` | `mock` serves local data, `rpc` forwards requests |
-| `TRIDENT_NODE_RPC_URL` | `http://localhost:8090` | Node RPC endpoint when `CHAIN_MODE=rpc` |
+| `CHAIN_MODE` | `rpc` | `mock` serves local data, `rpc` forwards requests |
+| `TRIDENT_NODE_RPC_URL` | `https://testnet.rpc.trident.network` | Node RPC endpoint when `CHAIN_MODE=rpc` |
 | `FRONTEND_URL` | `http://localhost:3000` | Allowed CORS origin for the API |
 
 `REACT_APP_*` variables are baked into the frontend at build time. Rebuild the image or run the dev server again after changing them.
@@ -45,7 +54,7 @@ Copy `frontend/.env.example` and `backend/.env.example` to create `.env` files. 
 docker compose -f docker-compose.dev.yml up
 ```
 
-The command above starts the backend on port 4000 and the React app on port 3000 using mock data.
+The command above starts the backend on port 4000 and the React app on port 3000 with `CHAIN_MODE=mock` for local development.
 
 ### Production
 

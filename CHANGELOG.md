@@ -3,6 +3,7 @@
 ## [Unreleased]
 ### Changed
 - Consolidated project documentation into a single README with unified environment variable reference and CI/CD overview.
+- Explorer configured for Trident Testnet only with testnet RPC defaults.
 
 
 ## [1.0.0] - 2024-06-01

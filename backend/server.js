@@ -6,9 +6,15 @@ const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
-const CHAIN_MODE = process.env.CHAIN_MODE || 'mock';
+const CHAIN_MODE = process.env.CHAIN_MODE;
 const TRIDENT_NODE_RPC_URL = process.env.TRIDENT_NODE_RPC_URL || '';
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+
+const validModes = ['mock', 'rpc'];
+if (!CHAIN_MODE || !validModes.includes(CHAIN_MODE)) {
+  console.error('CHAIN_MODE must be set to rpc for production deployments.');
+  process.exit(1);
+}
 
 app.use(helmet());
 const allowedOrigins = FRONTEND_URL ? FRONTEND_URL.split(',') : [];

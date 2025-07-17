@@ -17,6 +17,13 @@ spec:
       containers:
       - name: trident-node
         image: trident-network:latest
+        env:
+        - name: CHAIN_MODE
+          value: "rpc"
+        - name: TRIDENT_NODE_RPC_URL
+          value: "https://testnet.rpc.trident.network"
+        - name: REACT_APP_BACKEND_URL
+          value: "https://testnet-explorer-api.trident.network"
         ports:
         - containerPort: 8090
         - containerPort: 50051

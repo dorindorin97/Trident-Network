@@ -40,5 +40,6 @@
   "of": "de",
   "Not Found": "No Encontrado",
   "The requested page could not be found.": "La página solicitada no fue encontrada.",
-  "Copy": "Copiar"
+  "Copy": "Copiar",
+  "This explorer is connected to a testnet. Do not use real assets.": "Este explorador está conectado a una testnet. No uses activos reales."
 }
