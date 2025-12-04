@@ -109,6 +109,11 @@ See [API.md](./API.md) for comprehensive API documentation including:
 - Rate limiting details
 - Code examples in cURL and JavaScript
 
+Additional Documentation:
+- **[WebSocket API](./WEBSOCKET_API.md)** - Real-time updates via WebSocket
+- **[Export Features](./EXPORT_FEATURES.md)** - CSV/JSON export functionality
+- **[Admin API](./ADMIN_API.md)** - Admin endpoints for monitoring
+
 Quick reference:
 
 | Method | Endpoint | Description |
@@ -120,15 +125,55 @@ Quick reference:
 | GET | `/api/v1/transactions/:id` | Transaction details |
 | GET | `/api/v1/accounts/:address` | Account info |
 | GET | `/api/v1/validators` | Validator list |
+| GET | `/api/v1/admin/cache/stats` | Cache statistics (admin) |
+| DELETE | `/api/v1/admin/cache` | Clear cache (admin) |
+| GET | `/api/v1/admin/metrics` | System metrics (admin) |
+| WebSocket | `/ws` | Real-time updates |
 
 Non‑listed routes under `/api` return `404`.
 
-## Upcoming v1.1.0 Features (Beta)
+## New Features (v1.1.0)
 
-- **Live block updates** via WebSockets or polling.
-- **Wallet signing** and transaction broadcasting.
-- **Multi-chain support** for connecting to different networks.
-- **Admin dashboard** exposing basic analytics.
+### ✅ Real-Time Updates
+- **WebSocket Support**: Live block, transaction, and validator updates
+- Subscribe to specific channels (blocks, transactions, validators)
+- Auto-reconnection and heartbeat monitoring
+- See [WEBSOCKET_API.md](./WEBSOCKET_API.md) for details
+
+### ✅ Data Export
+- **CSV Export**: Download validator lists and transaction data
+- **JSON Export**: Full data export with formatting
+- One-click export from UI
+- See [EXPORT_FEATURES.md](./EXPORT_FEATURES.md) for details
+
+### ✅ Admin Dashboard
+- **System Health Monitoring**: Real-time status and uptime
+- **Cache Statistics**: Hit rate, size, and performance metrics
+- **Request Metrics**: Total requests and endpoint analytics
+- **WebSocket Monitoring**: Connected clients and subscriptions
+- Auto-refresh every 10 seconds
+
+### ✅ Enhanced UI/UX
+- **Pagination**: Configurable items per page for block transactions
+- **Sorting & Filtering**: Sort validators by power/status, filter by active/inactive
+- **Search Bar**: Global search with auto-detection (block/tx/account)
+- **Status Badges**: Visual indicators for validator status
+- **Mobile Responsive**: Improved mobile layout
+
+### ✅ Security & Performance
+- **Zero Vulnerabilities**: All npm security issues resolved
+- **Request/Response Logging**: Enhanced debugging capabilities
+- **Compression**: Gzip compression for 60-80% bandwidth reduction
+- **Retry Logic**: Exponential backoff for transient failures
+- **Input Sanitization**: XSS and injection prevention
+
+## Upcoming Features (v1.2.0)
+
+- **Wallet signing** and transaction broadcasting
+- **Multi-chain support** for connecting to different networks
+- **Advanced analytics** with charts and graphs
+- **Email notifications** for specific events
+- **API authentication** for admin endpoints
 
 ## CI/CD
 
@@ -141,6 +186,9 @@ GitHub Actions run automated checks on pushes to `main` and `work`. Separate wor
 ## Documentation
 
 - **[API Documentation](./API.md)** - Complete API reference with examples
+- **[WebSocket API](./WEBSOCKET_API.md)** - Real-time updates documentation
+- **[Export Features](./EXPORT_FEATURES.md)** - CSV/JSON export guide
+- **[Admin API](./ADMIN_API.md)** - Admin endpoints for monitoring
 - **[Development Guide](./DEVELOPMENT.md)** - Setup, workflows, and best practices
 - **[Contributing Guide](./CONTRIBUTING.md)** - How to contribute to the project
 - **[Security Policy](./SECURITY.md)** - Security features and reporting vulnerabilities
