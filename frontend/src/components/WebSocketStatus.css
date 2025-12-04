@@ -1,0 +1,69 @@
+.ws-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  background: var(--card-bg, rgba(255, 255, 255, 0.05));
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  transition: all 0.3s ease;
+}
+
+.ws-status-icon {
+  font-size: 0.7rem;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.ws-status-text {
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.ws-status-count {
+  font-size: 0.75rem;
+  color: var(--text-secondary, rgba(255, 255, 255, 0.6));
+}
+
+.ws-status-attempts {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Status-specific styles */
+.ws-status-connected {
+  border-color: rgba(76, 175, 80, 0.3);
+  background: rgba(76, 175, 80, 0.1);
+}
+
+.ws-status-connecting {
+  border-color: rgba(255, 193, 7, 0.3);
+  background: rgba(255, 193, 7, 0.1);
+}
+
+.ws-status-disconnected {
+  border-color: rgba(244, 67, 54, 0.3);
+  background: rgba(244, 67, 54, 0.1);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Hide on mobile */
+@media (max-width: 768px) {
+  .ws-status-text,
+  .ws-status-count {
+    display: none;
+  }
+  
+  .ws-status {
+    padding: 0.25rem;
+  }
+}

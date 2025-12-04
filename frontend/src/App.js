@@ -11,6 +11,8 @@ import Home from './components/Home';
 import ErrorBoundary from './components/ErrorBoundary';
 import Spinner from './components/Spinner';
 import { ToastProvider } from './components/Toast';
+import Footer from './components/Footer';
+import PerformanceMonitor from './components/PerformanceMonitor';
 
 // Lazy load components for code splitting
 const AccountLookup = lazy(() => import('./components/AccountLookup'));
@@ -83,6 +85,8 @@ function App() {
             </Routes>
           </Suspense>
         </ErrorBoundary>
+        <Footer />
+        <PerformanceMonitor enabled={process.env.NODE_ENV === 'development'} />
       </Router>
     </ToastProvider>
   );
