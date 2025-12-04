@@ -107,6 +107,8 @@ Copy `frontend/.env.example` and `backend/.env.example` to create `.env` files. 
 
 ## Quickstart
 
+**New to the project?** See [QUICKSTART.md](./QUICKSTART.md) for a quick reference card.
+
 ### Quick Setup (Automated)
 
 ```bash
@@ -243,6 +245,7 @@ GitHub Actions run automated checks on pushes to `main` and `work`. Separate wor
 
 ## Documentation
 
+- **[Quick Start Guide](./QUICKSTART.md)** - Quick reference card for setup and common tasks
 - **[API Documentation](./API.md)** - Complete API reference with examples
 - **[WebSocket API](./WEBSOCKET_API.md)** - Real-time updates documentation
 - **[Export Features](./EXPORT_FEATURES.md)** - CSV/JSON export guide
