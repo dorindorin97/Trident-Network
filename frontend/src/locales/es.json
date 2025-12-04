@@ -41,5 +41,9 @@
   "Not Found": "No Encontrado",
   "The requested page could not be found.": "La página solicitada no fue encontrada.",
   "Copy": "Copiar",
-  "This explorer is connected to a testnet. Do not use real assets.": "Este explorador está conectado a una testnet. No uses activos reales."
+  "Copied!": "¡Copiado!",
+  "This explorer is connected to a testnet. Do not use real assets.": "Este explorador está conectado a una testnet. No uses activos reales.",
+  "Use test accounts only. Keys stay in browser memory.": "Usa solo cuentas de prueba. Las claves permanecen en la memoria del navegador.",
+  "An unexpected error occurred. Please refresh the page or try again later.": "Ocurrió un error inesperado. Por favor, actualiza la página o inténtalo de nuevo más tarde.",
+  "Something went wrong": "Algo salió mal"
 }

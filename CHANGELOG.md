@@ -17,6 +17,14 @@
 - Comprehensive API documentation (API.md) with examples.
 - Development guide (DEVELOPMENT.md) with workflows and best practices.
 - Request ID middleware for request tracking.
+- Copy button with user feedback (shows "Copied!" state).
+- Custom React hooks (useApi, usePolling) for API calls.
+- API error handling utilities with custom error classes.
+- LoadingSpinner component with configurable sizes.
+- Configuration constants file for centralized settings.
+- Environment validation on startup.
+- Comprehensive test suite for validator utilities.
+- Missing translations (Copied!, error messages) in all languages.
 
 ### Improved
 - Address validation consistency across frontend and backend.
@@ -29,11 +37,15 @@
 - Code organization with centralized validation utilities.
 - README.md with link to comprehensive API documentation.
 - PropTypes added to frontend package.json dependencies.
+- User feedback on copy actions with temporary state.
+- i18n translations with better coverage.
+- API calls with proper error handling and loading states.
 
 ### Fixed
 - Address regex pattern inconsistency in utils.js.
 - Missing validation for pagination parameters.
 - Duplicate validation logic across route handlers.
+- Missing clipboard error handling in CopyButton.
 
 ## [1.0.0] - 2024-06-01
 ### Added

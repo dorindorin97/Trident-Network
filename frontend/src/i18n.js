@@ -45,10 +45,13 @@ const resources = {
       "Page": "Page",
       "of": "of",
       "Copy": "Copy",
+      "Copied!": "Copied!",
       "Not Found": "Not Found",
       "The requested page could not be found.": "The requested page could not be found.",
       "Use test accounts only. Keys stay in browser memory.": "Use test accounts only. Keys stay in browser memory.",
-      "This explorer is connected to a testnet. Do not use real assets.": "This explorer is connected to a testnet. Do not use real assets."
+      "This explorer is connected to a testnet. Do not use real assets.": "This explorer is connected to a testnet. Do not use real assets.",
+      "Something went wrong": "Something went wrong",
+      "An unexpected error occurred. Please refresh the page or try again later.": "An unexpected error occurred. Please refresh the page or try again later."
     }
   },
   pt: {
@@ -93,10 +96,13 @@ const resources = {
       "Page": "Página",
       "of": "de",
       "Copy": "Copiar",
+      "Copied!": "Copiado!",
       "Not Found": "Não Encontrado",
       "The requested page could not be found.": "A página solicitada não foi encontrada.",
       "Use test accounts only. Keys stay in browser memory.": "Use apenas contas de teste. Chaves ficam somente na memória do navegador.",
-      "This explorer is connected to a testnet. Do not use real assets.": "Este explorador está conectado a uma testnet. Não use ativos reais."
+      "This explorer is connected to a testnet. Do not use real assets.": "Este explorador está conectado a uma testnet. Não use ativos reais.",
+      "Something went wrong": "Algo deu errado",
+      "An unexpected error occurred. Please refresh the page or try again later.": "Ocorreu um erro inesperado. Por favor, atualize a página ou tente novamente mais tarde."
     }
   },
   es: {
