@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import Spinner from './Spinner';
@@ -90,15 +91,15 @@ function WalletPage({ wallet, login, logout }) {
                 {account.transactions.map(tx => (
                   <tr key={tx.txId}>
                     <td>
-                      <a href={`/tx/${tx.txId}`}>{tx.txId}</a>
+                      <Link to={`/tx/${tx.txId}`}>{tx.txId}</Link>
                       <CopyButton value={tx.txId} />
                     </td>
                     <td>
-                      <a href={`/account/${tx.from}`}>{tx.from}</a>
+                      <Link to={`/account/${tx.from}`}>{tx.from}</Link>
                       <CopyButton value={tx.from} />
                     </td>
                     <td>
-                      <a href={`/account/${tx.to}`}>{tx.to}</a>
+                      <Link to={`/account/${tx.to}`}>{tx.to}</Link>
                       <CopyButton value={tx.to} />
                     </td>
                     <td>{tx.amount}</td>

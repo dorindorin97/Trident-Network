@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Spinner from './Spinner';
 
@@ -70,9 +71,9 @@ function AccountLookup() {
             <tbody>
               {txs.map(tx => (
                 <tr key={tx.txId}>
-                  <td><a href={`/tx/${tx.txId}`}>{tx.txId}</a></td>
-                  <td><a href={`/account/${tx.from}`}>{tx.from}</a></td>
-                  <td><a href={`/account/${tx.to}`}>{tx.to}</a></td>
+                  <td><Link to={`/tx/${tx.txId}`}>{tx.txId}</Link></td>
+                  <td><Link to={`/account/${tx.from}`}>{tx.from}</Link></td>
+                  <td><Link to={`/account/${tx.to}`}>{tx.to}</Link></td>
                   <td>{tx.amount}</td>
                   <td>{tx.timestamp}</td>
                 </tr>
