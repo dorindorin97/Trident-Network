@@ -2,12 +2,14 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import LatestBlock from './LatestBlock';
 import BlockHistory from './BlockHistory';
+import SearchBar from './SearchBar';
 
 function Home() {
   const { t } = useTranslation();
   return (
     <div className="container">
       <p className="warning">{t('This explorer is connected to a testnet. Do not use real assets.')}</p>
+      <SearchBar autoFocus={true} />
       <LatestBlock />
       <BlockHistory />
     </div>

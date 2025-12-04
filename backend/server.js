@@ -2,11 +2,13 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const compression = require('compression');
 const path = require('path');
 const SimpleCache = require('./utils/cache');
 const logger = require('./utils/logger');
 const requestId = require('./utils/requestId');
 const { sanitizeInput } = require('./utils/sanitize');
+const { retryWithBackoff } = require('./utils/retry');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -17,6 +19,13 @@ const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 // Initialize cache with 5s TTL for latest blocks, 30s for others
 const cache = new SimpleCache();
 const cleanupInterval = cache.startCleanup();
+
+// Request metrics
+const metrics = {
+  totalRequests: 0,
+  requestsByEndpoint: {},
+  startTime: Date.now()
+};
 
 if (CHAIN_MODE !== 'rpc') {
   logger.error('CHAIN_MODE must be "rpc"');
@@ -34,7 +43,17 @@ if (!TRIDENT_NODE_RPC_URL.startsWith('http://') && !TRIDENT_NODE_RPC_URL.startsW
 }
 
 app.use(helmet());
+app.use(compression()); // Enable gzip compression
 app.use(requestId);
+
+// Track metrics
+app.use('/api', (req, res, next) => {
+  metrics.totalRequests++;
+  const endpoint = req.path;
+  metrics.requestsByEndpoint[endpoint] = (metrics.requestsByEndpoint[endpoint] || 0) + 1;
+  next();
+});
+
 const allowedOrigins = FRONTEND_URL ? FRONTEND_URL.split(',') : [];
 app.use(cors({ origin: allowedOrigins, credentials: true }));
 const limiter = rateLimit({
@@ -43,17 +62,6 @@ const limiter = rateLimit({
   message: { error: 'Too many requests, please try again later' }
 });
 app.use('/api', limiter);
-
-// Content-type validation for POST/PUT/PATCH requests
-app.use('/api', (req, res, next) => {
-  if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
-    const contentType = req.get('Content-Type');
-    if (!contentType || !contentType.includes('application/json')) {
-      return res.status(415).json({ error: 'Content-Type must be application/json' });
-    }
-  }
-  next();
-});
 
 app.use(express.json({ limit: '10kb' }));
 app.use(sanitizeInput);
@@ -80,27 +88,33 @@ async function fetchRpc(endpoint) {
   logger.debug('RPC request', { url });
   
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
-    
-    const resp = await fetch(url, { 
-      signal: controller.signal,
-      headers: { 'Accept': 'application/json' }
-    });
-    
-    clearTimeout(timeoutId);
-    
-    if (!resp.ok) {
-      logger.error('RPC request failed', { url, status: resp.status });
-      throw new Error(`RPC request failed: ${resp.status}`);
-    }
-    
-    const contentType = resp.headers.get('content-type');
-    if (!contentType || !contentType.includes('application/json')) {
-      throw new Error('Invalid response content type');
-    }
-    
-    const data = await resp.json();
+    // Wrap fetch in retry logic
+    const data = await retryWithBackoff(async () => {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+      
+      const resp = await fetch(url, { 
+        signal: controller.signal,
+        headers: { 
+          'Accept': 'application/json',
+          'Connection': 'keep-alive' // Enable connection pooling
+        }
+      });
+      
+      clearTimeout(timeoutId);
+      
+      if (!resp.ok) {
+        logger.error('RPC request failed', { url, status: resp.status });
+        throw new Error(`RPC request failed: ${resp.status}`);
+      }
+      
+      const contentType = resp.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error('Invalid response content type');
+      }
+      
+      return await resp.json();
+    }, 2, 500); // Max 2 retries with 500ms base delay
     
     // Cache with different TTLs based on endpoint
     const ttl = endpoint.includes('/latest') ? 5000 : 30000;
@@ -123,6 +137,28 @@ app.use('/api', require('./routes/blocks')(fetchRpc));
 app.use('/api', require('./routes/transactions')(fetchRpc));
 app.use('/api', require('./routes/accounts')(fetchRpc));
 app.use('/api', require('./routes/validators')(fetchRpc));
+
+// Admin/Debug endpoints
+app.get('/api/v1/admin/cache/stats', (req, res) => {
+  const stats = cache.getStats();
+  res.json(stats);
+});
+
+app.delete('/api/v1/admin/cache', (req, res) => {
+  cache.clear();
+  logger.info('Cache cleared manually', { requestId: req.id });
+  res.json({ message: 'Cache cleared successfully' });
+});
+
+app.get('/api/v1/admin/metrics', (req, res) => {
+  const uptime = Date.now() - metrics.startTime;
+  res.json({
+    ...metrics,
+    uptime: Math.floor(uptime / 1000),
+    requestsPerSecond: (metrics.totalRequests / (uptime / 1000)).toFixed(2),
+    cacheStats: cache.getStats()
+  });
+});
 
 // 404 handler for API routes
 app.use('/api', (req, res) => {

@@ -4,6 +4,8 @@ class SimpleCache {
     this.cache = new Map();
     this.cleanupIntervalId = null;
     this.maxSize = maxSize;
+    this.hits = 0;
+    this.misses = 0;
   }
 
   set(key, value, ttlMs = 5000) {
@@ -20,13 +22,18 @@ class SimpleCache {
 
   get(key) {
     const item = this.cache.get(key);
-    if (!item) return null;
-    
-    if (Date.now() > item.expiry) {
-      this.cache.delete(key);
+    if (!item) {
+      this.misses++;
       return null;
     }
     
+    if (Date.now() > item.expiry) {
+      this.cache.delete(key);
+      this.misses++;
+      return null;
+    }
+    
+    this.hits++;
     return item.value;
   }
 
@@ -92,10 +99,17 @@ class SimpleCache {
       }
     }
     
+    const totalRequests = this.hits + this.misses;
+    const hitRate = totalRequests > 0 ? ((this.hits / totalRequests) * 100).toFixed(2) : 0;
+    
     return {
       total: this.cache.size,
       active: activeCount,
-      expired: expiredCount
+      expired: expiredCount,
+      maxSize: this.maxSize,
+      hits: this.hits,
+      misses: this.misses,
+      hitRate: `${hitRate}%`
     };
   }
 }

@@ -51,7 +51,14 @@ const resources = {
       "Use test accounts only. Keys stay in browser memory.": "Use test accounts only. Keys stay in browser memory.",
       "This explorer is connected to a testnet. Do not use real assets.": "This explorer is connected to a testnet. Do not use real assets.",
       "Something went wrong": "Something went wrong",
-      "An unexpected error occurred. Please refresh the page or try again later.": "An unexpected error occurred. Please refresh the page or try again later."
+      "An unexpected error occurred. Please refresh the page or try again later.": "An unexpected error occurred. Please refresh the page or try again later.",
+      "Searching for block": "Searching for block",
+      "Searching for account": "Searching for account",
+      "Searching for tx": "Searching for transaction",
+      "Block not found": "Block not found",
+      "Transaction not found": "Transaction not found",
+      "Account not found": "Account not found",
+      "No transactions found": "No transactions found"
     }
   },
   pt: {

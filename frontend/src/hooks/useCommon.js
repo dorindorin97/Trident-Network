@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 /**
  * Custom hook for debouncing values
@@ -60,15 +60,15 @@ export function useLocalStorage(key, initialValue) {
  * @returns {object} ref - Ref to attach to element
  */
 export function useClickOutside(handler) {
-  const [ref, setRef] = useState(null);
+  const ref = useRef(null);
 
   useEffect(() => {
-    if (!ref) return;
-
     const listener = event => {
-      if (!ref.contains(event.target)) {
-        handler(event);
+      // Do nothing if clicking ref's element or descendent elements
+      if (!ref.current || ref.current.contains(event.target)) {
+        return;
       }
+      handler(event);
     };
 
     document.addEventListener('mousedown', listener);
@@ -78,6 +78,10 @@ export function useClickOutside(handler) {
       document.removeEventListener('mousedown', listener);
       document.removeEventListener('touchstart', listener);
     };
+  }, [handler]);
+
+  return ref;
+}
   }, [ref, handler]);
 
   return setRef;
