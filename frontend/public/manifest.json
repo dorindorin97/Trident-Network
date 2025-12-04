@@ -1,0 +1,56 @@
+{
+  "name": "Trident Network Explorer",
+  "short_name": "Trident",
+  "description": "Blockchain explorer for the Trident Network testnet",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#001730",
+  "theme_color": "#001730",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logo192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["finance", "utilities"],
+  "screenshots": [
+    {
+      "src": "/screenshot1.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "label": "Home screen showing latest blocks"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Latest Block",
+      "short_name": "Latest",
+      "description": "View latest block",
+      "url": "/",
+      "icons": [{ "src": "/logo192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Validators",
+      "short_name": "Validators",
+      "description": "View validator list",
+      "url": "/validators",
+      "icons": [{ "src": "/logo192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Account Lookup",
+      "short_name": "Account",
+      "description": "Look up account balance",
+      "url": "/account",
+      "icons": [{ "src": "/logo192.png", "sizes": "192x192" }]
+    }
+  ]
+}

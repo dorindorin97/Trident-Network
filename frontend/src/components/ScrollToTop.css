@@ -1,0 +1,77 @@
+.scroll-to-top {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  background: var(--primary, #007bff);
+  color: white;
+  border: 2px solid var(--primary, #007bff);
+  border-radius: 50%;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+  transition: all 0.3s ease;
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  animation: fadeInUp 0.3s ease-out;
+}
+
+.scroll-to-top:hover {
+  background: #0056b3;
+  border-color: #0056b3;
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 123, 255, 0.6);
+}
+
+.scroll-to-top:active {
+  transform: translateY(-2px);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .scroll-to-top {
+    bottom: 70px;
+    right: 10px;
+    width: 44px;
+    height: 44px;
+    font-size: 1.3rem;
+  }
+}
+
+/* No animations mode */
+.no-animations .scroll-to-top {
+  animation: none;
+  transition: none;
+}
+
+/* Light theme */
+[data-theme="light"] .scroll-to-top {
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+[data-theme="light"] .scroll-to-top:hover {
+  box-shadow: 0 6px 16px rgba(0, 123, 255, 0.5);
+}
+
+/* Adjust position when network status is visible */
+@media (min-width: 769px) {
+  .scroll-to-top {
+    right: 90px;
+  }
+}

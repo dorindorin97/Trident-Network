@@ -16,6 +16,8 @@ import PerformanceMonitor from './components/PerformanceMonitor';
 import SettingsPanel from './components/SettingsPanel';
 import NetworkStatus from './components/NetworkStatus';
 import LoadingBar from './components/LoadingBar';
+import Breadcrumb from './components/Breadcrumb';
+import ScrollToTop from './components/ScrollToTop';
 
 // Lazy load components for code splitting
 const AccountLookup = lazy(() => import('./components/AccountLookup'));
@@ -75,6 +77,9 @@ function App() {
           toggleTheme={toggleTheme}
           onSettingsClick={() => setSettingsOpen(true)}
         />
+        <div className="container">
+          <Breadcrumb />
+        </div>
         <SettingsPanel
           isOpen={settingsOpen}
           onClose={() => setSettingsOpen(false)}
@@ -100,6 +105,7 @@ function App() {
           </Suspense>
         </ErrorBoundary>
         <Footer />
+        <ScrollToTop />
         <NetworkStatus refreshInterval={15000} />
         <PerformanceMonitor enabled={localStorage.getItem('showPerformance') === 'true'} />
       </Router>

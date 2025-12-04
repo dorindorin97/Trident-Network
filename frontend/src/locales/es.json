@@ -108,5 +108,8 @@
   "Normal": "Normal",
   "Latency": "Latencia",
   "Last Check": "Última Verificación",
-  "Failed Checks": "Verificaciones Fallidas"
+  "Failed Checks": "Verificaciones Fallidas",
+  "Scroll to top": "Volver arriba",
+  "Block": "Bloque",
+  "Transaction": "Transacción"
 }

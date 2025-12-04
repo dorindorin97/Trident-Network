@@ -148,7 +148,10 @@ const resources = {
       "Normal": "Normal",
       "Latency": "Latency",
       "Last Check": "Last Check",
-      "Failed Checks": "Failed Checks"
+      "Failed Checks": "Failed Checks",
+      "Scroll to top": "Scroll to top",
+      "Block": "Block",
+      "Transaction": "Transaction"
     }
   },
   pt: {
