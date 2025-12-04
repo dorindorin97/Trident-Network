@@ -15,7 +15,7 @@ export const REFRESH_INTERVAL = parseInt(process.env.REACT_APP_REFRESH_INTERVAL 
 // Validation Patterns
 export const PATTERNS = {
   ADDRESS: /^T[a-zA-Z0-9]{39}$/,
-  BLOCK_HASH: /^0x[0-9a-fA-F]{16}$/,
+  BLOCK_HASH: /^0x[0-9a-fA-F]{64}$/,
   TX_ID: /^(0x)?[0-9a-fA-F]{64}$/,
   BLOCK_NUMBER: /^\d+$/,
 };
