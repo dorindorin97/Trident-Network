@@ -5,23 +5,29 @@ services:
     working_dir: /app
     volumes:
       - ./backend:/app
+      - /app/node_modules
     environment:
       - CHAIN_MODE=rpc
       - TRIDENT_NODE_RPC_URL=https://testnet.rpc.trident.network
       - FRONTEND_URL=http://localhost:3000
+      - LOG_LEVEL=debug
     command: sh -c "npm install && npm run dev"
     ports:
       - "4000:4000"
+    restart: unless-stopped
 
   frontend:
     image: node:18-alpine
     working_dir: /app
     volumes:
       - ./frontend:/app
+      - /app/node_modules
     environment:
       - REACT_APP_BACKEND_URL=http://localhost:4000
+      - CHOKIDAR_USEPOLLING=true
     command: sh -c "npm install && npm start"
     ports:
       - "3000:3000"
+    restart: unless-stopped
     depends_on:
       - backend

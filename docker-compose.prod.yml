@@ -7,19 +7,37 @@ services:
     environment:
       - CHAIN_MODE=rpc
       - TRIDENT_NODE_RPC_URL=https://testnet.rpc.trident.network
+      - LOG_LEVEL=info
     ports:
       - "4000:4000"
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   frontend:
     build:
       context: ./frontend
       args:
         REACT_APP_BACKEND_URL: https://testnet-explorer-api.trident.network
+        REACT_APP_APP_TITLE: Trident Explorer
+        REACT_APP_THEME_COLOR: "#001730"
+        REACT_APP_DEFAULT_LANGUAGE: en
+        REACT_APP_DEFAULT_THEME: dark
+        REACT_APP_REFRESH_INTERVAL: "10000"
     env_file:
       - ./frontend/.env
     environment:
       - REACT_APP_BACKEND_URL=https://testnet-explorer-api.trident.network
     ports:
       - "80:80"
+    restart: always
     depends_on:
       - backend
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

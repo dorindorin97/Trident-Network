@@ -51,7 +51,21 @@ Copy `frontend/.env.example` and `backend/.env.example` to create `.env` files. 
 
 ## Quickstart
 
-### Development
+### Quick Setup (Automated)
+
+```bash
+# Clone and setup
+git clone https://github.com/dorindorin97/Trident-Network.git
+cd Trident-Network
+./setup.sh
+
+# Start development
+make dev
+```
+
+### Manual Setup
+
+#### Development
 
 ```bash
 docker compose -f docker-compose.dev.yml up
@@ -67,6 +81,24 @@ docker compose -f docker-compose.prod.yml up -d
 ```
 
 Images are built from `frontend/` and `backend/`. Ensure your `.env` files contain the correct values before building.
+
+## Available Commands
+
+The project includes a Makefile for common development tasks:
+
+```bash
+make help          # Show all available commands
+make install       # Install all dependencies
+make dev           # Start development environment with Docker
+make test          # Run all tests
+make lint          # Lint all code
+make format        # Format all code with Prettier
+make clean         # Clean node_modules and build artifacts
+make docker-logs   # View Docker logs
+make ci            # Run CI checks (install, lint, test)
+```
+
+See `make help` for complete list of commands.
 
 ## API Reference
 
