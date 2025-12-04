@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import './index.css';
 import App from './App';
+import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
 const title = process.env.REACT_APP_APP_TITLE || 'Trident Explorer';
 document.title = title;
@@ -10,6 +12,14 @@ const defaultTheme = localStorage.getItem('theme') || process.env.REACT_APP_DEFA
 document.documentElement.setAttribute('data-theme', defaultTheme);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<App />);
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+
+// Register service worker for PWA offline support
+serviceWorkerRegistration.register();
+
 document.getElementById('splash').style.display = 'none';
 document.getElementById('root').style.display = 'block';

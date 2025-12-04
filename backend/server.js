@@ -70,6 +70,45 @@ app.use(express.json({ limit: '10kb' }));
 app.use(sanitizeInput);
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Add caching headers middleware
+app.use('/api', (req, res, next) => {
+  // Set default cache headers
+  const isStaticEndpoint = req.path.includes('/health') || 
+                          req.path.includes('/validators') ||
+                          req.path.includes('/blocks/');
+  
+  if (isStaticEndpoint && req.method === 'GET') {
+    // Cache static endpoints for 30 seconds
+    res.set('Cache-Control', 'public, max-age=30, stale-while-revalidate=60');
+  } else if (req.path.includes('/latest')) {
+    // Latest endpoints cache for 5 seconds only
+    res.set('Cache-Control', 'public, max-age=5, must-revalidate');
+  } else {
+    // Dynamic content - no cache
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+  }
+  
+  // Add ETag support
+  const originalJson = res.json;
+  res.json = function(data) {
+    // Generate ETag from response data
+    const crypto = require('crypto');
+    const etag = crypto.createHash('md5').update(JSON.stringify(data)).digest('hex');
+    res.set('ETag', `"${etag}"`);
+    
+    // Check if client has matching ETag
+    if (req.headers['if-none-match'] === `"${etag}"`) {
+      return res.status(304).end();
+    }
+    
+    return originalJson.call(this, data);
+  };
+  
+  next();
+});
+
 async function fetchRpc(endpoint) {
   // Validate endpoint to prevent SSRF attacks
   if (!endpoint || typeof endpoint !== 'string') {

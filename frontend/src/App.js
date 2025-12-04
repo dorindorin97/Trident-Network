@@ -29,6 +29,8 @@ const BlockDetails = lazy(() => import('./components/BlockDetails'));
 const TransactionDetails = lazy(() => import('./components/TransactionDetails'));
 const AccountPage = lazy(() => import('./components/AccountPage'));
 const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
+const TransactionGraph = lazy(() => import('./components/TransactionGraph'));
+const NotificationPreferences = lazy(() => import('./components/NotificationPreferences'));
 
 
 function App() {
@@ -103,6 +105,8 @@ function App() {
               <Route path="/validators" element={<ValidatorList />} />
               <Route path="/wallet" element={<WalletPage wallet={wallet} login={login} logout={logout} />} />
               <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/analytics" element={<div className="container"><TransactionGraph /></div>} />
+              <Route path="/notifications" element={<div className="container"><NotificationPreferences /></div>} />
               <Route path="/block/:number" element={<BlockDetails />} />
               <Route path="/tx/:id" element={<TransactionDetails />} />
               <Route path="/account/:address" element={<AccountPage />} />

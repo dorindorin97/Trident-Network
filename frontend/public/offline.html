@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#001730" />
+  <title>Offline - Trident Network Explorer</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+        sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background: linear-gradient(135deg, #001730 0%, #002651 100%);
+      color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .offline-container {
+      text-align: center;
+      max-width: 500px;
+    }
+
+    .offline-icon {
+      font-size: 80px;
+      margin-bottom: 20px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 0.6;
+        transform: scale(0.95);
+      }
+    }
+
+    h1 {
+      font-size: 32px;
+      margin-bottom: 16px;
+      color: #4a9eff;
+    }
+
+    p {
+      font-size: 18px;
+      line-height: 1.6;
+      color: #a8c5e6;
+      margin-bottom: 30px;
+    }
+
+    .tips {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 30px;
+      text-align: left;
+    }
+
+    .tips h2 {
+      font-size: 20px;
+      margin-bottom: 12px;
+      color: #4a9eff;
+    }
+
+    .tips ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .tips li {
+      padding: 8px 0;
+      padding-left: 24px;
+      position: relative;
+      color: #a8c5e6;
+    }
+
+    .tips li:before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #4a9eff;
+      font-weight: bold;
+    }
+
+    .retry-button {
+      background: #4a9eff;
+      color: #ffffff;
+      border: none;
+      padding: 12px 32px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 20px;
+    }
+
+    .retry-button:hover {
+      background: #357abd;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(74, 158, 255, 0.3);
+    }
+
+    .retry-button:active {
+      transform: translateY(0);
+    }
+
+    .network-status {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #7a9fc9;
+    }
+
+    .online {
+      color: #4ade80;
+    }
+
+    .offline-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ef4444;
+      margin-right: 8px;
+      animation: blink 1.5s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+  </style>
+</head>
+<body>
+  <div class="offline-container">
+    <div class="offline-icon">🌐</div>
+    <h1>You're Offline</h1>
+    <p>
+      It looks like you've lost your internet connection. 
+      Don't worry, we've saved some data for you to view offline.
+    </p>
+    
+    <div class="network-status">
+      <span class="offline-dot"></span>
+      <span id="status-text">No internet connection detected</span>
+    </div>
+
+    <button class="retry-button" onclick="location.reload()">
+      Try Again
+    </button>
+
+    <div class="tips">
+      <h2>While you're offline:</h2>
+      <ul>
+        <li>Cached pages will still be available</li>
+        <li>Recent data may be visible</li>
+        <li>Changes will sync when you're back online</li>
+        <li>Check your network settings</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // Monitor online/offline status
+    function updateOnlineStatus() {
+      const statusText = document.getElementById('status-text');
+      const offlineDot = document.querySelector('.offline-dot');
+      
+      if (navigator.onLine) {
+        statusText.textContent = 'Connection restored! Refreshing...';
+        statusText.className = 'online';
+        offlineDot.style.background = '#4ade80';
+        setTimeout(() => location.reload(), 1000);
+      } else {
+        statusText.textContent = 'No internet connection detected';
+        statusText.className = '';
+        offlineDot.style.background = '#ef4444';
+      }
+    }
+
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    
+    // Check periodically
+    setInterval(updateOnlineStatus, 5000);
+  </script>
+</body>
+</html>

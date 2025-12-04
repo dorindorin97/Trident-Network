@@ -177,7 +177,27 @@ const resources = {
       "Block numbers are positive integers (e.g., 12345)": "Block numbers are positive integers (e.g., 12345)",
       "Block and transaction hashes start with 0x": "Block and transaction hashes start with 0x",
       "Account addresses start with T": "Account addresses start with T",
-      "Use Auto Detect to search any type automatically": "Use Auto Detect to search any type automatically"
+      "Use Auto Detect to search any type automatically": "Use Auto Detect to search any type automatically",
+      "Analytics": "Analytics",
+      "transactionGraph": {
+        "title": "Transaction Activity",
+        "subtitle": "Real-time network activity visualization",
+        "chartType": "Chart Type",
+        "area": "Area",
+        "line": "Line",
+        "bar": "Bar",
+        "timeRange": "Time Range",
+        "1h": "Last Hour",
+        "6h": "Last 6 Hours",
+        "24h": "Last 24 Hours",
+        "7d": "Last 7 Days",
+        "total": "Total Transactions",
+        "average": "Average/Block",
+        "peak": "Peak Activity",
+        "trend": "Trend",
+        "loading": "Loading transaction data...",
+        "info": "Data updates every 30 seconds. Hover over the chart for detailed information."
+      }
     }
   },
   pt: {
@@ -228,7 +248,27 @@ const resources = {
       "Use test accounts only. Keys stay in browser memory.": "Use apenas contas de teste. Chaves ficam somente na memória do navegador.",
       "This explorer is connected to a testnet. Do not use real assets.": "Este explorador está conectado a uma testnet. Não use ativos reais.",
       "Something went wrong": "Algo deu errado",
-      "An unexpected error occurred. Please refresh the page or try again later.": "Ocorreu um erro inesperado. Por favor, atualize a página ou tente novamente mais tarde."
+      "An unexpected error occurred. Please refresh the page or try again later.": "Ocorreu um erro inesperado. Por favor, atualize a página ou tente novamente mais tarde.",
+      "Analytics": "Analytics",
+      "transactionGraph": {
+        "title": "Atividade da Transação",
+        "subtitle": "Visualização da atividade da rede em tempo real",
+        "chartType": "Tipo de Gráfico",
+        "area": "Área",
+        "line": "Linha",
+        "bar": "Barra",
+        "timeRange": "Intervalo de Tempo",
+        "1h": "Última Hora",
+        "6h": "Últimas 6 Horas",
+        "24h": "Últimas 24 Horas",
+        "7d": "Últimos 7 Dias",
+        "total": "Transações Totais",
+        "average": "Média/Bloco",
+        "peak": "Pico de Atividade",
+        "trend": "Tendência",
+        "loading": "Carregando dados da transação...",
+        "info": "Os dados são atualizados a cada 30 segundos. Passe o mouse sobre o gráfico para mais informações."
+      }
     }
   },
   es: {

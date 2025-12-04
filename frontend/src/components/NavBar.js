@@ -94,6 +94,7 @@ function NavBar({ wallet, logout, language, setLanguage, theme, toggleTheme, onS
       <Link to="/">{t('Latest Block')}</Link>
       <Link to="/account">{t('Account Lookup')}</Link>
       <Link to="/validators">{t('Validator List')}</Link>
+      <Link to="/analytics">{t('Analytics')}</Link>
       <Link to="/wallet">{t('Wallet')}</Link>
       <Link to="/admin">{t('Admin Dashboard')}</Link>
       
