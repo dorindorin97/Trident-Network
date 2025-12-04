@@ -82,7 +82,35 @@ export function useClickOutside(handler) {
 
   return ref;
 }
-  }, [ref, handler]);
 
-  return setRef;
+/**
+ * Custom hook for keyboard shortcuts
+ * @param {object} shortcuts - Object mapping key combinations to handlers
+ * Example: { 'ctrl+k': handleSearch, 'ctrl+/': handleHelp }
+ */
+export function useKeyboardShortcuts(shortcuts) {
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      const key = event.key.toLowerCase();
+      const ctrl = event.ctrlKey || event.metaKey;
+      const shift = event.shiftKey;
+      const alt = event.altKey;
+      
+      let keyCombo = '';
+      if (ctrl) keyCombo += 'ctrl+';
+      if (shift) keyCombo += 'shift+';
+      if (alt) keyCombo += 'alt+';
+      keyCombo += key;
+      
+      const handler = shortcuts[keyCombo];
+      if (handler) {
+        event.preventDefault();
+        handler(event);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [shortcuts]);
 }
+

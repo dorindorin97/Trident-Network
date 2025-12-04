@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { deriveAddress } from './utils';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -8,15 +8,19 @@ import './i18n';
 
 import NavBar from './components/NavBar';
 import Home from './components/Home';
-import AccountLookup from './components/AccountLookup';
-import ValidatorList from './components/ValidatorList';
-import WalletPage from './components/WalletPage';
-import NotFound from './components/NotFound';
-import BlockDetails from './components/BlockDetails';
-import TransactionDetails from './components/TransactionDetails';
-import AccountPage from './components/AccountPage';
 import ErrorBoundary from './components/ErrorBoundary';
-import AdminDashboard from './components/AdminDashboard';
+import Spinner from './components/Spinner';
+import { ToastProvider } from './components/Toast';
+
+// Lazy load components for code splitting
+const AccountLookup = lazy(() => import('./components/AccountLookup'));
+const ValidatorList = lazy(() => import('./components/ValidatorList'));
+const WalletPage = lazy(() => import('./components/WalletPage'));
+const NotFound = lazy(() => import('./components/NotFound'));
+const BlockDetails = lazy(() => import('./components/BlockDetails'));
+const TransactionDetails = lazy(() => import('./components/TransactionDetails'));
+const AccountPage = lazy(() => import('./components/AccountPage'));
+const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
 
 
 function App() {
@@ -53,30 +57,34 @@ function App() {
   };
 
   return (
-    <Router>
-      <NavBar
-        wallet={wallet}
-        logout={logout}
-        language={language}
-        setLanguage={setLanguage}
-        theme={theme}
-        toggleTheme={toggleTheme}
-      />
-      <ErrorBoundary>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/account" element={<div className="container"><AccountLookup /></div>} />
-          <Route path="/validators" element={<ValidatorList />} />
-          <Route path="/wallet" element={<WalletPage wallet={wallet} login={login} logout={logout} />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/block/:number" element={<BlockDetails />} />
-          <Route path="/tx/:id" element={<TransactionDetails />} />
-          <Route path="/account/:address" element={<AccountPage />} />
-          <Route path="/404" element={<NotFound />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </ErrorBoundary>
-    </Router>
+    <ToastProvider>
+      <Router>
+        <NavBar
+          wallet={wallet}
+          logout={logout}
+          language={language}
+          setLanguage={setLanguage}
+          theme={theme}
+          toggleTheme={toggleTheme}
+        />
+        <ErrorBoundary>
+          <Suspense fallback={<div className="container"><Spinner /></div>}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/account" element={<div className="container"><AccountLookup /></div>} />
+              <Route path="/validators" element={<ValidatorList />} />
+              <Route path="/wallet" element={<WalletPage wallet={wallet} login={login} logout={logout} />} />
+              <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/block/:number" element={<BlockDetails />} />
+              <Route path="/tx/:id" element={<TransactionDetails />} />
+              <Route path="/account/:address" element={<AccountPage />} />
+              <Route path="/404" element={<NotFound />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
+        </ErrorBoundary>
+      </Router>
+    </ToastProvider>
   );
 }
 

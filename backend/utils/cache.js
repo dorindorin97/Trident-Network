@@ -1,23 +1,24 @@
-// Simple in-memory cache with TTL
+// Simple in-memory cache with TTL and smart invalidation
 class SimpleCache {
   constructor(maxSize = 1000) {
     this.cache = new Map();
+    this.accessOrder = new Map(); // For LRU tracking
     this.cleanupIntervalId = null;
     this.maxSize = maxSize;
     this.hits = 0;
     this.misses = 0;
+    this.evictions = 0;
   }
 
   set(key, value, ttlMs = 5000) {
     // Check if we need to evict entries
     if (this.cache.size >= this.maxSize && !this.cache.has(key)) {
-      // Simple LRU: remove the oldest entry
-      const firstKey = this.cache.keys().next().value;
-      this.cache.delete(firstKey);
+      this.evictLRU();
     }
     
     const expiry = Date.now() + ttlMs;
-    this.cache.set(key, { value, expiry });
+    this.cache.set(key, { value, expiry, lastAccessed: Date.now() });
+    this.accessOrder.set(key, Date.now());
   }
 
   get(key) {
@@ -29,16 +30,74 @@ class SimpleCache {
     
     if (Date.now() > item.expiry) {
       this.cache.delete(key);
+      this.accessOrder.delete(key);
       this.misses++;
       return null;
     }
     
+    // Update access time for LRU
+    item.lastAccessed = Date.now();
+    this.accessOrder.set(key, Date.now());
     this.hits++;
     return item.value;
   }
 
+  /**
+   * Evict least recently used entry
+   */
+  evictLRU() {
+    let oldestKey = null;
+    let oldestTime = Infinity;
+    
+    for (const [key, time] of this.accessOrder.entries()) {
+      if (time < oldestTime) {
+        oldestTime = time;
+        oldestKey = key;
+      }
+    }
+    
+    if (oldestKey) {
+      this.cache.delete(oldestKey);
+      this.accessOrder.delete(oldestKey);
+      this.evictions++;
+    }
+  }
+
+  /**
+   * Invalidate cache entries by pattern
+   * @param {RegExp|string} pattern - Pattern to match keys
+   */
+  invalidatePattern(pattern) {
+    const regex = typeof pattern === 'string' ? new RegExp(pattern) : pattern;
+    const keysToDelete = [];
+    
+    for (const key of this.cache.keys()) {
+      if (regex.test(key)) {
+        keysToDelete.push(key);
+      }
+    }
+    
+    keysToDelete.forEach(key => {
+      this.cache.delete(key);
+      this.accessOrder.delete(key);
+    });
+    
+    return keysToDelete.length;
+  }
+
+  /**
+   * Warm cache with commonly requested data
+   * @param {Array} entries - Array of {key, value, ttl} objects
+   */
+  warm(entries) {
+    entries.forEach(({ key, value, ttl }) => {
+      this.set(key, value, ttl || 5000);
+    });
+  }
+
   clear() {
     this.cache.clear();
+    this.accessOrder.clear();
   }
 
   /**
@@ -103,13 +162,14 @@ class SimpleCache {
     const hitRate = totalRequests > 0 ? ((this.hits / totalRequests) * 100).toFixed(2) : 0;
     
     return {
-      total: this.cache.size,
+      size: this.cache.size,
       active: activeCount,
       expired: expiredCount,
       maxSize: this.maxSize,
       hits: this.hits,
       misses: this.misses,
-      hitRate: `${hitRate}%`
+      evictions: this.evictions,
+      hitRate: parseFloat(hitRate)
     };
   }
 }
