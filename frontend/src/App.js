@@ -18,6 +18,7 @@ import NetworkStatus from './components/NetworkStatus';
 import LoadingBar from './components/LoadingBar';
 import Breadcrumb from './components/Breadcrumb';
 import ScrollToTop from './components/ScrollToTop';
+import AdvancedSearch from './components/AdvancedSearch';
 
 // Lazy load components for code splitting
 const AccountLookup = lazy(() => import('./components/AccountLookup'));
@@ -34,6 +35,7 @@ function App() {
   useTranslation(); // initialize i18n
   const [wallet, setWallet] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [advancedSearchOpen, setAdvancedSearchOpen] = useState(false);
 
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('theme') || process.env.REACT_APP_DEFAULT_THEME || 'dark';
@@ -76,6 +78,7 @@ function App() {
           theme={theme}
           toggleTheme={toggleTheme}
           onSettingsClick={() => setSettingsOpen(true)}
+          onAdvancedSearchClick={() => setAdvancedSearchOpen(true)}
         />
         <div className="container">
           <Breadcrumb />
@@ -87,6 +90,10 @@ function App() {
           setTheme={setTheme}
           language={language}
           setLanguage={setLanguage}
+        />
+        <AdvancedSearch
+          isOpen={advancedSearchOpen}
+          onClose={() => setAdvancedSearchOpen(false)}
         />
         <ErrorBoundary>
           <Suspense fallback={<div className="container"><Spinner /></div>}>

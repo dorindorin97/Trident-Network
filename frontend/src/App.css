@@ -89,10 +89,32 @@ body {
   position: relative;
   flex: 1;
   max-width: 400px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .search-input {
-  width: 100%;
+  flex: 1;
+}
+
+.advanced-search-btn {
+  background: var(--primary, #007bff);
+  border: 1px solid var(--primary, #007bff);
+  padding: 0.4rem 0.6rem;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+  color: white;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.advanced-search-btn:hover {
+  background: #0056b3;
+  border-color: #0056b3;
+  transform: scale(1.05);
 }
 
 .search-history {
