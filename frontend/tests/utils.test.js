@@ -10,7 +10,7 @@ test('parseSearch detects block number', () => {
 });
 
 test('parseSearch detects address', () => {
-  const addr = 'T' + 'A'.repeat(33);
+  const addr = 'T' + 'A'.repeat(39);
   expect(parseSearch(addr).type).toBe('account');
 });
 

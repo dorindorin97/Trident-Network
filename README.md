@@ -14,8 +14,8 @@ A web explorer for the community-run Trident blockchain. The project provides a 
 
 - **RPC Endpoint:** `https://testnet.rpc.trident.network`
 - **Explorer API:** `https://testnet-explorer-api.trident.network`
-- **Example Addresses:** `TACC1PLACEHOLDER000000000000000000000`, `TACC2PLACEHOLDER000000000000000000000`
-- **Validators:** `TVAL1PLACEHOLDER000000000000000000000`, `TVAL2PLACEHOLDER000000000000000000000`
+- **Example Addresses:** `TACC1PLACEHOLDER000000000000000000000000`, `TACC2PLACEHOLDER000000000000000000000000`
+- **Validators:** `TVAL1PLACEHOLDER000000000000000000000000`, `TVAL2PLACEHOLDER000000000000000000000000`
 
 ## Wallet Disclaimer
 
