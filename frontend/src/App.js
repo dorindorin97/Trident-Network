@@ -13,6 +13,7 @@ import Spinner from './components/Spinner';
 import { ToastProvider } from './components/Toast';
 import Footer from './components/Footer';
 import PerformanceMonitor from './components/PerformanceMonitor';
+import SettingsPanel from './components/SettingsPanel';
 
 // Lazy load components for code splitting
 const AccountLookup = lazy(() => import('./components/AccountLookup'));
@@ -28,6 +29,7 @@ const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
 function App() {
   useTranslation(); // initialize i18n
   const [wallet, setWallet] = useState(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('theme') || process.env.REACT_APP_DEFAULT_THEME || 'dark';
@@ -68,6 +70,15 @@ function App() {
           setLanguage={setLanguage}
           theme={theme}
           toggleTheme={toggleTheme}
+          onSettingsClick={() => setSettingsOpen(true)}
+        />
+        <SettingsPanel
+          isOpen={settingsOpen}
+          onClose={() => setSettingsOpen(false)}
+          theme={theme}
+          setTheme={setTheme}
+          language={language}
+          setLanguage={setLanguage}
         />
         <ErrorBoundary>
           <Suspense fallback={<div className="container"><Spinner /></div>}>
@@ -86,7 +97,7 @@ function App() {
           </Suspense>
         </ErrorBoundary>
         <Footer />
-        <PerformanceMonitor enabled={process.env.NODE_ENV === 'development'} />
+        <PerformanceMonitor enabled={localStorage.getItem('showPerformance') === 'true'} />
       </Router>
     </ToastProvider>
   );

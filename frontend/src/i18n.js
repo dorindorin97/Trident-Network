@@ -120,7 +120,26 @@ const resources = {
       "Connecting...": "Connecting...",
       "Disconnected": "Disconnected",
       "Unknown": "Unknown",
-      "Performance": "Performance"
+      "Performance": "Performance",
+      "Settings": "Settings",
+      "Done": "Done",
+      "Reset to Defaults": "Reset to Defaults",
+      "Reset all settings to defaults?": "Reset all settings to defaults? This will clear all preferences.",
+      "Appearance": "Appearance",
+      "Dark": "Dark",
+      "Light": "Light",
+      "Compact Mode": "Compact Mode",
+      "Reduces spacing for more content": "Reduces spacing for more content",
+      "Enable Animations": "Enable Animations",
+      "Disable for better performance": "Disable for better performance",
+      "Data & Updates": "Data & Updates",
+      "Auto-refresh Data": "Auto-refresh Data",
+      "Refresh Interval": "Refresh Interval",
+      "seconds": "seconds",
+      "minute": "minute",
+      "Developer": "Developer",
+      "Show Performance Monitor": "Show Performance Monitor",
+      "Development only - requires page reload": "Development only - requires page reload"
     }
   },
   pt: {

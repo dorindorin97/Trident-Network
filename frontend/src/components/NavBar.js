@@ -9,7 +9,7 @@ import { useLocalStorage, useClickOutside, useKeyboardShortcuts } from '../hooks
 const APP_TITLE = process.env.REACT_APP_APP_TITLE || 'Trident Explorer';
 const MAX_HISTORY_ITEMS = 10;
 
-function NavBar({ wallet, logout, language, setLanguage, theme, toggleTheme }) {
+function NavBar({ wallet, logout, language, setLanguage, theme, toggleTheme, onSettingsClick }) {
   const { t } = useTranslation();
   const [search, setSearch] = useState('');
   const [searchHistory, setSearchHistory] = useLocalStorage('searchHistory', []);
@@ -77,6 +77,10 @@ function NavBar({ wallet, logout, language, setLanguage, theme, toggleTheme }) {
       e.preventDefault();
       toggleTheme();
     },
+    'ctrl+,': (e) => {
+      e.preventDefault();
+      onSettingsClick?.();
+    },
     'escape': () => {
       setShowHistory(false);
       searchInputRef.current?.blur();
@@ -141,6 +145,14 @@ function NavBar({ wallet, logout, language, setLanguage, theme, toggleTheme }) {
         <option value="es">ES</option>
       </select>
       <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+      <button 
+        onClick={onSettingsClick} 
+        className="settings-btn ml-sm"
+        title={t('Settings') + ' (Ctrl+,)'}
+        aria-label={t('Settings')}
+      >
+        ⚙️
+      </button>
       {wallet && (
         <span className="ml-sm">
           {wallet.address}{' '}
@@ -149,7 +161,7 @@ function NavBar({ wallet, logout, language, setLanguage, theme, toggleTheme }) {
       )}
       
       <div className="keyboard-shortcuts-hint">
-        <kbd>Ctrl+K</kbd> Search | <kbd>Ctrl+/</kbd> Theme
+        <kbd>Ctrl+K</kbd> Search | <kbd>Ctrl+/</kbd> Theme | <kbd>Ctrl+,</kbd> Settings
       </div>
     </nav>
   );
@@ -164,7 +176,8 @@ NavBar.propTypes = {
   language: PropTypes.string.isRequired,
   setLanguage: PropTypes.func.isRequired,
   theme: PropTypes.string.isRequired,
-  toggleTheme: PropTypes.func.isRequired
+  toggleTheme: PropTypes.func.isRequired,
+  onSettingsClick: PropTypes.func
 };
 
 export default NavBar;
