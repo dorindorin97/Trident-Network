@@ -1,8 +1,64 @@
 # Trident Network Explorer
 
-A web explorer for the community-run Trident blockchain. The project provides a React frontend and an Express API server for inspecting blocks, transactions and accounts.
+A modern, feature-rich web explorer for the community-run Trident blockchain. Built with React and Express, providing real-time monitoring of blocks, transactions, accounts, and validators.
 
-**Note:** this explorer operates against the Trident Testnet only.
+**Note:** This explorer operates against the Trident Testnet only.
+
+## ✨ Key Features
+
+### 🔍 **Advanced Search & Navigation**
+- Smart search with auto-detection (blocks, transactions, addresses)
+- Advanced search modal with comprehensive filters
+- Search history with quick access
+- Breadcrumb navigation for easy navigation
+- Keyboard shortcuts (Ctrl+K, Ctrl+/, Ctrl+,)
+
+### 📊 **Real-Time Monitoring**
+- Live block updates via WebSocket
+- Network status indicator with latency monitoring
+- Performance monitor (FPS, memory usage)
+- Loading bar for smooth page transitions
+- Auto-refresh with configurable intervals
+
+### 🎨 **Modern UI/UX**
+- Dark/Light theme with smooth transitions
+- Responsive design for mobile and desktop
+- Toast notifications for user feedback
+- Scroll-to-top button for long pages
+- Skeleton loaders for better perceived performance
+
+### 🌐 **Internationalization**
+- Multi-language support (English, Spanish, Portuguese)
+- Complete translation coverage
+- RTL support ready
+
+### ⚙️ **Customization**
+- Comprehensive settings panel
+- Theme customization
+- Compact mode for dense information
+- Animation controls
+- Refresh interval configuration
+
+### 📈 **Data Visualization**
+- Admin dashboard with charts (recharts)
+- Block history chart
+- Transaction volume chart
+- Validator distribution pie chart
+- Export data (CSV/JSON)
+
+### 🔒 **Security & Performance**
+- Rate limiting (100 req/15min)
+- Input sanitization
+- Security headers (helmet)
+- Response compression (gzip)
+- Smart caching with LRU eviction
+- Code splitting with lazy loading
+
+### 📱 **Progressive Web App**
+- Installable on mobile/desktop
+- Offline-ready manifest
+- App shortcuts
+- iOS home screen support
 
 ## Blockchain Specs
 
