@@ -32,6 +32,7 @@ function NavBar({ wallet, logout, language, setLanguage, theme, toggleTheme }) {
       <Link to="/account">{t('Account Lookup')}</Link>
       <Link to="/validators">{t('Validator List')}</Link>
       <Link to="/wallet">{t('Wallet')}</Link>
+      <Link to="/admin">{t('Admin Dashboard')}</Link>
       <form onSubmit={handleSearch} className="ml-auto">
         <input
           value={search}

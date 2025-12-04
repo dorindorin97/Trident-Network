@@ -157,3 +157,50 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   border-left-color: #cc0000;
   background-color: rgba(204, 0, 0, 0.1);
 }
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.status-badge.active {
+  background: rgba(46, 213, 115, 0.15);
+  color: #2ed573;
+}
+
+.status-badge.inactive {
+  background: rgba(255, 71, 87, 0.15);
+  color: #ff4757;
+}
+
+table th {
+  user-select: none;
+}
+
+table th[style*="cursor: pointer"]:hover {
+  opacity: 0.8;
+}

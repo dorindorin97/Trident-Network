@@ -4,11 +4,13 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const compression = require('compression');
 const path = require('path');
+const http = require('http');
 const SimpleCache = require('./utils/cache');
 const logger = require('./utils/logger');
 const requestId = require('./utils/requestId');
 const { sanitizeInput } = require('./utils/sanitize');
 const { retryWithBackoff } = require('./utils/retry');
+const WebSocketManager = require('./utils/websocket');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -45,6 +47,7 @@ if (!TRIDENT_NODE_RPC_URL.startsWith('http://') && !TRIDENT_NODE_RPC_URL.startsW
 app.use(helmet());
 app.use(compression()); // Enable gzip compression
 app.use(requestId);
+app.use(logger.requestLogger); // Log all requests/responses
 
 // Track metrics
 app.use('/api', (req, res, next) => {
@@ -173,7 +176,15 @@ app.use((err, req, res, next) => {
 });
 
 if (require.main === module) {
-  const server = app.listen(PORT, () => {
+  const server = http.createServer(app);
+  
+  // Initialize WebSocket
+  const wsManager = new WebSocketManager(server);
+  
+  // Make wsManager available to routes via app.locals
+  app.locals.wsManager = wsManager;
+  
+  server.listen(PORT, () => {
     logger.info(`Trident Network API server started`, { 
       port: PORT, 
       mode: CHAIN_MODE,
@@ -184,6 +195,7 @@ if (require.main === module) {
   // Graceful shutdown
   const shutdown = (signal) => {
     logger.info(`${signal} received, shutting down gracefully`);
+    wsManager.close();
     server.close(() => {
       logger.info('Server closed');
       if (cleanupInterval) {

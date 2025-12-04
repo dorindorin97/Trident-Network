@@ -16,6 +16,7 @@ import BlockDetails from './components/BlockDetails';
 import TransactionDetails from './components/TransactionDetails';
 import AccountPage from './components/AccountPage';
 import ErrorBoundary from './components/ErrorBoundary';
+import AdminDashboard from './components/AdminDashboard';
 
 
 function App() {
@@ -65,8 +66,9 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/account" element={<div className="container"><AccountLookup /></div>} />
-          <Route path="/validators" element={<div className="container"><ValidatorList /></div>} />
+          <Route path="/validators" element={<ValidatorList />} />
           <Route path="/wallet" element={<WalletPage wallet={wallet} login={login} logout={logout} />} />
+          <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/block/:number" element={<BlockDetails />} />
           <Route path="/tx/:id" element={<TransactionDetails />} />
           <Route path="/account/:address" element={<AccountPage />} />
