@@ -7,6 +7,9 @@ const validator = {
 
   // Validate block number
   isValidBlockNumber(n) {
+    if (typeof n !== 'string' || !/^\d+$/.test(n)) {
+      return false;
+    }
     const num = parseInt(n, 10);
     return Number.isInteger(num) && num >= 0 && num <= Number.MAX_SAFE_INTEGER;
   },
@@ -23,12 +26,17 @@ const validator = {
 
   // Validate pagination parameters
   validatePagination(page, limit, maxLimit = 100) {
-    const p = Math.max(1, parseInt(page, 10) || 1);
-    const l = Math.min(maxLimit, Math.max(1, parseInt(limit, 10) || 10));
+    const parsedPage = parseInt(page, 10);
+    const parsedLimit = parseInt(limit, 10);
     
-    if (isNaN(p) || isNaN(l)) {
+    // If non-numeric strings are provided, reject them
+    if ((page !== undefined && page !== null && isNaN(parsedPage)) ||
+        (limit !== undefined && limit !== null && isNaN(parsedLimit))) {
       return { valid: false, error: 'Invalid pagination parameters' };
     }
+    
+    const p = Math.max(1, parsedPage || 1);
+    const l = Math.min(maxLimit, Math.max(1, parsedLimit || 10));
     
     return { valid: true, page: p, limit: l };
   },

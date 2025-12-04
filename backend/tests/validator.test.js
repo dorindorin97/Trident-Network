@@ -5,12 +5,12 @@ describe('Validator Utilities', () => {
     test('should accept valid addresses', () => {
       expect(validator.isValidAddress('T' + 'a'.repeat(39))).toBe(true);
       expect(validator.isValidAddress('T' + '1'.repeat(39))).toBe(true);
-      expect(validator.isValidAddress('TACC1PLACEHOLDER000000000000000000000')).toBe(true);
+      expect(validator.isValidAddress('TACC1PLACEHOLDER000000000000000000000000')).toBe(true);
     });
 
     test('should reject invalid addresses', () => {
       expect(validator.isValidAddress('T123')).toBe(false);
-      expect(validator.isValidAddress('AACC1PLACEHOLDER000000000000000000000')).toBe(false);
+      expect(validator.isValidAddress('AACC1PLACEHOLDER000000000000000000000000')).toBe(false);
       expect(validator.isValidAddress('T' + 'a'.repeat(38))).toBe(false);
       expect(validator.isValidAddress('T' + 'a'.repeat(40))).toBe(false);
       expect(validator.isValidAddress(null)).toBe(false);
