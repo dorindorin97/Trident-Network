@@ -34,15 +34,18 @@ describe('Validator Utilities', () => {
   });
 
   describe('isValidBlockHash', () => {
-    test('should accept valid block hashes', () => {
-      expect(validator.isValidBlockHash('0x1234567890abcdef')).toBe(true);
-      expect(validator.isValidBlockHash('0xABCDEF1234567890')).toBe(true);
+    test('should accept valid block hashes (64 hex chars)', () => {
+      const validHash1 = '0x' + '1234567890abcdef'.repeat(4);
+      const validHash2 = '0x' + 'ABCDEF1234567890'.repeat(4);
+      expect(validator.isValidBlockHash(validHash1)).toBe(true);
+      expect(validator.isValidBlockHash(validHash2)).toBe(true);
     });
 
     test('should reject invalid block hashes', () => {
       expect(validator.isValidBlockHash('0x123')).toBe(false);
-      expect(validator.isValidBlockHash('1234567890abcdef')).toBe(false);
-      expect(validator.isValidBlockHash('0xGHIJKL1234567890')).toBe(false);
+      expect(validator.isValidBlockHash('0x1234567890abcdef')).toBe(false); // Only 16 chars
+      expect(validator.isValidBlockHash('1234567890abcdef')).toBe(false); // Missing 0x
+      expect(validator.isValidBlockHash('0x' + 'GHIJKL' + 'a'.repeat(58))).toBe(false); // Invalid chars
       expect(validator.isValidBlockHash(null)).toBe(false);
     });
   });
