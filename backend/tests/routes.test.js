@@ -24,7 +24,15 @@ beforeAll(() => {
     } else if (path === '/validators') {
       body = [];
     }
-    return Promise.resolve(new Response(JSON.stringify(body), { status }));
+    
+    return Promise.resolve({
+      ok: status >= 200 && status < 300,
+      status,
+      headers: {
+        get: (header) => header === 'content-type' ? 'application/json' : null
+      },
+      json: () => Promise.resolve(body)
+    });
   });
 });
 
@@ -60,7 +68,7 @@ describe('API routes', () => {
 
   test('transaction by id not found', async () => {
     const res = await request(app).get('/api/v1/transactions/0x' + 'a'.repeat(64));
-    expect(res.statusCode).toBe(503);
+    expect(res.statusCode).toBe(404);
   });
 
   test('account by address', async () => {

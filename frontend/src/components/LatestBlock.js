@@ -1,33 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Spinner from './Spinner';
+import { fetchApi, getErrorMessage } from '../apiUtils';
+import { API_BASE_PATH } from '../config';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
 const REFRESH = parseInt(process.env.REACT_APP_REFRESH_INTERVAL, 10) || 10000;
 
 function LatestBlock() {
   const { t } = useTranslation();
   const [block, setBlock] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchBlock = () => {
+    const fetchBlock = async () => {
       setLoading(true);
-      fetch(`${API_URL}/api/v1/blocks/latest`)
-        .then(res => {
-          if (!res.ok) throw new Error('bad');
-          return res.json();
-        })
-        .then(data => {
-          setBlock(data);
-          setError(false);
-          setLoading(false);
-        })
-        .catch(() => {
-          setError(true);
-          setLoading(false);
-        });
+      try {
+        const data = await fetchApi(`${API_BASE_PATH}/blocks/latest`);
+        setBlock(data);
+        setError(null);
+      } catch (err) {
+        setError(getErrorMessage(err));
+      } finally {
+        setLoading(false);
+      }
     };
     fetchBlock();
     const interval = setInterval(fetchBlock, REFRESH);
@@ -35,7 +31,7 @@ function LatestBlock() {
   }, []);
 
   if (loading) return <Spinner />;
-  if (error) return <p>{t('Service unavailable')}</p>;
+  if (error) return <p className="error">{error}</p>;
   return (
     <div>
       <h2>{t('Latest Block')}</h2>

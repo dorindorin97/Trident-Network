@@ -13,7 +13,8 @@ module.exports = fetchRpc => {
         error: err.message,
         requestId: req.id
       });
-      return res.status(503).json({ error: 'Service unavailable' });
+      const status = err.message.includes('timeout') ? 504 : 503;
+      return res.status(status).json({ error: err.message || 'Service unavailable' });
     }
   });
   return router;

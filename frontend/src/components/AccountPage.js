@@ -2,40 +2,38 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Spinner from './Spinner';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+import { fetchApi, getErrorMessage } from '../apiUtils';
+import { API_BASE_PATH } from '../config';
 
 function AccountPage() {
   const { t } = useTranslation();
   const { address } = useParams();
   const [account, setAccount] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const perPage = 10;
 
   useEffect(() => {
-    setLoading(true);
-    setPage(1);
-    fetch(`${API_URL}/api/v1/accounts/${address}`)
-      .then(res => {
-        if (!res.ok) throw new Error('bad');
-        return res.json();
-      })
-      .then(data => {
+    const fetchAccount = async () => {
+      setLoading(true);
+      setPage(1);
+      try {
+        const data = await fetchApi(`${API_BASE_PATH}/accounts/${address}`);
         setAccount(data);
-        setError(false);
-        setLoading(false);
-      })
-      .catch(() => {
+        setError(null);
+      } catch (err) {
+        setError(getErrorMessage(err));
         setAccount(null);
-        setError(true);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+    fetchAccount();
   }, [address]);
 
   if (loading) return <Spinner />;
-  if (error || !account) return <p>{t('Service unavailable')}</p>;
+  if (error || !account) return <p className="error">{error || t('Account not found')}</p>;
 
   const total = Math.ceil(account.transactions.length / perPage);
   const start = (page - 1) * perPage;

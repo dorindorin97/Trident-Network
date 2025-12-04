@@ -2,36 +2,31 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Spinner from './Spinner';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+import { fetchApi, getErrorMessage } from '../apiUtils';
+import { API_BASE_PATH } from '../config';
 
 function AccountLookup() {
   const { t } = useTranslation();
   const [address, setAddress] = useState('');
   const [account, setAccount] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const perPage = 10;
 
-  const lookup = () => {
+  const lookup = async () => {
     setLoading(true);
-    fetch(`${API_URL}/api/v1/accounts/${address}`)
-      .then(res => {
-        if (!res.ok) throw new Error('bad');
-        return res.json();
-      })
-      .then(data => {
-        setAccount(data);
-        setPage(1);
-        setError(false);
-        setLoading(false);
-      })
-      .catch(() => {
-        setAccount(null);
-        setError(true);
-        setLoading(false);
-      });
+    try {
+      const data = await fetchApi(`${API_BASE_PATH}/accounts/${address}`);
+      setAccount(data);
+      setPage(1);
+      setError(null);
+    } catch (err) {
+      setError(getErrorMessage(err));
+      setAccount(null);
+    } finally {
+      setLoading(false);
+    }
   };
 
   let total = 1;
@@ -48,7 +43,7 @@ function AccountLookup() {
       <input value={address} onChange={e => setAddress(e.target.value)} placeholder={t('Address')} />
       <button onClick={lookup} className="ml-sm" disabled={!address.trim()}>{t('Lookup')}</button>
       {loading && <Spinner />}
-      {error && !loading && <p>{t('Service unavailable')}</p>}
+      {error && !loading && <p className="error">{error}</p>}
       {account && !loading && !error && (
         <div>
           <p>{t('Balance')}: {account.balance} TRI</p>

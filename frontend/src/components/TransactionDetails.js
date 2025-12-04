@@ -3,36 +3,34 @@ import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Spinner from './Spinner';
 import CopyButton from './CopyButton';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+import { fetchApi, getErrorMessage } from '../apiUtils';
+import { API_BASE_PATH } from '../config';
 
 function TransactionDetails() {
   const { t } = useTranslation();
   const { id } = useParams();
   const [tx, setTx] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    setLoading(true);
-    fetch(`${API_URL}/api/v1/transactions/${id}`)
-      .then(res => {
-        if (!res.ok) throw new Error('bad');
-        return res.json();
-      })
-      .then(data => {
+    const fetchTransaction = async () => {
+      setLoading(true);
+      try {
+        const data = await fetchApi(`${API_BASE_PATH}/transactions/${id}`);
         setTx(data);
-        setError(false);
+        setError(null);
+      } catch (err) {
+        setError(getErrorMessage(err));
+      } finally {
         setLoading(false);
-      })
-      .catch(() => {
-        setError(true);
-        setLoading(false);
-      });
+      }
+    };
+    fetchTransaction();
   }, [id]);
 
   if (loading) return <Spinner />;
-  if (error || !tx) return <p>{t('Service unavailable')}</p>;
+  if (error || !tx) return <p className="error">{error || t('Transaction not found')}</p>;
 
   return (
     <div className="container">

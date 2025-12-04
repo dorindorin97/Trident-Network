@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { fetchApi, getErrorMessage } from '../apiUtils';
 
 /**
@@ -12,6 +12,13 @@ export function useApi(url, options = {}, immediate = true) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(immediate);
   const [error, setError] = useState(null);
+  
+  // Use ref to store options to avoid dependency issues
+  const optionsRef = useRef(options);
+  
+  useEffect(() => {
+    optionsRef.current = options;
+  }, [options]);
 
   const fetchData = useCallback(async () => {
     if (!url) return;
@@ -20,7 +27,7 @@ export function useApi(url, options = {}, immediate = true) {
     setError(null);
 
     try {
-      const result = await fetchApi(url, options);
+      const result = await fetchApi(url, optionsRef.current);
       setData(result);
       setError(null);
     } catch (err) {
@@ -29,7 +36,7 @@ export function useApi(url, options = {}, immediate = true) {
     } finally {
       setLoading(false);
     }
-  }, [url, options]);
+  }, [url]);
 
   useEffect(() => {
     if (immediate) {

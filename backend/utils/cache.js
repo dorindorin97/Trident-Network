@@ -1,10 +1,19 @@
 // Simple in-memory cache with TTL
 class SimpleCache {
-  constructor() {
+  constructor(maxSize = 1000) {
     this.cache = new Map();
+    this.cleanupIntervalId = null;
+    this.maxSize = maxSize;
   }
 
   set(key, value, ttlMs = 5000) {
+    // Check if we need to evict entries
+    if (this.cache.size >= this.maxSize && !this.cache.has(key)) {
+      // Simple LRU: remove the oldest entry
+      const firstKey = this.cache.keys().next().value;
+      this.cache.delete(firstKey);
+    }
+    
     const expiry = Date.now() + ttlMs;
     this.cache.set(key, { value, expiry });
   }
@@ -25,16 +34,69 @@ class SimpleCache {
     this.cache.clear();
   }
 
-  // Clean up expired entries periodically
+  /**
+   * Clean up expired entries periodically
+   * @param {number} intervalMs - Cleanup interval in milliseconds
+   * @returns {NodeJS.Timeout} The interval ID for cleanup
+   */
   startCleanup(intervalMs = 60000) {
-    setInterval(() => {
+    // Clear any existing cleanup interval
+    if (this.cleanupIntervalId) {
+      clearInterval(this.cleanupIntervalId);
+    }
+    
+    const logger = require('./logger');
+    
+    this.cleanupIntervalId = setInterval(() => {
       const now = Date.now();
+      let deletedCount = 0;
       for (const [key, item] of this.cache.entries()) {
         if (now > item.expiry) {
           this.cache.delete(key);
+          deletedCount++;
         }
       }
+      if (deletedCount > 0) {
+        logger.debug('Cache cleanup completed', { deletedCount, remainingEntries: this.cache.size });
+      }
     }, intervalMs);
+    
+    // Return the interval ID so it can be cleared on shutdown
+    return this.cleanupIntervalId;
+  }
+
+  /**
+   * Stop the cleanup interval
+   */
+  stopCleanup() {
+    if (this.cleanupIntervalId) {
+      clearInterval(this.cleanupIntervalId);
+      this.cleanupIntervalId = null;
+    }
+  }
+
+  /**
+   * Get cache statistics
+   * @returns {object} Cache statistics
+   */
+  getStats() {
+    const now = Date.now();
+    let activeCount = 0;
+    let expiredCount = 0;
+    
+    for (const item of this.cache.values()) {
+      if (now > item.expiry) {
+        expiredCount++;
+      } else {
+        activeCount++;
+      }
+    }
+    
+    return {
+      total: this.cache.size,
+      active: activeCount,
+      expired: expiredCount
+    };
   }
 }
 

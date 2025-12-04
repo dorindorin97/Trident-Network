@@ -1,31 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Spinner from './Spinner';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+import { fetchApi, getErrorMessage } from '../apiUtils';
+import { API_BASE_PATH } from '../config';
 
 function ValidatorList() {
   const { t } = useTranslation();
   const [vals, setVals] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    setLoading(true);
-    fetch(`${API_URL}/api/v1/validators`)
-      .then(res => {
-        if (!res.ok) throw new Error('bad');
-        return res.json();
-      })
-      .then(data => {
+    const fetchValidators = async () => {
+      setLoading(true);
+      try {
+        const data = await fetchApi(`${API_BASE_PATH}/validators`);
         setVals(data);
-        setError(false);
+        setError(null);
+      } catch (err) {
+        setError(getErrorMessage(err));
+      } finally {
         setLoading(false);
-      })
-      .catch(() => {
-        setError(true);
-        setLoading(false);
-      });
+      }
+    };
+    fetchValidators();
   }, []);
 
   return (
@@ -34,7 +32,7 @@ function ValidatorList() {
       {loading ? (
         <Spinner />
       ) : error ? (
-        <p>{t('Service unavailable')}</p>
+        <p className="error">{error}</p>
       ) : (
         <ul>
           {vals.map(v => (

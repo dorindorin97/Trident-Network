@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
+import { useApi } from '../hooks/useApi';
 import Spinner from './Spinner';
 import CopyButton from './CopyButton';
 
@@ -11,37 +12,20 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 function WalletPage({ wallet, login, logout }) {
   const { t } = useTranslation();
   const [privKey, setPrivKey] = useState('');
-  const [account, setAccount] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
 
-  useEffect(() => {
-    if (wallet) {
-      setLoading(true);
-      fetch(`${API_URL}/api/v1/accounts/${wallet.address}`)
-        .then(res => {
-          if (!res.ok) throw new Error('bad');
-          return res.json();
-        })
-        .then(data => {
-          setAccount(data);
-          setError(false);
-          setLoading(false);
-        })
-        .catch(() => {
-          setAccount(null);
-          setError(true);
-          setLoading(false);
-        });
-    } else {
-      setAccount(null);
-    }
-  }, [wallet]);
+  const accountUrl = wallet ? `${API_URL}/api/v1/accounts/${wallet.address}` : null;
+  const { data: account, loading, error } = useApi(accountUrl, {}, !!wallet);
 
   const handleLogin = () => {
-    if (privKey) {
-      login(privKey);
+    if (privKey && privKey.trim()) {
+      login(privKey.trim());
       setPrivKey('');
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleLogin();
     }
   };
 
@@ -55,9 +39,11 @@ function WalletPage({ wallet, login, logout }) {
           type="password"
           value={privKey}
           onChange={e => setPrivKey(e.target.value)}
+          onKeyPress={handleKeyPress}
           placeholder={t('Private Key')}
+          aria-label={t('Private Key')}
         />
-        <button onClick={handleLogin} className="ml-sm">{t('Login')}</button>
+        <button onClick={handleLogin} className="ml-sm" disabled={!privKey.trim()}>{t('Login')}</button>
       </div>
     );
   }
@@ -71,12 +57,14 @@ function WalletPage({ wallet, login, logout }) {
       {loading ? (
         <Spinner />
       ) : error ? (
-        <p>{t('Service unavailable')}</p>
-      ) : (
-        account && (
-          <div>
-            <p>{t('Balance')}: {account.balance} TRI</p>
-            <h4>{t('Transactions')}</h4>
+        <p className="error">{t('Service unavailable')}: {error}</p>
+      ) : account ? (
+        <div>
+          <p>{t('Balance')}: {account.balance || 0} TRI</p>
+          <h4>{t('Transactions')}</h4>
+          {!account.transactions || account.transactions.length === 0 ? (
+            <p>{t('No transactions found')}</p>
+          ) : (
             <table className="full-width">
               <thead>
                 <tr>
@@ -108,9 +96,9 @@ function WalletPage({ wallet, login, logout }) {
                 ))}
               </tbody>
             </table>
-          </div>
-        )
-      )}
+          )}
+        </div>
+      ) : null}
     </div>
   );
 }

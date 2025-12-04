@@ -3,39 +3,37 @@ import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Spinner from './Spinner';
 import CopyButton from './CopyButton';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+import { fetchApi, getErrorMessage } from '../apiUtils';
+import { API_BASE_PATH } from '../config';
 
 function BlockDetails() {
   const { t } = useTranslation();
   const { number } = useParams();
   const [block, setBlock] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    setLoading(true);
-    const endpoint = number.startsWith('0x') ?
-      `${API_URL}/api/v1/blocks/hash/${number}` :
-      `${API_URL}/api/v1/blocks/${number}`;
-    fetch(endpoint)
-      .then(res => {
-        if (!res.ok) throw new Error('bad');
-        return res.json();
-      })
-      .then(data => {
+    const fetchBlock = async () => {
+      setLoading(true);
+      try {
+        const endpoint = number.startsWith('0x') ?
+          `${API_BASE_PATH}/blocks/hash/${number}` :
+          `${API_BASE_PATH}/blocks/${number}`;
+        const data = await fetchApi(endpoint);
         setBlock(data);
-        setError(false);
+        setError(null);
+      } catch (err) {
+        setError(getErrorMessage(err));
+      } finally {
         setLoading(false);
-      })
-      .catch(() => {
-        setError(true);
-        setLoading(false);
-      });
+      }
+    };
+    fetchBlock();
   }, [number]);
 
   if (loading) return <Spinner />;
-  if (error || !block) return <p>{t('Service unavailable')}</p>;
+  if (error || !block) return <p className="error">{error || t('Block not found')}</p>;
 
   return (
     <div className="container">

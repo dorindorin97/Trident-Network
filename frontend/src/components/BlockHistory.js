@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Spinner from './Spinner';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+import { fetchApi, getErrorMessage } from '../apiUtils';
+import { API_BASE_PATH } from '../config';
 
 function BlockHistory() {
   const { t } = useTranslation();
@@ -11,25 +11,23 @@ function BlockHistory() {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    setLoading(true);
-    fetch(`${API_URL}/api/v1/blocks?page=${page}&limit=10`)
-      .then(res => {
-        if (!res.ok) throw new Error('bad');
-        return res.json();
-      })
-      .then(data => {
+    const fetchBlocks = async () => {
+      setLoading(true);
+      try {
+        const data = await fetchApi(`${API_BASE_PATH}/blocks?page=${page}&limit=10`);
         setBlocks(data.blocks);
         setTotal(Math.ceil(data.total / data.limit));
-        setError(false);
+        setError(null);
+      } catch (err) {
+        setError(getErrorMessage(err));
+      } finally {
         setLoading(false);
-      })
-      .catch(() => {
-        setError(true);
-        setLoading(false);
-      });
+      }
+    };
+    fetchBlocks();
   }, [page]);
 
   return (
@@ -43,7 +41,7 @@ function BlockHistory() {
       {loading ? (
         <Spinner />
       ) : error ? (
-        <p>{t('Service unavailable')}</p>
+        <p className="error">{error}</p>
       ) : (
         <ul>
           {blocks.map(b => (
