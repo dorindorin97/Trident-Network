@@ -14,9 +14,9 @@ const validator = {
     return Number.isInteger(num) && num >= 0 && num <= Number.MAX_SAFE_INTEGER;
   },
 
-  // Validate block hash
+  // Validate block hash (64 hex characters = 32 bytes)
   isValidBlockHash(hash) {
-    return typeof hash === 'string' && /^0x[0-9a-fA-F]{16}$/.test(hash);
+    return typeof hash === 'string' && /^0x[0-9a-fA-F]{64}$/.test(hash);
   },
 
   // Validate transaction ID

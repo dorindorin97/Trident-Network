@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const validator = require('../utils/validator');
+const logger = require('../utils/logger');
 
 module.exports = fetchRpc => {
   router.get('/v1/blocks/latest', async (req, res) => {
@@ -8,6 +9,11 @@ module.exports = fetchRpc => {
       const data = await fetchRpc('/blocks/latest');
       return res.json(data);
     } catch (err) {
+      logger.error('Failed to fetch latest block', {
+        endpoint: '/v1/blocks/latest',
+        error: err.message,
+        requestId: req.id
+      });
       return res.status(503).json({ error: 'Service unavailable' });
     }
   });
@@ -18,11 +24,18 @@ module.exports = fetchRpc => {
       if (!pagination.valid) {
         return res.status(400).json({ error: pagination.error });
       }
-      
+
       const q = `?page=${pagination.page}&limit=${pagination.limit}`;
       const data = await fetchRpc(`/blocks${q}`);
       return res.json(data);
     } catch (err) {
+      logger.error('Failed to fetch block list', {
+        endpoint: '/v1/blocks',
+        page: req.query.page,
+        limit: req.query.limit,
+        error: err.message,
+        requestId: req.id
+      });
       return res.status(503).json({ error: 'Service unavailable' });
     }
   });
@@ -36,6 +49,12 @@ module.exports = fetchRpc => {
       const data = await fetchRpc(`/blocks/${num}`);
       return res.json(data);
     } catch (err) {
+      logger.error('Failed to fetch block by number', {
+        endpoint: '/v1/blocks/:number',
+        blockNumber: num,
+        error: err.message,
+        requestId: req.id
+      });
       return res.status(503).json({ error: 'Service unavailable' });
     }
   });
@@ -49,6 +68,12 @@ module.exports = fetchRpc => {
       const data = await fetchRpc(`/blocks/hash/${hash}`);
       return res.json(data);
     } catch (err) {
+      logger.error('Failed to fetch block by hash', {
+        endpoint: '/v1/blocks/hash/:hash',
+        blockHash: hash,
+        error: err.message,
+        requestId: req.id
+      });
       return res.status(503).json({ error: 'Service unavailable' });
     }
   });
