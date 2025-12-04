@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { fetchApi, getErrorMessage } from '../apiUtils';
 import { API_BASE_PATH } from '../config';
 import Spinner from './Spinner';
+import { BlockHistoryChart, TransactionVolumeChart, ValidatorDistributionChart } from './Charts';
 import './AdminDashboard.css';
 
 function AdminDashboard() {
@@ -13,21 +14,24 @@ function AdminDashboard() {
   const [metrics, setMetrics] = useState(null);
   const [health, setHealth] = useState(null);
   const [lastRefresh, setLastRefresh] = useState(Date.now());
+  const [blocks, setBlocks] = useState([]);
 
   const fetchData = async () => {
     setLoading(true);
     setError(null);
     
     try {
-      const [cache, metricsData, healthData] = await Promise.all([
+      const [cache, metricsData, healthData, blocksData] = await Promise.all([
         fetchApi(`${API_BASE_PATH}/admin/cache/stats`),
         fetchApi(`${API_BASE_PATH}/admin/metrics`),
-        fetchApi(`${API_BASE_PATH}/health`)
+        fetchApi(`${API_BASE_PATH}/health`),
+        fetchApi(`${API_BASE_PATH}/blocks?limit=10`)
       ]);
       
       setCacheStats(cache);
       setMetrics(metricsData);
       setHealth(healthData);
+      setBlocks(blocksData || []);
       setLastRefresh(Date.now());
     } catch (err) {
       setError(getErrorMessage(err));
@@ -199,6 +203,30 @@ function AdminDashboard() {
             </span>
           </div>
         </div>
+      </div>
+
+      {/* Data Visualizations */}
+      <div className="charts-section">
+        <BlockHistoryChart 
+          data={blocks.map(block => ({
+            blockNumber: block.number || 0,
+            transactionCount: (block.transactions || []).length
+          }))}
+        />
+        
+        <TransactionVolumeChart 
+          data={blocks.map(block => ({
+            date: new Date(block.timestamp * 1000).toLocaleDateString(),
+            volume: (block.transactions || []).reduce((sum, tx) => sum + parseFloat(tx.amount || 0), 0)
+          }))}
+        />
+        
+        <ValidatorDistributionChart 
+          data={[
+            { name: 'Active', value: metrics?.validators || 0 },
+            { name: 'Standby', value: Math.max(0, (metrics?.totalValidators || 0) - (metrics?.validators || 0)) }
+          ]}
+        />
       </div>
 
       <div style={{ marginTop: '1rem', textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>

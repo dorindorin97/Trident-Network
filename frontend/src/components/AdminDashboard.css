@@ -5,9 +5,13 @@
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
   margin-bottom: 2rem;
+}
+
+.charts-section {
+  margin-top: 2rem;
 }
 
 .dashboard-card {

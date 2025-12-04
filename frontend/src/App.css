@@ -2,6 +2,24 @@
   --primary-color: #001730;
   --background-color: var(--primary-color);
   --text-color: #fff;
+  --transition-speed: 0.3s;
+}
+
+/* Smooth theme transitions */
+* {
+  transition: background-color var(--transition-speed) ease,
+              color var(--transition-speed) ease,
+              border-color var(--transition-speed) ease;
+}
+
+/* Disable transitions for specific elements */
+input,
+textarea,
+select,
+button,
+.no-transition,
+.theme-toggle * {
+  transition: none;
 }
 
 [data-theme='light'] {

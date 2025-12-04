@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { parseSearch } from '../utils';
 import PropTypes from 'prop-types';
+import ThemeToggle from './ThemeToggle';
 
 const APP_TITLE = process.env.REACT_APP_APP_TITLE || 'Trident Explorer';
 
@@ -47,9 +48,7 @@ function NavBar({ wallet, logout, language, setLanguage, theme, toggleTheme }) {
         <option value="pt">PT</option>
         <option value="es">ES</option>
       </select>
-      <button onClick={toggleTheme} className="ml-sm">
-        {theme === 'dark' ? t('Light Mode') : t('Dark Mode')}
-      </button>
+      <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
       {wallet && (
         <span className="ml-sm">
           {wallet.address}{' '}
