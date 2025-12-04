@@ -79,7 +79,7 @@ echo ""
 
 echo "Installing frontend dependencies..."
 cd frontend
-npm install
+npm install --legacy-peer-deps
 echo -e "${GREEN}✓ Frontend dependencies installed${NC}"
 cd ..
 

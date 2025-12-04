@@ -119,6 +119,8 @@ cd Trident-Network
 make dev
 ```
 
+**Having issues?** See [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) for common problems and solutions.
+
 ### Manual Setup
 
 #### Development
@@ -245,9 +247,12 @@ GitHub Actions run automated checks on pushes to `main` and `work`. Separate wor
 - **[WebSocket API](./WEBSOCKET_API.md)** - Real-time updates documentation
 - **[Export Features](./EXPORT_FEATURES.md)** - CSV/JSON export guide
 - **[Admin API](./ADMIN_API.md)** - Admin endpoints for monitoring
+- **[User Guide](./USER_GUIDE.md)** - End-user documentation with keyboard shortcuts
+- **[Features Guide](./FEATURES.md)** - Complete feature inventory (45+ features)
 - **[Development Guide](./DEVELOPMENT.md)** - Setup, workflows, and best practices
 - **[Contributing Guide](./CONTRIBUTING.md)** - How to contribute to the project
 - **[Security Policy](./SECURITY.md)** - Security features and reporting vulnerabilities
+- **[Troubleshooting Guide](./TROUBLESHOOTING.md)** - Common issues and solutions
 - **[Changelog](./CHANGELOG.md)** - Version history and changes
 
 ## Contributing
