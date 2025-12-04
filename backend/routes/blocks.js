@@ -18,7 +18,14 @@ module.exports = fetchRpc => {
 
   router.get('/v1/blocks', async (req, res) => {
     try {
-      const q = `?page=${req.query.page || 1}&limit=${req.query.limit || 10}`;
+      const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+      const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 10));
+      
+      if (isNaN(page) || isNaN(limit)) {
+        return res.status(400).json({ error: 'Invalid pagination parameters' });
+      }
+      
+      const q = `?page=${page}&limit=${limit}`;
       const data = await fetchRpc(`/blocks${q}`);
       return res.json(data);
     } catch (err) {

@@ -6,6 +6,24 @@
 - Wallet signing and transaction broadcasting flow.
 - Multi-chain/mainnet explorer configuration.
 - Admin dashboard with basic analytics.
+- Error boundary component for graceful React error handling.
+- Response caching with TTL for frequently accessed endpoints.
+- Structured JSON logging with configurable log levels.
+- Health check endpoints for Docker containers.
+- Jest configuration files for better test setup.
+- Prettier configuration for consistent code formatting.
+
+### Improved
+- Address validation consistency across frontend and backend.
+- Backend input validation for query parameters with max limits.
+- Docker configurations with multi-stage builds and health checks.
+- Error handling and logging throughout the backend.
+- Rate limiting with custom error messages.
+- Security headers and request body size limits.
+
+### Fixed
+- Address regex pattern inconsistency in utils.js.
+- Missing validation for pagination parameters.
 
 ## [1.0.0] - 2024-06-01
 ### Added

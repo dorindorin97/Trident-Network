@@ -15,6 +15,7 @@ import NotFound from './components/NotFound';
 import BlockDetails from './components/BlockDetails';
 import TransactionDetails from './components/TransactionDetails';
 import AccountPage from './components/AccountPage';
+import ErrorBoundary from './components/ErrorBoundary';
 
 
 function App() {
@@ -60,17 +61,19 @@ function App() {
         theme={theme}
         toggleTheme={toggleTheme}
       />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/account" element={<div className="container"><AccountLookup /></div>} />
-        <Route path="/validators" element={<div className="container"><ValidatorList /></div>} />
-        <Route path="/wallet" element={<WalletPage wallet={wallet} login={login} logout={logout} />} />
-        <Route path="/block/:number" element={<BlockDetails />} />
-        <Route path="/tx/:id" element={<TransactionDetails />} />
-        <Route path="/account/:address" element={<AccountPage />} />
-        <Route path="/404" element={<NotFound />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <ErrorBoundary>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/account" element={<div className="container"><AccountLookup /></div>} />
+          <Route path="/validators" element={<div className="container"><ValidatorList /></div>} />
+          <Route path="/wallet" element={<WalletPage wallet={wallet} login={login} logout={logout} />} />
+          <Route path="/block/:number" element={<BlockDetails />} />
+          <Route path="/tx/:id" element={<TransactionDetails />} />
+          <Route path="/account/:address" element={<AccountPage />} />
+          <Route path="/404" element={<NotFound />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </ErrorBoundary>
     </Router>
   );
 }

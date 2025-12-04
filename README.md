@@ -45,6 +45,7 @@ Copy `frontend/.env.example` and `backend/.env.example` to create `.env` files. 
 | `CHAIN_MODE` | `rpc` | Backend operating mode (must be `rpc`) |
 | `TRIDENT_NODE_RPC_URL` | `https://testnet.rpc.trident.network` | Node RPC endpoint when `CHAIN_MODE=rpc` |
 | `FRONTEND_URL` | `http://localhost:3000` | Allowed CORS origin for the API |
+| `LOG_LEVEL` (backend) | `info` | Logging level (error, warn, info, debug) |
 
 `REACT_APP_*` variables are baked into the frontend at build time. Rebuild the image or run the dev server again after changing them.
 

@@ -7,7 +7,7 @@ function deriveAddress(privateKey) {
 
 function parseSearch(input) {
   if (/^\d+$/.test(input)) return { type: 'block', value: input };
-  if (/^T\w{33}$/.test(input)) return { type: 'account', value: input };
+  if (/^T[a-zA-Z0-9]{39}$/.test(input)) return { type: 'account', value: input };
   if (/^0x[0-9a-fA-F]{16}$/.test(input)) return { type: 'block', value: input };
   if (/^(0x)?[0-9a-fA-F]{64}$/.test(input)) {
     const id = input.startsWith('0x') ? input : `0x${input}`;
