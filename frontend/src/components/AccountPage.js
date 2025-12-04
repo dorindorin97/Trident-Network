@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Spinner from './Spinner';
+import CopyButton from './CopyButton';
+import { QRCodeButton } from './QRCodeModal';
 import { fetchApi, getErrorMessage } from '../apiUtils';
 import { API_BASE_PATH } from '../config';
 
@@ -42,7 +44,11 @@ function AccountPage() {
 
   return (
     <div className="container">
-      <h2>{t('Account')} {address}</h2>
+      <h2>
+        {t('Account')} {address}
+        <CopyButton value={address} />
+        <QRCodeButton value={address} label={`Account: ${address.slice(0, 12)}...`} />
+      </h2>
       <p>{t('Balance')}: {account.balance} TRI</p>
       <h4>{t('Transactions')}</h4>
       <div className="pagination-controls">

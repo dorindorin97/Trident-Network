@@ -82,7 +82,12 @@ const resources = {
       "Uptime": "Uptime",
       "Connected Clients": "Connected Clients",
       "Clear Cache": "Clear Cache",
-      "Refresh": "Refresh"
+      "Refresh": "Refresh",
+      "Live": "Live",
+      "Show QR Code": "Show QR Code",
+      "QR Code": "QR Code",
+      "Download PNG": "Download PNG",
+      "Close": "Close"
     }
   },
   pt: {

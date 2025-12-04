@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import Spinner from './Spinner';
+import { TableSkeleton } from './SkeletonLoader';
 import { fetchApi, getErrorMessage } from '../apiUtils';
 import { API_BASE_PATH } from '../config';
 
@@ -33,23 +33,41 @@ function BlockHistory() {
   return (
     <div>
       <h2>{t('Block History')}</h2>
-      <div className="pagination-controls">
-        <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>{t('Previous')}</button>
-        <span className="ml-sm">{t('Page')} {page} {t('of')} {total}</span>
-        <button onClick={() => setPage(p => p + 1)} disabled={page >= total} className="ml-sm">{t('Next')}</button>
-      </div>
-      {loading ? (
-        <Spinner />
-      ) : error ? (
-        <p className="error">{error}</p>
+      {error && <p className="error">{error}</p>}
+      {loading && !blocks.length ? (
+        <TableSkeleton rows={10} columns={4} />
       ) : (
-        <ul>
-          {blocks.map(b => (
-            <li key={b.number}>
-              <Link to={`/block/${b.number}`}>{t('Block')} {b.number}</Link> - {b.validator} - {b.timestamp}
-            </li>
-          ))}
-        </ul>
+        <>
+          <table className="full-width">
+            <thead>
+              <tr>
+                <th>{t('Number')}</th>
+                <th>{t('Hash')}</th>
+                <th>{t('Validator')}</th>
+                <th>{t('Timestamp')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {blocks.map(b => (
+                <tr key={b.number}>
+                  <td><Link to={`/block/${b.number}`}>{b.number}</Link></td>
+                  <td>{b.hash?.slice(0, 16)}...</td>
+                  <td>{b.validator?.slice(0, 12)}...</td>
+                  <td>{b.timestamp}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div className="pagination-controls" style={{ marginTop: '1rem' }}>
+            <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1 || loading} className="btn-primary">
+              {t('Previous')}
+            </button>
+            <span style={{ margin: '0 1rem' }}>{t('Page')} {page} {t('of')} {total}</span>
+            <button onClick={() => setPage(p => p + 1)} disabled={page >= total || loading} className="btn-primary">
+              {t('Next')}
+            </button>
+          </div>
+        </>
       )}
     </div>
   );
