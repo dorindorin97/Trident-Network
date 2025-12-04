@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { parseSearch } from '../utils';
+import PropTypes from 'prop-types';
 
 const APP_TITLE = process.env.REACT_APP_APP_TITLE || 'Trident Explorer';
 
@@ -57,5 +58,17 @@ function NavBar({ wallet, logout, language, setLanguage, theme, toggleTheme }) {
     </nav>
   );
 }
+
+NavBar.propTypes = {
+  wallet: PropTypes.shape({
+    address: PropTypes.string.isRequired,
+    privateKey: PropTypes.string.isRequired
+  }),
+  logout: PropTypes.func.isRequired,
+  language: PropTypes.string.isRequired,
+  setLanguage: PropTypes.func.isRequired,
+  theme: PropTypes.string.isRequired,
+  toggleTheme: PropTypes.func.isRequired
+};
 
 export default NavBar;

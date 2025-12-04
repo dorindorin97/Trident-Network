@@ -12,6 +12,11 @@
 - Health check endpoints for Docker containers.
 - Jest configuration files for better test setup.
 - Prettier configuration for consistent code formatting.
+- Centralized validator utility module for input validation.
+- PropTypes validation for React components (NavBar, CopyButton, WalletPage).
+- Comprehensive API documentation (API.md) with examples.
+- Development guide (DEVELOPMENT.md) with workflows and best practices.
+- Request ID middleware for request tracking.
 
 ### Improved
 - Address validation consistency across frontend and backend.
@@ -20,10 +25,15 @@
 - Error handling and logging throughout the backend.
 - Rate limiting with custom error messages.
 - Security headers and request body size limits.
+- .dockerignore files for better build efficiency.
+- Code organization with centralized validation utilities.
+- README.md with link to comprehensive API documentation.
+- PropTypes added to frontend package.json dependencies.
 
 ### Fixed
 - Address regex pattern inconsistency in utils.js.
 - Missing validation for pagination parameters.
+- Duplicate validation logic across route handlers.
 
 ## [1.0.0] - 2024-06-01
 ### Added

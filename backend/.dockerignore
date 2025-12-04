@@ -1,6 +1,14 @@
 node_modules
 tests
+coverage
 Dockerfile
 README.md
 .git
 .gitignore
+.env
+.env.local
+*.log
+npm-debug.log*
+.DS_Store
+.vscode
+.idea

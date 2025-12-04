@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import PropTypes from 'prop-types';
 
 function CopyButton({ value }) {
   const { t } = useTranslation();
@@ -12,5 +13,9 @@ function CopyButton({ value }) {
     </button>
   );
 }
+
+CopyButton.propTypes = {
+  value: PropTypes.string.isRequired
+};
 
 export default CopyButton;

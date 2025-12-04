@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import PropTypes from 'prop-types';
 import Spinner from './Spinner';
 import CopyButton from './CopyButton';
 
@@ -112,5 +113,14 @@ function WalletPage({ wallet, login, logout }) {
     </div>
   );
 }
+
+WalletPage.propTypes = {
+  wallet: PropTypes.shape({
+    address: PropTypes.string.isRequired,
+    privateKey: PropTypes.string.isRequired
+  }),
+  login: PropTypes.func.isRequired,
+  logout: PropTypes.func.isRequired
+};
 
 export default WalletPage;

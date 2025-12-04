@@ -70,6 +70,15 @@ Images are built from `frontend/` and `backend/`. Ensure your `.env` files conta
 
 ## API Reference
 
+See [API.md](./API.md) for comprehensive API documentation including:
+- All endpoints with parameters
+- Request/response examples
+- Error codes and handling
+- Rate limiting details
+- Code examples in cURL and JavaScript
+
+Quick reference:
+
 | Method | Endpoint | Description |
 | ------ | -------- | ----------- |
 | GET | `/api/v1/health` | Health check |
@@ -96,6 +105,18 @@ GitHub Actions run automated checks on pushes to `main` and `work`. Separate wor
 - `build.yml` – lints, tests and builds both projects on push.
 - `frontend.yml` – builds and pushes the frontend image on release.
 - `backend.yml` – builds and pushes the backend image on release.
+
+## Documentation
+
+- **[API Documentation](./API.md)** - Complete API reference with examples
+- **[Development Guide](./DEVELOPMENT.md)** - Setup, workflows, and best practices
+- **[Contributing Guide](./CONTRIBUTING.md)** - How to contribute to the project
+- **[Security Policy](./SECURITY.md)** - Security features and reporting vulnerabilities
+- **[Changelog](./CHANGELOG.md)** - Version history and changes
+
+## Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 
 ## License
 

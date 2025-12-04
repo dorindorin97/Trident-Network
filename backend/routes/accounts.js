@@ -1,13 +1,10 @@
 const express = require('express');
 const router = express.Router();
-
-function isValidAddress(addr) {
-  return /^T[a-zA-Z0-9]{39}$/.test(addr);
-}
+const validator = require('../utils/validator');
 
 module.exports = fetchRpc => {
   router.get('/v1/accounts/:address', async (req, res) => {
-    if (!isValidAddress(req.params.address)) {
+    if (!validator.isValidAddress(req.params.address)) {
       return res.status(400).json({ error: 'Invalid address' });
     }
     try {
