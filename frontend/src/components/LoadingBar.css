@@ -1,0 +1,43 @@
+.loading-bar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 99999;
+  pointer-events: none;
+}
+
+.loading-bar {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--primary, #007bff) 0%,
+    #00d4ff 50%,
+    var(--primary, #007bff) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  transition: width 0.2s ease-out, opacity 0.3s ease-out;
+  box-shadow: 0 2px 10px rgba(0, 123, 255, 0.5);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* No animations mode */
+.no-animations .loading-bar {
+  animation: none;
+  background: var(--primary, #007bff);
+}
+
+/* Light theme adjustments */
+[data-theme="light"] .loading-bar {
+  box-shadow: 0 2px 10px rgba(0, 123, 255, 0.3);
+}

@@ -99,5 +99,14 @@
   "minute": "minuto",
   "Developer": "Desarrollador",
   "Show Performance Monitor": "Mostrar Monitor de Rendimiento",
-  "Development only - requires page reload": "Solo desarrollo - requiere recargar página"
+  "Development only - requires page reload": "Solo desarrollo - requiere recargar página",
+  "Click for network details": "Haz clic para detalles de red",
+  "Online": "En Línea",
+  "Offline": "Fuera de Línea",
+  "Fast": "Rápido",
+  "Slow": "Lento",
+  "Normal": "Normal",
+  "Latency": "Latencia",
+  "Last Check": "Última Verificación",
+  "Failed Checks": "Verificaciones Fallidas"
 }

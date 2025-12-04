@@ -139,7 +139,16 @@ const resources = {
       "minute": "minute",
       "Developer": "Developer",
       "Show Performance Monitor": "Show Performance Monitor",
-      "Development only - requires page reload": "Development only - requires page reload"
+      "Development only - requires page reload": "Development only - requires page reload",
+      "Click for network details": "Click for network details",
+      "Online": "Online",
+      "Offline": "Offline",
+      "Fast": "Fast",
+      "Slow": "Slow",
+      "Normal": "Normal",
+      "Latency": "Latency",
+      "Last Check": "Last Check",
+      "Failed Checks": "Failed Checks"
     }
   },
   pt: {

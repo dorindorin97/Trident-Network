@@ -14,6 +14,8 @@ import { ToastProvider } from './components/Toast';
 import Footer from './components/Footer';
 import PerformanceMonitor from './components/PerformanceMonitor';
 import SettingsPanel from './components/SettingsPanel';
+import NetworkStatus from './components/NetworkStatus';
+import LoadingBar from './components/LoadingBar';
 
 // Lazy load components for code splitting
 const AccountLookup = lazy(() => import('./components/AccountLookup'));
@@ -63,6 +65,7 @@ function App() {
   return (
     <ToastProvider>
       <Router>
+        <LoadingBar />
         <NavBar
           wallet={wallet}
           logout={logout}
@@ -97,6 +100,7 @@ function App() {
           </Suspense>
         </ErrorBoundary>
         <Footer />
+        <NetworkStatus refreshInterval={15000} />
         <PerformanceMonitor enabled={localStorage.getItem('showPerformance') === 'true'} />
       </Router>
     </ToastProvider>
