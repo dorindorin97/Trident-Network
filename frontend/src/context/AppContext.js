@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer, useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
+import { deriveAddress } from '../utils';
 
 /**
  * App Context for global state management
@@ -32,6 +33,9 @@ const initialState = {
   
   // Error state
   error: null,
+
+  // Wallet
+  wallet: null,
   
   // Network status
   isOnline: typeof navigator !== 'undefined' ? navigator.onLine : true
@@ -41,6 +45,8 @@ const initialState = {
 const ACTIONS = {
   SET_THEME: 'SET_THEME',
   SET_LANGUAGE: 'SET_LANGUAGE',
+  SET_WALLET: 'SET_WALLET',
+  CLEAR_WALLET: 'CLEAR_WALLET',
   SET_PREFERENCE: 'SET_PREFERENCE',
   SHOW_TOAST: 'SHOW_TOAST',
   HIDE_TOAST: 'HIDE_TOAST',
@@ -67,6 +73,20 @@ function appReducer(state, action) {
       const newLanguage = action.payload;
       localStorage.setItem('language', newLanguage);
       return { ...state, language: newLanguage };
+    }
+
+    case ACTIONS.SET_WALLET: {
+      return {
+        ...state,
+        wallet: action.payload
+      };
+    }
+
+    case ACTIONS.CLEAR_WALLET: {
+      return {
+        ...state,
+        wallet: null
+      };
     }
 
     case ACTIONS.SET_PREFERENCE: {
@@ -191,7 +211,16 @@ export function AppContextProvider({ children }) {
     }
   }), [state.theme, state.preferences.compactMode, state.preferences.autoRefresh]);
 
-  const value = { state, ...actions };
+  // Wallet actions
+  const setWallet = (wallet) => dispatch({ type: ACTIONS.SET_WALLET, payload: wallet });
+  const clearWallet = () => dispatch({ type: ACTIONS.CLEAR_WALLET });
+  const login = (privKey) => {
+    const address = deriveAddress(privKey);
+    setWallet({ privateKey: privKey, address });
+  };
+  const logout = () => clearWallet();
+
+  const value = { state, ...actions, setWallet, clearWallet, login, logout };
 
   return (
     <AppContext.Provider value={value}>
@@ -280,4 +309,12 @@ export function useErrorState() {
 export function useOnlineStatus() {
   const { state } = useAppContext();
   return state.isOnline;
+}
+
+/**
+ * Hook for wallet management
+ */
+export function useWallet() {
+  const { state, login, logout } = useAppContext();
+  return { wallet: state.wallet, login, logout };
 }

@@ -1,5 +1,4 @@
-import React, { lazy, Suspense, useState } from 'react';
-import { deriveAddress } from './utils';
+import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import './App.css';
@@ -11,10 +10,10 @@ import {
   useTheme,
   useLanguage,
   usePreferences,
-  useNotification,
   useLoadingState,
   useErrorState,
   useOnlineStatus,
+  useWallet,
 } from './context/AppContext';
 
 import NavBar from './components/NavBar';
@@ -48,21 +47,10 @@ function AppContent() {
   // Theme/language are available via context in components (NavBar, etc.)
   const { theme, toggleTheme } = useTheme();
   const { language, setLanguage } = useLanguage();
+  const { wallet, login, logout } = useWallet();
   const { preferences } = usePreferences();
-  const { showToast } = useNotification();
 
-  const [wallet, setWallet] = useState(null);
-
-  const login = (privKey) => {
-    const addr = deriveAddress(privKey);
-    setWallet({ privateKey: privKey, address: addr });
-    showToast && showToast('Wallet connected', 'success');
-  };
-
-  const logout = () => {
-    setWallet(null);
-    showToast && showToast('Wallet disconnected', 'info');
-  };
+  // Using `useWallet` from AppContext to manage wallet state
   const { isLoading } = useLoadingState();
   const { error, clearError } = useErrorState();
   const { isOnline } = useOnlineStatus();
