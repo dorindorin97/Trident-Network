@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer, useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
+import { captureException } from '../utils/errorTracker';
 import { deriveAddress } from '../utils';
 
 /**
@@ -35,7 +36,7 @@ const initialState = {
   error: null,
 
   // Wallet
-  wallet: null,
+  wallet: typeof window !== 'undefined' && localStorage.getItem('wallet') ? JSON.parse(localStorage.getItem('wallet')) : null,
   
   // Network status
   isOnline: typeof navigator !== 'undefined' ? navigator.onLine : true
@@ -159,6 +160,19 @@ export function AppContextProvider({ children }) {
   React.useEffect(() => {
     document.documentElement.setAttribute('data-theme', state.theme);
   }, []);
+
+  // Persist wallet to localStorage
+  React.useEffect(() => {
+    try {
+      if (state.wallet) {
+        localStorage.setItem('wallet', JSON.stringify(state.wallet));
+      } else {
+        localStorage.removeItem('wallet');
+      }
+    } catch (err) {
+      try { captureException(err, { source: 'AppContext.persistWallet' }); } catch (_) { /* swallow */ }
+    }
+  }, [state.wallet]);
 
   // Monitor online/offline status
   React.useEffect(() => {
