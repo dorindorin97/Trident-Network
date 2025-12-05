@@ -62,6 +62,7 @@ class RequestLogger {
     this.metrics.totalRequests++;
     this.metrics.totalDuration += duration;
     this.metrics.totalBytes += bytes;
+    this.metrics.totalMemory = (this.metrics.totalMemory || 0) + memory;
 
     if (statusCode >= 400) {
       this.metrics.totalErrors++;
@@ -123,6 +124,7 @@ class RequestLogger {
       ...this.metrics,
       avgDuration: this.metrics.totalRequests > 0 ? this.metrics.totalDuration / this.metrics.totalRequests : 0,
       avgBytes: this.metrics.totalRequests > 0 ? this.metrics.totalBytes / this.metrics.totalRequests : 0,
+      avgMemory: this.metrics.totalRequests > 0 ? this.metrics.totalMemory / this.metrics.totalRequests : 0,
       errorRate: this.metrics.totalRequests > 0 ? (this.metrics.totalErrors / this.metrics.totalRequests * 100).toFixed(2) : 0
     };
   }

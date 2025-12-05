@@ -3,8 +3,8 @@ const router = express.Router();
 const logger = require('../utils/logger');
 const { ValidationRules } = require('../utils/validation-rules');
 const { ERROR_CODES } = require('../utils/error-codes');
-const { createErrorHandlingWrapper, classifyError } = require('../utils/error-classifier');
-const { setCacheHeaders, CACHE_HEADERS } = require('../constants/cache-headers');
+const { createErrorHandlingWrapper } = require('../utils/error-classifier');
+const { setCacheHeaders } = require('../constants/cache-headers');
 
 module.exports = fetchRpc => {
   // Get latest block

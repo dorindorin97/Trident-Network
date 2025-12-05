@@ -5,7 +5,7 @@ const { ValidationRules } = require('../utils/validation-rules');
 const { ERROR_CODES } = require('../utils/error-codes');
 const { createErrorHandlingWrapper } = require('../utils/error-classifier');
 const { setCacheHeaders } = require('../constants/cache-headers');
-const HttpCacheMiddleware = require('../utils/http-cache-middleware');
+// HttpCacheMiddleware not used here; imported if needed elsewhere
 
 module.exports = fetchRpc => {
   router.get('/v1/accounts/:address', createErrorHandlingWrapper(

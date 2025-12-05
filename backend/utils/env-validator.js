@@ -122,7 +122,7 @@ function validateEnvironment(schema, env = process.env, source = 'backend') {
 
     // Check if required
     if (spec.required && !value) {
-      errors.push(`❌ ${key} is required but not set`);
+      errors.push(`[${source}] ❌ ${key} is required but not set`);
       continue;
     }
 
@@ -130,9 +130,9 @@ function validateEnvironment(schema, env = process.env, source = 'backend') {
     if (!value) {
       config[key] = spec.default;
       if (spec.default === undefined) {
-        warnings.push(`⚠️  ${key} not set, no default available`);
+        warnings.push(`[${source}] ⚠️  ${key} not set, no default available`);
       } else {
-        logger.info(`Using default for ${key}:`, { value: spec.default });
+        logger.info(`[${source}] Using default for ${key}:`, { value: spec.default });
       }
       continue;
     }
@@ -141,12 +141,12 @@ function validateEnvironment(schema, env = process.env, source = 'backend') {
     const parsed = parseEnvValue(value, spec.type);
 
     if (parsed === null && spec.type === 'number') {
-      errors.push(`❌ ${key} must be a number, got "${value}"`);
+      errors.push(`[${source}] ❌ ${key} must be a number, got "${value}"`);
       continue;
     }
 
     if (spec.validate && !spec.validate(parsed)) {
-      errors.push(`❌ ${key}: ${spec.error} (got "${value}")`);
+      errors.push(`[${source}] ❌ ${key}: ${spec.error} (got "${value}")`);
       continue;
     }
 

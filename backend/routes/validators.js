@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const logger = require('../utils/logger');
-const { ERROR_CODES } = require('../utils/error-codes');
+// logger and ERROR_CODES not needed in this route
 const { createErrorHandlingWrapper } = require('../utils/error-classifier');
 const { setCacheHeaders } = require('../constants/cache-headers');
 

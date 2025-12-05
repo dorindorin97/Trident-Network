@@ -115,6 +115,7 @@ class ValidationSchema {
 /**
  * API Response Schemas
  */
+const logger = require('./logger');
 const SCHEMAS = {
   // Validators response
   validators: new ValidationSchema({

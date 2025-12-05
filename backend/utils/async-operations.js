@@ -100,7 +100,7 @@ class AsyncOperationPool {
    * Cancel all operations
    */
   cancelAll() {
-    for (const [id, task] of this.operations) {
+    for (const [, task] of this.operations) {
       task.reject(new Error('All operations cancelled'));
     }
     this.operations.clear();
@@ -130,7 +130,7 @@ async function retryAsync(asyncFn, options = {}) {
     initialDelay = 1000,
     maxDelay = 30000,
     backoffMultiplier = 2,
-    shouldRetry = (err) => true
+    shouldRetry = () => true
   } = options;
 
   let lastError;
@@ -179,7 +179,7 @@ function withTimeout(asyncFn, timeoutMs = 5000, timeoutMessage = 'Operation time
  */
 function debounceAsync(asyncFn, delayMs = 300) {
   let timeoutId;
-  let lastPromise = Promise.resolve();
+  // lastPromise was unused; removed to avoid linter warnings
 
   return function(...args) {
     return new Promise((resolve, reject) => {
@@ -202,7 +202,7 @@ function debounceAsync(asyncFn, delayMs = 300) {
  */
 function throttleAsync(asyncFn, minIntervalMs = 1000) {
   let lastCallTime = 0;
-  let lastPromise = Promise.resolve();
+  // lastPromise was unused; removed to avoid linter warnings
 
   return function(...args) {
     return new Promise((resolve, reject) => {

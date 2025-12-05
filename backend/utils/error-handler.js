@@ -32,7 +32,7 @@ function asyncHandler(fn) {
  * Error handler middleware for Express
  * Should be used last in the middleware chain
  */
-function errorHandler(err, req, res, next) {
+function errorHandler(err, req, res/* , next */) {
   // Determine status code and error response
   let status = 500;
   let errorCode = ERROR_CODES.INTERNAL_SERVER_ERROR;

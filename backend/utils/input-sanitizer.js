@@ -39,7 +39,7 @@ class InputSanitizer {
 
     return str
       .trim()
-      .replace(/[<>\"'`]/g, '') // Remove dangerous HTML/JS characters
+      .replace(/[<>"'`]/g, '') // Remove dangerous HTML/JS characters
       .replace(/[;{}]/g, '')     // Remove script delimiters
       .substring(0, 1000);       // Max length 1000 chars
   }
