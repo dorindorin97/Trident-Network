@@ -13,6 +13,9 @@ const { retryWithBackoff } = require('./utils/retry');
 const WebSocketManager = require('./utils/websocket');
 const { validateBackendEnv } = require('./utils/env-validator');
 const RequestDeduplicator = require('./utils/request-deduplicator');
+const InputSanitizer = require('./utils/input-sanitizer');
+const HttpCacheMiddleware = require('./utils/http-cache-middleware');
+const RequestLoggerMiddleware = require('./utils/request-logger-middleware');
 
 const app = express();
 
@@ -49,6 +52,10 @@ app.use(helmet());
 app.use(compression()); // Enable gzip compression
 app.use(requestId);
 app.use(logger.requestLogger); // Log all requests/responses
+app.use(RequestLoggerMiddleware.middleware(false)); // Request metrics (verbose=false)
+
+// Sanitize all incoming inputs
+app.use(InputSanitizer.middleware());
 
 // Track metrics
 app.use('/api', (req, res, next) => {
@@ -68,47 +75,10 @@ const limiter = rateLimit({
 app.use('/api', limiter);
 
 app.use(express.json({ limit: '10kb' }));
-app.use(sanitizeInput);
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Add caching headers middleware
-app.use('/api', (req, res, next) => {
-  // Set default cache headers
-  const isStaticEndpoint = req.path.includes('/health') || 
-                          req.path.includes('/validators') ||
-                          req.path.includes('/blocks/');
-  
-  if (isStaticEndpoint && req.method === 'GET') {
-    // Cache static endpoints for 30 seconds
-    res.set('Cache-Control', 'public, max-age=30, stale-while-revalidate=60');
-  } else if (req.path.includes('/latest')) {
-    // Latest endpoints cache for 5 seconds only
-    res.set('Cache-Control', 'public, max-age=5, must-revalidate');
-  } else {
-    // Dynamic content - no cache
-    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
-    res.set('Pragma', 'no-cache');
-    res.set('Expires', '0');
-  }
-  
-  // Add ETag support
-  const originalJson = res.json;
-  res.json = function(data) {
-    // Generate ETag from response data
-    const crypto = require('crypto');
-    const etag = crypto.createHash('md5').update(JSON.stringify(data)).digest('hex');
-    res.set('ETag', `"${etag}"`);
-    
-    // Check if client has matching ETag
-    if (req.headers['if-none-match'] === `"${etag}"`) {
-      return res.status(304).end();
-    }
-    
-    return originalJson.call(this, data);
-  };
-  
-  next();
-});
+// Add intelligent caching headers middleware
+app.use('/api', HttpCacheMiddleware.cacheMiddleware(30)); // 30s TTL for GET requests
 
 async function fetchRpc(endpoint) {
   // Validate endpoint to prevent SSRF attacks
@@ -200,6 +170,8 @@ app.get('/api/v1/admin/metrics', (req, res) => {
     uptime: Math.floor(uptime / 1000),
     requestsPerSecond: (metrics.totalRequests / (uptime / 1000)).toFixed(2),
     cacheStats: cache.getStats(),
+    requestLoggerMetrics: RequestLoggerMiddleware.getMetrics(),
+    httpCacheMetrics: HttpCacheMiddleware.getStats(),
     deduplicationStats: {
       pendingRequests: deduplicator.getPendingCount()
     }

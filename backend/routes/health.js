@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 
 router.get('/v1/health', (req, res) => {
+  // Cache health status for 10 seconds
+  res.set('Cache-Control', 'public, max-age=10, stale-while-revalidate=20');
   res.json({ 
     status: 'ok', 
     timestamp: new Date().toISOString(),
@@ -11,6 +13,8 @@ router.get('/v1/health', (req, res) => {
 });
 
 router.get('/health', (req, res) => {
+  // Cache health status for 10 seconds
+  res.set('Cache-Control', 'public, max-age=10, stale-while-revalidate=20');
   res.json({ status: 'ok' });
 });
 

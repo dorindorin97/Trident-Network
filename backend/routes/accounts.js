@@ -1,12 +1,26 @@
 const express = require('express');
 const router = express.Router();
-const validator = require('../utils/validator');
 const logger = require('../utils/logger');
+const { ValidationRules, BatchValidator } = require('../utils/validation-rules');
+const { ERROR_CODES } = require('../utils/error-codes');
+const HttpCacheMiddleware = require('../utils/http-cache-middleware');
+const ConditionalCacheDecorator = require('../utils/conditional-cache');
 
 module.exports = fetchRpc => {
+  // Initialize cache for accounts endpoint
+  const accountCacheDecorator = new ConditionalCacheDecorator.wrap(async (address) => {
+    return fetchRpc(`/accounts/${address}`);
+  }, { ttl: 30 }); // 30s cache with query param override support
+
   router.get('/v1/accounts/:address', async (req, res) => {
-    if (!validator.isValidAddress(req.params.address)) {
-      return res.status(400).json({ error: 'Invalid address' });
+    // Validate address using ValidationRules
+    const validation = ValidationRules.validateAddress(req.params.address);
+    if (!validation.valid) {
+      logger.warn('Invalid address provided', { 
+        address: req.params.address, 
+        errors: validation.errors 
+      });
+      return res.status(ERROR_CODES.INVALID_ADDRESS.status).json(ERROR_CODES.INVALID_ADDRESS);
     }
 
     // Pagination parameters
@@ -15,7 +29,8 @@ module.exports = fetchRpc => {
     const offset = (page - 1) * limit;
 
     try {
-      const data = await fetchRpc(`/accounts/${req.params.address}`);
+      // Use conditional caching with query param override (e.g., ?noCache=true)
+      const data = await accountCacheDecorator(req.params.address);
       
       // Paginate transactions if present
       if (data.transactions && Array.isArray(data.transactions)) {
@@ -44,12 +59,15 @@ module.exports = fetchRpc => {
         error: err.message,
         requestId: req.id
       });
+      
       if (err.message.includes('404') || err.message.includes('not found')) {
-        return res.status(404).json({ error: 'Account not found' });
+        return res.status(ERROR_CODES.ACCOUNT_NOT_FOUND.status).json(ERROR_CODES.ACCOUNT_NOT_FOUND);
       }
+      
       const status = err.message.includes('timeout') ? 504 : 503;
-      return res.status(status).json({ error: err.message || 'Service unavailable' });
+      return res.status(status).json(ERROR_CODES.SERVICE_UNAVAILABLE);
     }
   });
+
   return router;
 };
