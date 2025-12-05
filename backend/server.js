@@ -11,38 +11,39 @@ const requestId = require('./utils/requestId');
 const { sanitizeInput } = require('./utils/sanitize');
 const { retryWithBackoff } = require('./utils/retry');
 const WebSocketManager = require('./utils/websocket');
+const { validateBackendEnv } = require('./utils/env-validator');
+const RequestDeduplicator = require('./utils/request-deduplicator');
 
 const app = express();
-const PORT = process.env.PORT || 4000;
+
+// Validate environment variables early
+let envConfig;
+try {
+  envConfig = validateBackendEnv();
+} catch (error) {
+  logger.error('Environment validation failed:', error.message);
+  process.exit(1);
+}
+
+const PORT = envConfig.PORT;
 const CHAIN_MODE = process.env.CHAIN_MODE;
-const TRIDENT_NODE_RPC_URL = process.env.TRIDENT_NODE_RPC_URL || '';
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+const TRIDENT_NODE_RPC_URL = process.env.TRIDENT_NODE_RPC_URL;
+const FRONTEND_URL = process.env.FRONTEND_URL;
 
 // Initialize cache with 5s TTL for latest blocks, 30s for others
 const cache = new SimpleCache();
 const cleanupInterval = cache.startCleanup();
 
+// Initialize request deduplicator
+const deduplicator = new RequestDeduplicator();
+
 // Request metrics
 const metrics = {
   totalRequests: 0,
   requestsByEndpoint: {},
-  startTime: Date.now()
+  startTime: Date.now(),
+  deduplicatedRequests: 0
 };
-
-if (CHAIN_MODE !== 'rpc') {
-  logger.error('CHAIN_MODE must be "rpc"');
-  process.exit(1);
-}
-
-if (!TRIDENT_NODE_RPC_URL) {
-  logger.error('TRIDENT_NODE_RPC_URL is required');
-  process.exit(1);
-}
-
-if (!TRIDENT_NODE_RPC_URL.startsWith('http://') && !TRIDENT_NODE_RPC_URL.startsWith('https://')) {
-  logger.error('TRIDENT_NODE_RPC_URL must start with http:// or https://');
-  process.exit(1);
-}
 
 app.use(helmet());
 app.use(compression()); // Enable gzip compression
@@ -198,7 +199,10 @@ app.get('/api/v1/admin/metrics', (req, res) => {
     ...metrics,
     uptime: Math.floor(uptime / 1000),
     requestsPerSecond: (metrics.totalRequests / (uptime / 1000)).toFixed(2),
-    cacheStats: cache.getStats()
+    cacheStats: cache.getStats(),
+    deduplicationStats: {
+      pendingRequests: deduplicator.getPendingCount()
+    }
   });
 });
 
