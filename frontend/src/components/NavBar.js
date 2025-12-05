@@ -120,9 +120,9 @@ function NavBar({ wallet, logout, language, setLanguage, theme, toggleTheme, onS
               </button>
             </div>
             <ul>
-              {searchHistory.map((item, index) => (
-                <li 
-                  key={index} 
+              {searchHistory.map((item) => (
+                <li
+                  key={`${item.query}-${item.timestamp}`}
                   onClick={() => handleHistoryClick(item.query)}
                   className="search-history-item"
                 >
@@ -182,4 +182,4 @@ NavBar.propTypes = {
   onAdvancedSearchClick: PropTypes.func
 };
 
-export default NavBar;
+export default React.memo(NavBar);

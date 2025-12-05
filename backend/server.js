@@ -8,14 +8,13 @@ const http = require('http');
 const SimpleCache = require('./utils/cache');
 const logger = require('./utils/logger');
 const requestId = require('./utils/requestId');
-const { sanitizeInput } = require('./utils/sanitize');
 const { retryWithBackoff } = require('./utils/retry');
 const WebSocketManager = require('./utils/websocket');
 const { validateBackendEnv } = require('./utils/env-validator');
-const RequestDeduplicator = require('./utils/request-deduplicator');
 const InputSanitizer = require('./utils/input-sanitizer');
 const HttpCacheMiddleware = require('./utils/http-cache-middleware');
 const RequestLoggerMiddleware = require('./utils/request-logger-middleware');
+const { adminAuth } = require('./utils/admin-auth');
 
 const app = express();
 
@@ -37,15 +36,11 @@ const FRONTEND_URL = process.env.FRONTEND_URL;
 const cache = new SimpleCache();
 const cleanupInterval = cache.startCleanup();
 
-// Initialize request deduplicator
-const deduplicator = new RequestDeduplicator();
-
 // Request metrics
 const metrics = {
   totalRequests: 0,
   requestsByEndpoint: {},
-  startTime: Date.now(),
-  deduplicatedRequests: 0
+  startTime: Date.now()
 };
 
 app.use(helmet());
@@ -151,19 +146,19 @@ app.use('/api', require('./routes/transactions')(fetchRpc));
 app.use('/api', require('./routes/accounts')(fetchRpc));
 app.use('/api', require('./routes/validators')(fetchRpc));
 
-// Admin/Debug endpoints
-app.get('/api/v1/admin/cache/stats', (req, res) => {
+// Admin/Debug endpoints - Protected with authentication
+app.get('/api/v1/admin/cache/stats', adminAuth, (req, res) => {
   const stats = cache.getStats();
   res.json(stats);
 });
 
-app.delete('/api/v1/admin/cache', (req, res) => {
+app.delete('/api/v1/admin/cache', adminAuth, (req, res) => {
   cache.clear();
   logger.info('Cache cleared manually', { requestId: req.id });
   res.json({ message: 'Cache cleared successfully' });
 });
 
-app.get('/api/v1/admin/metrics', (req, res) => {
+app.get('/api/v1/admin/metrics', adminAuth, (req, res) => {
   const uptime = Date.now() - metrics.startTime;
   res.json({
     ...metrics,
@@ -171,10 +166,7 @@ app.get('/api/v1/admin/metrics', (req, res) => {
     requestsPerSecond: (metrics.totalRequests / (uptime / 1000)).toFixed(2),
     cacheStats: cache.getStats(),
     requestLoggerMetrics: RequestLoggerMiddleware.getMetrics(),
-    httpCacheMetrics: HttpCacheMiddleware.getStats(),
-    deduplicationStats: {
-      pendingRequests: deduplicator.getPendingCount()
-    }
+    httpCacheMetrics: HttpCacheMiddleware.getStats()
   });
 });
 

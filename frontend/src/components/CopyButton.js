@@ -36,4 +36,4 @@ CopyButton.propTypes = {
   value: PropTypes.string.isRequired
 };
 
-export default CopyButton;
+export default React.memo(CopyButton);

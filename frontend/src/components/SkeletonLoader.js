@@ -48,38 +48,40 @@ SkeletonLoader.propTypes = {
   className: PropTypes.string
 };
 
+const MemoizedSkeletonLoader = React.memo(SkeletonLoader);
+
 /**
  * Skeleton for block card
  */
-export function BlockSkeleton() {
+export const BlockSkeleton = React.memo(function BlockSkeleton() {
   return (
     <div className="skeleton-block">
-      <SkeletonLoader type="title" height="2rem" width="60%" />
-      <SkeletonLoader type="text" count={3} height="1rem" />
+      <MemoizedSkeletonLoader type="title" height="2rem" width="60%" />
+      <MemoizedSkeletonLoader type="text" count={3} height="1rem" />
     </div>
   );
-}
+});
 
 /**
  * Skeleton for table rows
  */
-export function TableSkeleton({ rows = 5, columns = 4 }) {
+export const TableSkeleton = React.memo(function TableSkeleton({ rows = 5, columns = 4 }) {
   return (
     <div className="skeleton-table">
       {Array.from({ length: rows }).map((_, rowIndex) => (
         <div key={rowIndex} className="skeleton-row">
           {Array.from({ length: columns }).map((_, colIndex) => (
-            <SkeletonLoader key={colIndex} type="text" height="1rem" width="90%" />
+            <MemoizedSkeletonLoader key={colIndex} type="text" height="1rem" width="90%" />
           ))}
         </div>
       ))}
     </div>
   );
-}
+});
 
 TableSkeleton.propTypes = {
   rows: PropTypes.number,
   columns: PropTypes.number
 };
 
-export default SkeletonLoader;
+export default MemoizedSkeletonLoader;

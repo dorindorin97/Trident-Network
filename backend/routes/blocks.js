@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const logger = require('../utils/logger');
-const { ValidationRules, BatchValidator } = require('../utils/validation-rules');
+const { ValidationRules } = require('../utils/validation-rules');
 const { ERROR_CODES } = require('../utils/error-codes');
 const HttpCacheMiddleware = require('../utils/http-cache-middleware');
 

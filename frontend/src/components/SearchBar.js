@@ -103,4 +103,4 @@ SearchBar.propTypes = {
   autoFocus: PropTypes.bool
 };
 
-export default SearchBar;
+export default React.memo(SearchBar);
