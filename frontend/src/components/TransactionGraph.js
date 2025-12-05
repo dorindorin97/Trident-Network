@@ -15,6 +15,7 @@ const TransactionGraph = () => {
     trend: 0
   });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchTransactionData();
@@ -25,50 +26,27 @@ const TransactionGraph = () => {
   const fetchTransactionData = async () => {
     try {
       setLoading(true);
+      setError(null);
       const response = await fetch(`/api/v1/transactions/graph?range=${timeRange}`);
-      
+
       if (!response.ok) {
-        // Generate mock data for demo
-        const mockData = generateMockData(timeRange);
-        setData(mockData);
-        calculateStats(mockData);
+        setError('Failed to load transaction data');
+        setData([]);
+        calculateStats([]);
       } else {
         const result = await response.json();
         setData(result.data || []);
         calculateStats(result.data || []);
       }
     } catch (error) {
-      console.error('Failed to fetch transaction data:', error);
-      // Use mock data on error
-      const mockData = generateMockData(timeRange);
-      setData(mockData);
-      calculateStats(mockData);
+      setError('Unable to connect to the server');
+      setData([]);
+      calculateStats([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const generateMockData = (range) => {
-    const points = range === '1h' ? 12 : range === '6h' ? 24 : range === '24h' ? 48 : 168;
-    const now = Date.now();
-    const interval = range === '1h' ? 5 * 60 * 1000 : range === '6h' ? 15 * 60 * 1000 : 
-                     range === '24h' ? 30 * 60 * 1000 : 60 * 60 * 1000;
-
-    return Array.from({ length: points }, (_, i) => {
-      const time = now - (points - i - 1) * interval;
-      const baseValue = 50 + Math.sin(i / 10) * 20;
-      const variance = Math.random() * 30;
-      
-      return {
-        timestamp: time,
-        time: new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        date: new Date(time).toLocaleDateString(),
-        transactions: Math.max(0, Math.floor(baseValue + variance)),
-        volume: Math.floor((baseValue + variance) * 1000 * (0.8 + Math.random() * 0.4)),
-        uniqueAddresses: Math.floor((baseValue + variance) * 0.6)
-      };
-    });
-  };
 
   const calculateStats = (data) => {
     if (!data || data.length === 0) {
@@ -228,10 +206,22 @@ const TransactionGraph = () => {
             <div className="spinner"></div>
             <p>{t('transactionGraph.loading', 'Loading transaction data...')}</p>
           </div>
-        ) : (
+        ) : error ? (
+          <div className="graph-error">
+            <div className="error-icon">⚠️</div>
+            <p className="error-message">{error}</p>
+            <button onClick={fetchTransactionData} className="btn-retry">
+              {t('common.retry', 'Try Again')}
+            </button>
+          </div>
+        ) : data.length > 0 ? (
           <ResponsiveContainer width="100%" height={400}>
             {renderChart()}
           </ResponsiveContainer>
+        ) : (
+          <div className="graph-empty">
+            <p>{t('transactionGraph.noData', 'No transaction data available')}</p>
+          </div>
         )}
       </div>
 

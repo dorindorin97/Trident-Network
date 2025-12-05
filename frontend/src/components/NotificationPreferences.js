@@ -47,7 +47,7 @@ const NotificationPreferences = () => {
         });
       }
     } catch (error) {
-      console.error('Failed to request notification permission:', error);
+      // Notification permission request failed
     }
   };
 
@@ -65,7 +65,9 @@ const NotificationPreferences = () => {
 
     if (preferences.sound) {
       const audio = new Audio('/notification.mp3');
-      audio.play().catch(console.error);
+      audio.play().catch(() => {
+        // Audio playback failed, user may have disabled audio
+      });
     }
   };
 
