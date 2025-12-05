@@ -8,6 +8,26 @@ const logger = require('./logger');
 
 class InputSanitizer {
   /**
+   * Escape HTML special characters in string
+   * @param {string} str - Input string
+   * @returns {string} HTML-escaped string
+   */
+  escapeHtml(str) {
+    if (typeof str !== 'string') return str;
+
+    const htmlEscapeMap = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#x27;',
+      '/': '&#x2F;'
+    };
+
+    return str.replace(/[&<>"'/]/g, char => htmlEscapeMap[char]);
+  }
+
+  /**
    * Sanitize strings: remove dangerous characters
    * @param {string} str - String to sanitize
    * @returns {string} Sanitized string
