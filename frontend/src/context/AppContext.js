@@ -189,41 +189,56 @@ export function AppContextProvider({ children }) {
   }, []);
 
   // Action creators
+  const setTheme = useCallback((theme) => dispatch({ type: ACTIONS.SET_THEME, payload: theme }), []);
+  const setLanguage = useCallback((language) => dispatch({ type: ACTIONS.SET_LANGUAGE, payload: language }), []);
+  const setPreference = useCallback((key, value) => {
+    dispatch({ type: ACTIONS.SET_PREFERENCE, payload: { key, value } });
+  }, []);
+  const showToast = useCallback((message, type = 'info', duration = 3000) => {
+    dispatch({ type: ACTIONS.SHOW_TOAST, payload: { message, type, duration, id: Date.now() } });
+  }, []);
+  const hideToast = useCallback(() => dispatch({ type: ACTIONS.HIDE_TOAST }), []);
+  const setLoading = useCallback((isLoading) => dispatch({ type: ACTIONS.SET_LOADING, payload: isLoading }), []);
+  const setError = useCallback((error) => dispatch({ type: ACTIONS.SET_ERROR, payload: error }), []);
+  const clearError = useCallback(() => dispatch({ type: ACTIONS.CLEAR_ERROR }), []);
+  const toggleTheme = useCallback(() => {
+    const newTheme = state.theme === 'dark' ? 'light' : 'dark';
+    dispatch({ type: ACTIONS.SET_THEME, payload: newTheme });
+  }, [state.theme]);
+  const toggleCompactMode = useCallback(() => {
+    const newValue = !state.preferences.compactMode;
+    dispatch({ type: ACTIONS.SET_PREFERENCE, payload: { key: 'compactMode', value: newValue } });
+  }, [state.preferences.compactMode]);
+  const toggleAutoRefresh = useCallback(() => {
+    const newValue = !state.preferences.autoRefresh;
+    dispatch({ type: ACTIONS.SET_PREFERENCE, payload: { key: 'autoRefresh', value: newValue } });
+  }, [state.preferences.autoRefresh]);
+
   const actions = useMemo(() => ({
-    setTheme: (theme) => dispatch({ type: ACTIONS.SET_THEME, payload: theme }),
-    setLanguage: (language) => dispatch({ type: ACTIONS.SET_LANGUAGE, payload: language }),
-    setPreference: useCallback((key, value) => {
-      dispatch({ type: ACTIONS.SET_PREFERENCE, payload: { key, value } });
-    }, []),
-    showToast: (message, type = 'info', duration = 3000) => {
-      dispatch({ 
-        type: ACTIONS.SHOW_TOAST, 
-        payload: { message, type, duration, id: Date.now() } 
-      });
-    },
-    hideToast: () => dispatch({ type: ACTIONS.HIDE_TOAST }),
-    setLoading: (isLoading) => dispatch({ type: ACTIONS.SET_LOADING, payload: isLoading }),
-    setError: (error) => dispatch({ type: ACTIONS.SET_ERROR, payload: error }),
-    clearError: () => dispatch({ type: ACTIONS.CLEAR_ERROR }),
-    toggleTheme: () => {
-      const newTheme = state.theme === 'dark' ? 'light' : 'dark';
-      dispatch({ type: ACTIONS.SET_THEME, payload: newTheme });
-    },
-    toggleCompactMode: () => {
-      const newValue = !state.preferences.compactMode;
-      dispatch({ 
-        type: ACTIONS.SET_PREFERENCE, 
-        payload: { key: 'compactMode', value: newValue } 
-      });
-    },
-    toggleAutoRefresh: () => {
-      const newValue = !state.preferences.autoRefresh;
-      dispatch({ 
-        type: ACTIONS.SET_PREFERENCE, 
-        payload: { key: 'autoRefresh', value: newValue } 
-      });
-    }
-  }), [state.theme, state.preferences.compactMode, state.preferences.autoRefresh]);
+    setTheme,
+    setLanguage,
+    setPreference,
+    showToast,
+    hideToast,
+    setLoading,
+    setError,
+    clearError,
+    toggleTheme,
+    toggleCompactMode,
+    toggleAutoRefresh
+  }), [
+    setTheme,
+    setLanguage,
+    setPreference,
+    showToast,
+    hideToast,
+    setLoading,
+    setError,
+    clearError,
+    toggleTheme,
+    toggleCompactMode,
+    toggleAutoRefresh
+  ]);
 
   // Wallet actions
   const setWallet = (wallet) => dispatch({ type: ACTIONS.SET_WALLET, payload: wallet });
