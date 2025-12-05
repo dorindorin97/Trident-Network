@@ -3,7 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { useClickOutside } from '../hooks/useCommon';
-import { PATTERNS } from '../config';
+import { detectSearchType, getNavigationPath } from '../utils/searchValidation';
+import SearchTypeSelector from './SearchTypeSelector';
+import RangeFilter from './RangeFilter';
+import SearchHints from './SearchHints';
 import './AdvancedSearch.css';
 
 /**
@@ -18,8 +21,7 @@ function AdvancedSearch({ isOpen, onClose }) {
   const [filters, setFilters] = useState({
     blockRange: { min: '', max: '' },
     dateRange: { from: '', to: '' },
-    amountRange: { min: '', max: '' },
-    status: 'all'
+    amountRange: { min: '', max: '' }
   });
   const [error, setError] = useState('');
 
@@ -29,61 +31,20 @@ function AdvancedSearch({ isOpen, onClose }) {
     e.preventDefault();
     setError('');
 
-    if (!query.trim()) {
-      setError(t('Please enter a search query'));
+    const { type, isValid, error: validationError } = detectSearchType(query, searchType);
+
+    if (!isValid) {
+      setError(t(validationError));
       return;
     }
 
-    // Detect search type if "all" is selected
-    let type = searchType;
-    if (type === 'all') {
-      if (PATTERNS.BLOCK_NUMBER.test(query)) {
-        type = 'block';
-      } else if (PATTERNS.TX_ID.test(query)) {
-        type = 'transaction';
-      } else if (PATTERNS.ADDRESS.test(query)) {
-        type = 'account';
-      } else if (PATTERNS.BLOCK_HASH.test(query)) {
-        type = 'block';
-      } else {
-        setError(t('Invalid search query format'));
-        return;
-      }
+    const path = getNavigationPath(type, query);
+    if (!path) {
+      setError(t('Invalid search query'));
+      return;
     }
 
-    // Navigate based on type
-    switch (type) {
-      case 'block':
-        if (PATTERNS.BLOCK_NUMBER.test(query)) {
-          navigate(`/block/${query}`);
-        } else if (PATTERNS.BLOCK_HASH.test(query)) {
-          navigate(`/block/${query}`);
-        } else {
-          setError(t('Invalid block number or hash'));
-          return;
-        }
-        break;
-      case 'transaction':
-        if (PATTERNS.TX_ID.test(query)) {
-          navigate(`/tx/${query}`);
-        } else {
-          setError(t('Invalid transaction ID'));
-          return;
-        }
-        break;
-      case 'account':
-        if (PATTERNS.ADDRESS.test(query)) {
-          navigate(`/account/${query}`);
-        } else {
-          setError(t('Invalid account address'));
-          return;
-        }
-        break;
-      default:
-        setError(t('Unknown search type'));
-        return;
-    }
-
+    navigate(path);
     onClose();
   };
 
@@ -93,8 +54,7 @@ function AdvancedSearch({ isOpen, onClose }) {
     setFilters({
       blockRange: { min: '', max: '' },
       dateRange: { from: '', to: '' },
-      amountRange: { min: '', max: '' },
-      status: 'all'
+      amountRange: { min: '', max: '' }
     });
     setError('');
   };
@@ -117,39 +77,7 @@ function AdvancedSearch({ isOpen, onClose }) {
 
         <form onSubmit={handleSearch} className="advanced-search-form">
           {/* Search Type Selection */}
-          <div className="form-group">
-            <label>{t('Search Type')}</label>
-            <div className="search-type-buttons">
-              <button
-                type="button"
-                className={searchType === 'all' ? 'active' : ''}
-                onClick={() => setSearchType('all')}
-              >
-                {t('Auto Detect')}
-              </button>
-              <button
-                type="button"
-                className={searchType === 'block' ? 'active' : ''}
-                onClick={() => setSearchType('block')}
-              >
-                {t('Block')}
-              </button>
-              <button
-                type="button"
-                className={searchType === 'transaction' ? 'active' : ''}
-                onClick={() => setSearchType('transaction')}
-              >
-                {t('Transaction')}
-              </button>
-              <button
-                type="button"
-                className={searchType === 'account' ? 'active' : ''}
-                onClick={() => setSearchType('account')}
-              >
-                {t('Account')}
-              </button>
-            </div>
-          </div>
+          <SearchTypeSelector searchType={searchType} onTypeChange={setSearchType} />
 
           {/* Search Query Input */}
           <div className="form-group">
@@ -163,12 +91,7 @@ function AdvancedSearch({ isOpen, onClose }) {
               className="search-input"
               autoFocus
             />
-            <small className="input-hint">
-              {searchType === 'block' && t('Block number or hash (0x...)')}
-              {searchType === 'transaction' && t('Transaction hash (0x...)')}
-              {searchType === 'account' && t('Account address (T...)')}
-              {searchType === 'all' && t('Any valid block, transaction, or address')}
-            </small>
+            <SearchHints searchType={searchType} />
           </div>
 
           {/* Advanced Filters */}
@@ -176,87 +99,38 @@ function AdvancedSearch({ isOpen, onClose }) {
             <h3>{t('Filters')} <span className="optional">({t('Optional')})</span></h3>
 
             {/* Block Range Filter */}
-            <div className="form-group">
-              <label>{t('Block Range')}</label>
-              <div className="range-inputs">
-                <input
-                  type="number"
-                  placeholder={t('Min')}
-                  value={filters.blockRange.min}
-                  onChange={(e) => setFilters(f => ({
-                    ...f,
-                    blockRange: { ...f.blockRange, min: e.target.value }
-                  }))}
-                  min="0"
-                />
-                <span className="range-separator">—</span>
-                <input
-                  type="number"
-                  placeholder={t('Max')}
-                  value={filters.blockRange.max}
-                  onChange={(e) => setFilters(f => ({
-                    ...f,
-                    blockRange: { ...f.blockRange, max: e.target.value }
-                  }))}
-                  min="0"
-                />
-              </div>
-            </div>
+            <RangeFilter
+              label="Block Range"
+              minValue={filters.blockRange.min}
+              maxValue={filters.blockRange.max}
+              minPlaceholder="Min"
+              maxPlaceholder="Max"
+              onChange={(range) => setFilters(f => ({ ...f, blockRange: range }))}
+              type="number"
+            />
 
             {/* Date Range Filter */}
-            <div className="form-group">
-              <label>{t('Date Range')}</label>
-              <div className="range-inputs">
-                <input
-                  type="date"
-                  value={filters.dateRange.from}
-                  onChange={(e) => setFilters(f => ({
-                    ...f,
-                    dateRange: { ...f.dateRange, from: e.target.value }
-                  }))}
-                />
-                <span className="range-separator">—</span>
-                <input
-                  type="date"
-                  value={filters.dateRange.to}
-                  onChange={(e) => setFilters(f => ({
-                    ...f,
-                    dateRange: { ...f.dateRange, to: e.target.value }
-                  }))}
-                />
-              </div>
-            </div>
+            <RangeFilter
+              label="Date Range"
+              minValue={filters.dateRange.from}
+              maxValue={filters.dateRange.to}
+              minPlaceholder="From"
+              maxPlaceholder="To"
+              onChange={(range) => setFilters(f => ({ ...f, dateRange: range }))}
+              type="date"
+            />
 
             {/* Amount Range Filter (for transactions) */}
             {(searchType === 'transaction' || searchType === 'all') && (
-              <div className="form-group">
-                <label>{t('Amount Range')}</label>
-                <div className="range-inputs">
-                  <input
-                    type="number"
-                    placeholder={t('Min Amount')}
-                    value={filters.amountRange.min}
-                    onChange={(e) => setFilters(f => ({
-                      ...f,
-                      amountRange: { ...f.amountRange, min: e.target.value }
-                    }))}
-                    min="0"
-                    step="0.000001"
-                  />
-                  <span className="range-separator">—</span>
-                  <input
-                    type="number"
-                    placeholder={t('Max Amount')}
-                    value={filters.amountRange.max}
-                    onChange={(e) => setFilters(f => ({
-                      ...f,
-                      amountRange: { ...f.amountRange, max: e.target.value }
-                    }))}
-                    min="0"
-                    step="0.000001"
-                  />
-                </div>
-              </div>
+              <RangeFilter
+                label="Amount Range"
+                minValue={filters.amountRange.min}
+                maxValue={filters.amountRange.max}
+                minPlaceholder="Min Amount"
+                maxPlaceholder="Max Amount"
+                onChange={(range) => setFilters(f => ({ ...f, amountRange: range }))}
+                type="number"
+              />
             )}
           </div>
 
@@ -277,17 +151,6 @@ function AdvancedSearch({ isOpen, onClose }) {
             </button>
           </div>
         </form>
-
-        {/* Search Tips */}
-        <div className="search-tips">
-          <h4>{t('Search Tips')}</h4>
-          <ul>
-            <li>{t('Block numbers are positive integers (e.g., 12345)')}</li>
-            <li>{t('Block and transaction hashes start with 0x')}</li>
-            <li>{t('Account addresses start with T')}</li>
-            <li>{t('Use Auto Detect to search any type automatically')}</li>
-          </ul>
-        </div>
       </div>
     </div>
   );
