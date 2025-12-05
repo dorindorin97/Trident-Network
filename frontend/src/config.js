@@ -37,23 +37,60 @@ export const NETWORK = {
   CONSENSUS: 'Modified BFT Proof-of-Stake',
 };
 
-// Validation helpers
+/**
+ * Validates environment configuration
+ * @throws {Error} If critical environment variables are missing or invalid
+ * @returns {object} Validation result with warnings and errors
+ */
 export function validateEnv() {
   const warnings = [];
-  
-  if (!process.env.REACT_APP_BACKEND_URL) {
-    warnings.push('REACT_APP_BACKEND_URL not set, using default');
-  }
-  
+  const errors = [];
+
+  // Validate REFRESH_INTERVAL
   if (isNaN(REFRESH_INTERVAL) || REFRESH_INTERVAL < 1000) {
-    warnings.push('REACT_APP_REFRESH_INTERVAL invalid, using default');
+    warnings.push('REACT_APP_REFRESH_INTERVAL is invalid or too low, using default (10000ms)');
   }
-  
-  return warnings;
+
+  // Validate THEME
+  const validThemes = ['dark', 'light', 'auto'];
+  if (!validThemes.includes(DEFAULT_THEME)) {
+    warnings.push(`REACT_APP_DEFAULT_THEME is invalid, using default (dark)`);
+  }
+
+  // Validate LANGUAGE
+  const validLanguages = ['en', 'es', 'pt'];
+  if (!validLanguages.includes(DEFAULT_LANGUAGE)) {
+    warnings.push(`REACT_APP_DEFAULT_LANGUAGE is invalid, using default (en)`);
+  }
+
+  // Validate BACKEND_URL in production
+  if (process.env.NODE_ENV === 'production' && !process.env.REACT_APP_BACKEND_URL) {
+    errors.push('REACT_APP_BACKEND_URL must be set in production environment');
+  }
+
+  return { warnings, errors };
 }
 
-// Log environment warnings in development
-if (process.env.NODE_ENV === 'development') {
-  const warnings = validateEnv();
-  warnings.forEach(warning => console.warn(`[Config Warning] ${warning}`));
+// Validate environment configuration on app startup
+try {
+  const validation = validateEnv();
+
+  if (validation.errors.length > 0) {
+    const errorMsg = `Configuration errors:\n${validation.errors.map(e => `- ${e}`).join('\n')}`;
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error(errorMsg);
+    } else {
+      console.error(`[Config Error] ${errorMsg}`);
+    }
+  }
+
+  if (validation.warnings.length > 0 && process.env.NODE_ENV === 'development') {
+    validation.warnings.forEach(warning => {
+      console.info(`[Config Info] ${warning}`);
+    });
+  }
+} catch (err) {
+  if (process.env.NODE_ENV === 'production') {
+    throw err;
+  }
 }

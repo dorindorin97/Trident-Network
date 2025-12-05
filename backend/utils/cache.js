@@ -1,4 +1,16 @@
-// Simple in-memory cache with TTL and smart invalidation
+/**
+ * Simple in-memory cache with TTL and smart invalidation
+ *
+ * This module provides application-level caching for RPC responses and data retrieval.
+ * It uses LRU eviction when the cache reaches max capacity.
+ *
+ * Separate from HttpCacheMiddleware which handles HTTP-level caching headers and ETags.
+ *
+ * Usage:
+ * - Cache RPC responses with different TTLs based on data freshness requirements
+ * - Use invalidatePattern() to bust cache on data mutations
+ * - Monitor cache stats via getStats() for performance optimization
+ */
 class SimpleCache {
   constructor(maxSize = 1000) {
     this.cache = new Map();

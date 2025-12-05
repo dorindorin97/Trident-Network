@@ -36,7 +36,7 @@ export function useWebSocket(url, channels = [], enabled = true, heartbeatInterv
         try {
           wsRef.current.send(JSON.stringify({ type: 'ping' }));
         } catch (err) {
-          console.warn('Failed to send heartbeat:', err);
+          // Heartbeat send failed, connection will be retried
         }
       }
       setupHeartbeat(); // Reschedule
@@ -61,7 +61,7 @@ export function useWebSocket(url, channels = [], enabled = true, heartbeatInterv
             ws.send(JSON.stringify({ type: 'subscribe', channel }));
             subscribedChannelsRef.current.add(channel);
           } catch (err) {
-            console.warn(`Failed to subscribe to ${channel}:`, err);
+            // Subscription failed, will be retried on next connection
           }
         });
 
@@ -118,7 +118,7 @@ export function useWebSocket(url, channels = [], enabled = true, heartbeatInterv
         wsRef.current.send(JSON.stringify({ type: 'subscribe', channel }));
         subscribedChannelsRef.current.add(channel);
       } catch (err) {
-        console.warn(`Failed to subscribe to ${channel}:`, err);
+        // Subscription send failed, will retry on reconnect
       }
     }
   }, []);
@@ -129,7 +129,7 @@ export function useWebSocket(url, channels = [], enabled = true, heartbeatInterv
         wsRef.current.send(JSON.stringify({ type: 'unsubscribe', channel }));
         subscribedChannelsRef.current.delete(channel);
       } catch (err) {
-        console.warn(`Failed to unsubscribe from ${channel}:`, err);
+        // Unsubscription send failed, will retry on reconnect
       }
     }
   }, []);
