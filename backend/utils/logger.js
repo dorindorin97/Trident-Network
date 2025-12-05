@@ -19,9 +19,9 @@ function log(level, message, meta = {}) {
     };
     
     if (level === 'error') {
-      console.error(JSON.stringify(logEntry));
+      process.stderr.write(JSON.stringify(logEntry) + '\n');
     } else {
-      console.log(JSON.stringify(logEntry));
+      process.stdout.write(JSON.stringify(logEntry) + '\n');
     }
   }
 }

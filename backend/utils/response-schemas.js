@@ -217,7 +217,7 @@ function validateResponse(data, schemaName) {
   const schema = SCHEMAS[schemaName];
 
   if (!schema) {
-    console.warn(`Schema not found for ${schemaName}`);
+    logger.warn(`Schema not found for ${schemaName}`);
     return { valid: true, errors: [] }; // Don't fail if schema not found
   }
 

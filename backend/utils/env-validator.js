@@ -183,14 +183,14 @@ function validateFrontendEnv() {
   const { config, errors, warnings } = validateEnvironment(FRONTEND_ENV_SCHEMA, process.env, 'frontend');
 
   if (errors.length > 0) {
-    console.error('❌ Frontend environment validation failed:');
-    errors.forEach(err => console.error(err));
+    logger.error('Frontend environment validation failed:');
+    errors.forEach(err => logger.error(err));
     throw new Error('Invalid frontend environment configuration');
   }
 
   if (warnings.length > 0) {
-    console.warn('⚠️  Frontend environment warnings:');
-    warnings.forEach(warn => console.warn(warn));
+    logger.warn('Frontend environment warnings:');
+    warnings.forEach(warn => logger.warn(warn));
   }
 
   return config;

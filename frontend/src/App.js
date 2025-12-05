@@ -1,10 +1,12 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import { deriveAddress } from './utils';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import i18n from 'i18next';
 import './App.css';
 import './i18n';
+
+// Context & hooks
+import { AppContextProvider, useTheme, useLanguage } from './context/AppContext';
 
 import NavBar from './components/NavBar';
 import Home from './components/Home';
@@ -32,32 +34,16 @@ const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
 const TransactionGraph = lazy(() => import('./components/TransactionGraph'));
 const NotificationPreferences = lazy(() => import('./components/NotificationPreferences'));
 
-
-function App() {
+/**
+ * AppContent - Main app content using context hooks
+ */
+function AppContent() {
   useTranslation(); // initialize i18n
+  const { theme, toggleTheme } = useTheme();
+  const { language, setLanguage } = useLanguage();
   const [wallet, setWallet] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [advancedSearchOpen, setAdvancedSearchOpen] = useState(false);
-
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('theme') || process.env.REACT_APP_DEFAULT_THEME || 'dark';
-  });
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
-  }, [theme]);
-
-  const [language, setLanguage] = useState(() => {
-    return localStorage.getItem('language') || process.env.REACT_APP_DEFAULT_LANGUAGE || 'en';
-  });
-
-  useEffect(() => {
-    i18n.changeLanguage(language);
-    localStorage.setItem('language', language);
-  }, [language]);
-
-  const toggleTheme = () => setTheme(t => (t === 'dark' ? 'light' : 'dark'));
 
   const login = privKey => {
     const addr = deriveAddress(privKey);
@@ -69,59 +55,64 @@ function App() {
   };
 
   return (
-    <ToastProvider>
-      <Router>
-        <LoadingBar />
-        <NavBar
-          wallet={wallet}
-          logout={logout}
-          language={language}
-          setLanguage={setLanguage}
-          theme={theme}
-          toggleTheme={toggleTheme}
-          onSettingsClick={() => setSettingsOpen(true)}
-          onAdvancedSearchClick={() => setAdvancedSearchOpen(true)}
-        />
-        <div className="container">
-          <Breadcrumb />
-        </div>
-        <SettingsPanel
-          isOpen={settingsOpen}
-          onClose={() => setSettingsOpen(false)}
-          theme={theme}
-          setTheme={setTheme}
-          language={language}
-          setLanguage={setLanguage}
-        />
-        <AdvancedSearch
-          isOpen={advancedSearchOpen}
-          onClose={() => setAdvancedSearchOpen(false)}
-        />
-        <ErrorBoundary>
-          <Suspense fallback={<div className="container"><Spinner /></div>}>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/account" element={<div className="container"><AccountLookup /></div>} />
-              <Route path="/validators" element={<ValidatorList />} />
-              <Route path="/wallet" element={<WalletPage wallet={wallet} login={login} logout={logout} />} />
-              <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="/analytics" element={<div className="container"><TransactionGraph /></div>} />
-              <Route path="/notifications" element={<div className="container"><NotificationPreferences /></div>} />
-              <Route path="/block/:number" element={<BlockDetails />} />
-              <Route path="/tx/:id" element={<TransactionDetails />} />
-              <Route path="/account/:address" element={<AccountPage />} />
-              <Route path="/404" element={<NotFound />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
-        </ErrorBoundary>
-        <Footer />
-        <ScrollToTop />
-        <NetworkStatus refreshInterval={15000} />
-        <PerformanceMonitor enabled={localStorage.getItem('showPerformance') === 'true'} />
-      </Router>
-    </ToastProvider>
+    <Router>
+      <LoadingBar />
+      <NavBar
+        wallet={wallet}
+        logout={logout}
+        language={language}
+        setLanguage={setLanguage}
+        theme={theme}
+        toggleTheme={toggleTheme}
+        onSettingsClick={() => setSettingsOpen(true)}
+        onAdvancedSearchClick={() => setAdvancedSearchOpen(true)}
+      />
+      <div className="container">
+        <Breadcrumb />
+      </div>
+      <SettingsPanel
+        isOpen={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+      />
+      <AdvancedSearch
+        isOpen={advancedSearchOpen}
+        onClose={() => setAdvancedSearchOpen(false)}
+      />
+      <ErrorBoundary>
+        <Suspense fallback={<div className="container"><Spinner /></div>}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/account" element={<div className="container"><AccountLookup /></div>} />
+            <Route path="/validators" element={<ValidatorList />} />
+            <Route path="/wallet" element={<WalletPage wallet={wallet} login={login} logout={logout} />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/analytics" element={<div className="container"><TransactionGraph /></div>} />
+            <Route path="/notifications" element={<div className="container"><NotificationPreferences /></div>} />
+            <Route path="/block/:number" element={<BlockDetails />} />
+            <Route path="/tx/:id" element={<TransactionDetails />} />
+            <Route path="/account/:address" element={<AccountPage />} />
+            <Route path="/404" element={<NotFound />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
+      </ErrorBoundary>
+      <Footer />
+      <ScrollToTop />
+      <NetworkStatus refreshInterval={15000} />
+      <PerformanceMonitor enabled={localStorage.getItem('showPerformance') === 'true'} />
+    </Router>
   );
 }
 
-export default App;
+/**
+ * App - Root component with providers
+ */
+function App() {
+  return (
+    <ToastProvider>
+      <AppContextProvider>
+        <AppContent />
+      </AppContextProvider>
+    </ToastProvider>
+  );
+}
