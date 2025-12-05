@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Spinner from './Spinner';
@@ -18,61 +18,88 @@ function AccountPage() {
   const [limit] = useState(20);
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({});
+  const abortControllerRef = useRef(null);
 
-  const fetchAccount = async () => {
+  // Cleanup function for aborting requests on unmount
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
+
+  // Memoized fetch function
+  const fetchAccount = useCallback(async () => {
+    // Abort previous request if still pending
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    abortControllerRef.current = new AbortController();
     setLoading(true);
+
     try {
-      const data = await fetchApi(`${API_BASE_PATH}/accounts/${address}?page=${page}&limit=${limit}`);
+      const data = await fetchApi(
+        `${API_BASE_PATH}/accounts/${address}?page=${page}&limit=${limit}`,
+        { signal: abortControllerRef.current.signal }
+      );
       setAccount(data);
       setError(null);
     } catch (err) {
-      setError(getErrorMessage(err));
-      setAccount(null);
+      // Don't set error if request was aborted
+      if (err.name !== 'AbortError') {
+        setError(getErrorMessage(err));
+        setAccount(null);
+      }
     } finally {
       setLoading(false);
     }
-  };
+  }, [address, page, limit]);
 
   useEffect(() => {
     fetchAccount();
-  }, [address, page, limit]);
+  }, [fetchAccount]);
 
-  const handleFilterChange = (newFilters) => {
+  const handleFilterChange = useCallback((newFilters) => {
     setFilters(newFilters);
     setPage(1); // Reset to first page when filters change
-  };
+  }, []);
 
-  const handleResetFilters = () => {
+  const handleResetFilters = useCallback(() => {
     setFilters({});
     setPage(1);
-  };
+  }, []);
 
-  const filterTransactions = (transactions) => {
+  // Memoized filter function
+  const filterTransactions = useCallback((transactions) => {
     if (!transactions) return [];
-    
+
     return transactions.filter(tx => {
       // Date filters
       if (filters.dateFrom && new Date(tx.timestamp) < new Date(filters.dateFrom)) return false;
       if (filters.dateTo && new Date(tx.timestamp) > new Date(filters.dateTo)) return false;
-      
+
       // Amount filters
       const amount = parseFloat(tx.amount) || 0;
       if (filters.minAmount && amount < parseFloat(filters.minAmount)) return false;
       if (filters.maxAmount && amount > parseFloat(filters.maxAmount)) return false;
-      
+
       // Type filter
       if (filters.type === 'sent' && tx.from !== address) return false;
       if (filters.type === 'received' && tx.to !== address) return false;
-      
+
       return true;
     });
-  };
+  }, [address, filters]);
+
+  // Memoize filtered transactions
+  const filteredTxs = useMemo(() => filterTransactions(account?.transactions || []), [filterTransactions, account?.transactions]);
 
   if (loading) return <Spinner />;
   if (error || !account) return <p className="error">{error || t('Account not found')}</p>;
 
   const pagination = account.pagination || {};
-  const filteredTxs = filterTransactions(account.transactions || []);
 
   return (
     <div className="container">
@@ -155,4 +182,4 @@ function AccountPage() {
   );
 }
 
-export default AccountPage;
+export default React.memo(AccountPage);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import Spinner from './Spinner';
 import CopyButton from './CopyButton';
@@ -14,16 +14,37 @@ function ValidatorList() {
   const [sortBy, setSortBy] = useState('power'); // power, status, address
   const [sortOrder, setSortOrder] = useState('desc'); // asc, desc
   const [filterStatus, setFilterStatus] = useState('all'); // all, active, inactive
+  const abortControllerRef = useRef(null);
 
+  // Cleanup function for aborting requests on unmount
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
+
+  // Fetch validators on mount
   useEffect(() => {
     const fetchValidators = async () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+
+      abortControllerRef.current = new AbortController();
       setLoading(true);
+
       try {
-        const data = await fetchApi(`${API_BASE_PATH}/validators`);
+        const data = await fetchApi(`${API_BASE_PATH}/validators`, {
+          signal: abortControllerRef.current.signal
+        });
         setVals(data);
         setError(null);
       } catch (err) {
-        setError(getErrorMessage(err));
+        if (err.name !== 'AbortError') {
+          setError(getErrorMessage(err));
+        }
       } finally {
         setLoading(false);
       }
@@ -66,24 +87,32 @@ function ValidatorList() {
     return sorted;
   }, [vals, sortBy, sortOrder, filterStatus]);
 
-  const handleSort = (field) => {
-    if (sortBy === field) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortBy(field);
-      setSortOrder('desc');
-    }
-  };
+  // Memoized handler for sorting
+  const handleSort = useCallback((field) => {
+    setSortBy(prevSortBy => {
+      const newSortBy = field;
+      setSortOrder(prevSortOrder => {
+        if (prevSortBy === field) {
+          return prevSortOrder === 'asc' ? 'desc' : 'asc';
+        } else {
+          return 'desc';
+        }
+      });
+      return newSortBy;
+    });
+  }, []);
 
-  const handleExport = () => {
+  // Memoized handler for export
+  const handleExport = useCallback(() => {
     const formatted = formatValidatorsForExport(processedValidators);
     exportCSV(formatted, `validators_${new Date().toISOString().split('T')[0]}.csv`);
-  };
+  }, [processedValidators]);
 
-  const getSortIcon = (field) => {
+  // Memoized function to get sort icon
+  const getSortIcon = useCallback((field) => {
     if (sortBy !== field) return '⇅';
     return sortOrder === 'asc' ? '↑' : '↓';
-  };
+  }, [sortBy, sortOrder]);
 
   return (
     <div className="container">
@@ -159,4 +188,4 @@ function ValidatorList() {
   );
 }
 
-export default ValidatorList;
+export default React.memo(ValidatorList);
