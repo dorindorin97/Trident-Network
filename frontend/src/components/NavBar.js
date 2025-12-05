@@ -9,7 +9,7 @@ import { useLocalStorage, useClickOutside, useKeyboardShortcuts } from '../hooks
 const APP_TITLE = process.env.REACT_APP_APP_TITLE || 'Trident Explorer';
 const MAX_HISTORY_ITEMS = 10;
 
-function NavBar({ wallet, logout, language, setLanguage, theme, toggleTheme, onSettingsClick, onAdvancedSearchClick }) {
+function NavBar({ wallet, logout, language, setLanguage, theme, toggleTheme, onSettingsClick }) {
   const { t } = useTranslation();
   const [search, setSearch] = useState('');
   const [searchHistory, setSearchHistory] = useLocalStorage('searchHistory', []);
@@ -178,8 +178,7 @@ NavBar.propTypes = {
   setLanguage: PropTypes.func.isRequired,
   theme: PropTypes.string.isRequired,
   toggleTheme: PropTypes.func.isRequired,
-  onSettingsClick: PropTypes.func,
-  onAdvancedSearchClick: PropTypes.func
+  onSettingsClick: PropTypes.func
 };
 
 export default React.memo(NavBar);
