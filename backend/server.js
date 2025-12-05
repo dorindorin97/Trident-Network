@@ -185,8 +185,11 @@ app.use((err, req, res, next) => {
 if (require.main === module) {
   const server = http.createServer(app);
   
-  // Initialize WebSocket
-  const wsManager = new WebSocketManager(server);
+  // Initialize WebSocket with rate limiting
+  const wsManager = new WebSocketManager(server, {
+    maxMessagesPerSecond: 10,        // Maximum 10 messages per second per client
+    maxSubscriptionsPerClient: 10    // Maximum 10 subscriptions per client
+  });
   
   // Make wsManager available to routes via app.locals
   app.locals.wsManager = wsManager;
