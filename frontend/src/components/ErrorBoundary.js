@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import './ErrorBoundary.css';
+import { captureException } from '../utils/errorTracker';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -24,9 +25,15 @@ class ErrorBoundary extends React.Component {
     if (process.env.NODE_ENV === 'development') {
       console.error('ErrorBoundary caught an error:', error, errorInfo);
     }
-    
-    // Could send to error reporting service here
-    // e.g., Sentry, LogRocket, etc.
+    // Send to centralized error tracker
+    try {
+      captureException(error, { errorInfo });
+    } catch (e) {
+      if (process.env.NODE_ENV === 'development') {
+        // eslint-disable-next-line no-console
+        console.error('Failed to capture exception:', e);
+      }
+    }
   }
 
   handleRetry = () => {

@@ -1,12 +1,20 @@
-import React, { useState, lazy, Suspense } from 'react';
-import { deriveAddress } from './utils';
+import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import './App.css';
 import './i18n';
 
 // Context & hooks
-import { AppContextProvider, useTheme, useLanguage } from './context/AppContext';
+import {
+  AppContextProvider,
+  useTheme,
+  useLanguage,
+  usePreferences,
+  useNotification,
+  useLoadingState,
+  useErrorState,
+  useOnlineStatus,
+} from './context/AppContext';
 
 import NavBar from './components/NavBar';
 import Home from './components/Home';
@@ -34,57 +42,39 @@ const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
 const TransactionGraph = lazy(() => import('./components/TransactionGraph'));
 const NotificationPreferences = lazy(() => import('./components/NotificationPreferences'));
 
-/**
- * AppContent - Main app content using context hooks
- */
 function AppContent() {
   useTranslation(); // initialize i18n
   const { theme, toggleTheme } = useTheme();
   const { language, setLanguage } = useLanguage();
-  const [wallet, setWallet] = useState(null);
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [advancedSearchOpen, setAdvancedSearchOpen] = useState(false);
-
-  const login = privKey => {
-    const addr = deriveAddress(privKey);
-    setWallet({ privateKey: privKey, address: addr });
-  };
-
-  const logout = () => {
-    setWallet(null);
-  };
+  const { preferences } = usePreferences();
+  const { showToast } = useNotification();
+  const { isLoading } = useLoadingState();
+  const { error, clearError } = useErrorState();
+  const { isOnline } = useOnlineStatus();
 
   return (
     <Router>
       <LoadingBar />
-      <NavBar
-        wallet={wallet}
-        logout={logout}
-        language={language}
-        setLanguage={setLanguage}
-        theme={theme}
-        toggleTheme={toggleTheme}
-        onSettingsClick={() => setSettingsOpen(true)}
-        onAdvancedSearchClick={() => setAdvancedSearchOpen(true)}
-      />
+      <NavBar />
       <div className="container">
         <Breadcrumb />
       </div>
-      <SettingsPanel
-        isOpen={settingsOpen}
-        onClose={() => setSettingsOpen(false)}
-      />
-      <AdvancedSearch
-        isOpen={advancedSearchOpen}
-        onClose={() => setAdvancedSearchOpen(false)}
-      />
+      <SettingsPanel />
+      <AdvancedSearch />
+      {isLoading && <Spinner />}
+      {error && (
+        <div className="error-banner" role="alert">
+          <span>{error.message || error}</span>
+          <button onClick={clearError} aria-label="Dismiss error">×</button>
+        </div>
+      )}
       <ErrorBoundary>
         <Suspense fallback={<div className="container"><Spinner /></div>}>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/account" element={<div className="container"><AccountLookup /></div>} />
             <Route path="/validators" element={<ValidatorList />} />
-            <Route path="/wallet" element={<WalletPage wallet={wallet} login={login} logout={logout} />} />
+            <Route path="/wallet" element={<WalletPage />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/analytics" element={<div className="container"><TransactionGraph /></div>} />
             <Route path="/notifications" element={<div className="container"><NotificationPreferences /></div>} />
@@ -98,15 +88,15 @@ function AppContent() {
       </ErrorBoundary>
       <Footer />
       <ScrollToTop />
-      <NetworkStatus refreshInterval={15000} />
-      <PerformanceMonitor enabled={localStorage.getItem('showPerformance') === 'true'} />
+      <NetworkStatus refreshInterval={preferences.refreshInterval || 15000} />
+      <PerformanceMonitor enabled={preferences.showPerformanceMonitor} />
+      <div className="online-status" aria-live="polite">
+        {isOnline ? 'Online' : 'Offline'}
+      </div>
     </Router>
   );
 }
 
-/**
- * App - Root component with providers
- */
 function App() {
   return (
     <ToastProvider>
@@ -116,3 +106,5 @@ function App() {
     </ToastProvider>
   );
 }
+
+export default App;

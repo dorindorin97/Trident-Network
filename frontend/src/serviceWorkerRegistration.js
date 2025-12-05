@@ -1,5 +1,6 @@
 // Service Worker Registration Utility
 // Handles service worker installation and updates
+import { captureMessage, captureException } from './utils/errorTracker';
 
 export function register() {
   if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
@@ -9,7 +10,7 @@ export function register() {
       navigator.serviceWorker
         .register(swUrl)
         .then((registration) => {
-          console.log('Service Worker registered:', registration);
+          captureMessage('Service Worker registered', 'info', { registration });
 
           // Check for updates periodically
           setInterval(() => {
@@ -25,9 +26,9 @@ export function register() {
 
             installingWorker.onstatechange = () => {
               if (installingWorker.state === 'installed') {
-                if (navigator.serviceWorker.controller) {
+                  if (navigator.serviceWorker.controller) {
                   // New update available
-                  console.log('New content available; please refresh.');
+                  captureMessage('New content available; please refresh.', 'info');
                   
                   // Show update notification
                   if (window.showToast) {
@@ -42,14 +43,19 @@ export function register() {
                   }
                 } else {
                   // Content cached for offline use
-                  console.log('Content cached for offline use.');
+                  captureMessage('Content cached for offline use.', 'info');
                 }
               }
             };
           };
         })
         .catch((error) => {
-          console.error('Service Worker registration failed:', error);
+          try {
+            captureException(error, { source: 'serviceWorkerRegistration' });
+          } catch (e) {
+            // eslint-disable-next-line no-console
+            console.error('Failed to capture service worker registration error:', e);
+          }
         });
 
       // Handle controller change
@@ -71,7 +77,12 @@ export function unregister() {
         registration.unregister();
       })
       .catch((error) => {
-        console.error('Service Worker unregistration failed:', error);
+        try {
+          captureException(error, { source: 'serviceWorkerUnregister' });
+        } catch (e) {
+          // eslint-disable-next-line no-console
+          console.error('Failed to capture service worker unregistration error:', e);
+        }
       });
   }
 }

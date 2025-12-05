@@ -5,6 +5,8 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import apiClient from './client';
+import { useNotification } from '../context/AppContext';
+import { captureException } from '../utils/errorTracker';
 
 /**
  * Hook for fetching data
@@ -219,6 +221,9 @@ export function useSearch(onSearch, debounceMs = 500) {
 export function useInfiniteScroll(endpoint, options = {}) {
   const { pageSize = 20, threshold = 0.1 } = options;
 
+  // Notification helper (use hooks from AppContext)
+  const { error: notifyError } = useNotification();
+
   const [data, setData] = useState([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -242,7 +247,22 @@ export function useInfiniteScroll(endpoint, options = {}) {
 
         setHasMore(loadedItems < totalItems);
       } catch (err) {
-        console.error('Failed to load more:', err);
+        // Surface error through UI notification and report to centralized tracker
+        try {
+          notifyError?.(err.message || 'Failed to load more');
+        } catch (e) {
+          try {
+            captureException(e, { source: 'useInfiniteScroll.notifyErrorFallback' });
+          } catch (_) {
+            // swallow
+          }
+        }
+
+        try {
+          captureException(err, { source: 'useInfiniteScroll' });
+        } catch (_) {
+          // swallow
+        }
       } finally {
         setLoading(false);
       }

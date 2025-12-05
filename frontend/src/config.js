@@ -42,6 +42,8 @@ export const NETWORK = {
  * @throws {Error} If critical environment variables are missing or invalid
  * @returns {object} Validation result with warnings and errors
  */
+import { captureMessage, captureException } from './utils/errorTracker';
+
 export function validateEnv() {
   const warnings = [];
   const errors = [];
@@ -80,13 +82,23 @@ try {
     if (process.env.NODE_ENV === 'production') {
       throw new Error(errorMsg);
     } else {
-      console.error(`[Config Error] ${errorMsg}`);
+      try {
+        captureException(new Error(errorMsg), { source: 'config.validateEnv' });
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error(`[Config Error] ${errorMsg}`);
+      }
     }
   }
 
   if (validation.warnings.length > 0 && process.env.NODE_ENV === 'development') {
     validation.warnings.forEach(warning => {
-      console.info(`[Config Info] ${warning}`);
+      try {
+        captureMessage(`[Config Info] ${warning}`, 'info', { source: 'config.validateEnv' });
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.info(`[Config Info] ${warning}`);
+      }
     });
   }
 } catch (err) {
