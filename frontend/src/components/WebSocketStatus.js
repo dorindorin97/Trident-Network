@@ -21,6 +21,7 @@ function WebSocketStatus({ wsManager }) {
       try {
         const stats = wsManager.getStats();
         setClientCount(stats.totalClients || 0);
+        setReconnectAttempts(stats.reconnectAttempts || 0);
         setStatus('connected');
       } catch (error) {
         setStatus('disconnected');

@@ -12,6 +12,10 @@ class ErrorBoundary extends React.Component {
       errorInfo: null,
       retryCount: 0 
     };
+    // Bind class methods to avoid using class fields (for ESLint/Babel compatibility)
+    this.handleRetry = this.handleRetry.bind(this);
+    this.handleReload = this.handleReload.bind(this);
+    this.handleGoHome = this.handleGoHome.bind(this);
   }
 
   static getDerivedStateFromError(error) {
@@ -36,22 +40,22 @@ class ErrorBoundary extends React.Component {
     }
   }
 
-  handleRetry = () => {
+  handleRetry() {
     this.setState(prevState => ({
       hasError: false,
       error: null,
       errorInfo: null,
       retryCount: prevState.retryCount + 1
     }));
-  };
+  }
 
-  handleReload = () => {
+  handleReload() {
     window.location.reload();
-  };
+  }
 
-  handleGoHome = () => {
+  handleGoHome() {
     window.location.href = '/';
-  };
+  }
 
   render() {
     if (this.state.hasError) {
@@ -74,7 +78,7 @@ class ErrorBoundary extends React.Component {
             <div className="error-icon">⚠️</div>
             <h2>Oops! Something went wrong</h2>
             <p className="error-message">
-              We encountered an unexpected error. Don't worry, your data is safe.
+              We encountered an unexpected error. Your data is safe and will not be affected.
             </p>
             
             {retryCount > 0 && (

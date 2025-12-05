@@ -1,4 +1,5 @@
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense, useState } from 'react';
+import { deriveAddress } from './utils';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import './App.css';
@@ -44,10 +45,24 @@ const NotificationPreferences = lazy(() => import('./components/NotificationPref
 
 function AppContent() {
   useTranslation(); // initialize i18n
+  // Theme/language are available via context in components (NavBar, etc.)
   const { theme, toggleTheme } = useTheme();
   const { language, setLanguage } = useLanguage();
   const { preferences } = usePreferences();
   const { showToast } = useNotification();
+
+  const [wallet, setWallet] = useState(null);
+
+  const login = (privKey) => {
+    const addr = deriveAddress(privKey);
+    setWallet({ privateKey: privKey, address: addr });
+    showToast && showToast('Wallet connected', 'success');
+  };
+
+  const logout = () => {
+    setWallet(null);
+    showToast && showToast('Wallet disconnected', 'info');
+  };
   const { isLoading } = useLoadingState();
   const { error, clearError } = useErrorState();
   const { isOnline } = useOnlineStatus();
@@ -55,7 +70,15 @@ function AppContent() {
   return (
     <Router>
       <LoadingBar />
-      <NavBar />
+      <NavBar
+        wallet={wallet}
+        logout={logout}
+        language={language}
+        setLanguage={setLanguage}
+        theme={theme}
+        toggleTheme={toggleTheme}
+        onSettingsClick={() => {}}
+      />
       <div className="container">
         <Breadcrumb />
       </div>
@@ -74,7 +97,7 @@ function AppContent() {
             <Route path="/" element={<Home />} />
             <Route path="/account" element={<div className="container"><AccountLookup /></div>} />
             <Route path="/validators" element={<ValidatorList />} />
-            <Route path="/wallet" element={<WalletPage />} />
+            <Route path="/wallet" element={<WalletPage wallet={wallet} login={login} logout={logout} />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/analytics" element={<div className="container"><TransactionGraph /></div>} />
             <Route path="/notifications" element={<div className="container"><NotificationPreferences /></div>} />

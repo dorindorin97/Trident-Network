@@ -268,6 +268,9 @@ export function useInfiniteScroll(endpoint, options = {}) {
       }
     };
 
+    // Trigger initial load and subsequent loads
+    loadMore();
+
     const observer = new IntersectionObserver(
       entries => {
         if (entries[0].isIntersecting && hasMore && !loading) {
@@ -286,7 +289,7 @@ export function useInfiniteScroll(endpoint, options = {}) {
         observer.unobserve(observerRef.current);
       }
     };
-  }, [endpoint, pageSize, hasMore, loading, data.length]);
+  }, [endpoint, pageSize, hasMore, loading, data.length, page]);
 
   return {
     data,

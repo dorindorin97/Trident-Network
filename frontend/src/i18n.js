@@ -7,7 +7,7 @@ const resources = {
     translation: {
       "Latest Block": "Latest Block",
       "Block History": "Block History",
-      "Block": "Block",
+      // 'Block' key defined once
       "Number": "Number",
       "Hash": "Hash",
       "Validator": "Validator",
@@ -150,7 +150,7 @@ const resources = {
       "Last Check": "Last Check",
       "Failed Checks": "Failed Checks",
       "Scroll to top": "Scroll to top",
-      "Block": "Block",
+      // duplicate key removed
       "Transaction": "Transaction",
       "Advanced Search": "Advanced Search",
       "Search Type": "Search Type",

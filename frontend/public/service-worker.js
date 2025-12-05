@@ -15,12 +15,7 @@ const STATIC_ASSETS = [
   '/favicon.ico'
 ];
 
-// API endpoints to cache (with shorter TTL)
-const API_ENDPOINTS = [
-  '/api/v1/health',
-  '/api/v1/blocks/latest',
-  '/api/v1/validators'
-];
+// API endpoints to cache (with shorter TTL) - currently unused, placeholder
 
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
@@ -227,7 +222,7 @@ self.addEventListener('notificationclick', (event) => {
   event.notification.close();
 
   event.waitUntil(
-    clients.openWindow('/')
+    self.clients.openWindow('/')
   );
 });
 
