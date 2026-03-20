@@ -14,8 +14,10 @@ function LatestBlock() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // WebSocket for real-time updates
-  const wsUrl = process.env.REACT_APP_BACKEND_URL?.replace(/^http/, 'ws') + '/ws';
+  // WebSocket for real-time updates — guard against undefined env var before concatenation
+  const wsUrl = process.env.REACT_APP_BACKEND_URL
+    ? process.env.REACT_APP_BACKEND_URL.replace(/^http/, 'ws') + '/ws'
+    : null;
   const { data: wsData, connected } = useWebSocket(wsUrl, ['blocks'], !!wsUrl);
 
   useEffect(() => {

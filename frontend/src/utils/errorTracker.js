@@ -188,8 +188,10 @@ class ErrorTracker {
     this.listeners.forEach(listener => {
       try {
         listener(errorData);
-      } catch (err) {
-        console.error('Error in error tracker listener:', err);
+      } catch (_err) {
+        // Silently swallow listener errors to prevent infinite loop —
+        // console.error is overridden by setupGlobalHandlers and would
+        // re-enter captureMessage → _notifyListeners recursively.
       }
     });
   }

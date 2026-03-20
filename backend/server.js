@@ -176,7 +176,7 @@ app.use('/api', (req, res) => {
 });
 
 // Generic error handler
-app.use((err, req, res) => {
+app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
   logger.error('Unhandled error', { error: err.message, stack: err.stack, path: req.path });
   res.status(500).json({ error: 'Internal server error' });
 });
