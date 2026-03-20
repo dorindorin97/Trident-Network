@@ -17,12 +17,12 @@ module.exports = fetchRpc => {
           address: req.params.address,
           errors: validation.errors
         });
-        return res.status(ERROR_CODES.INVALID_ADDRESS.status).json(ERROR_CODES.INVALID_ADDRESS);
+        return res.status(ERROR_CODES.INVALID_ADDRESS.status).json({ error: 'Invalid address' });
       }
 
       // Pagination parameters
-      const page = Math.max(1, parseInt(req.query.page) || 1);
-      const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
+      const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+      const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 20));
       const offset = (page - 1) * limit;
 
       // Fetch account data from RPC

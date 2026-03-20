@@ -31,11 +31,12 @@ class HttpCacheMiddleware {
    */
   cacheMiddleware(ttl = 300, cacheKey = null) {
     return async (req, res, next) => {
-      // Store original send method
-      const originalSend = res.send;
+      // Store original send bound to res so Express internals work correctly
+      const originalSend = res.send.bind(res);
 
-      // Override send to intercept response
-      res.send = function(data) {
+      // Arrow function keeps `this` as HttpCacheMiddleware via lexical scope;
+      // `res` and `originalSend` are captured from the enclosing closure.
+      res.send = (data) => {
         if (res.statusCode === 200) {
           const key = cacheKey ? cacheKey(req) : `${req.method}:${req.originalUrl}`;
           const etag = this.generateETag(data);
@@ -44,13 +45,12 @@ class HttpCacheMiddleware {
           res.set('Cache-Control', `public, max-age=${ttl}, stale-while-revalidate=${ttl}`);
           res.set('ETag', etag);
 
-          // Store in cache
-          this.cache.set(key, data, { etag, ttl });
+          // ResponseCache.set expects ttl in milliseconds, not an options object
+          this.cache.set(key, data, ttl * 1000);
         }
 
-        // Call original send
-        return originalSend.call(this, data);
-      }.bind(this);
+        return originalSend(data);
+      };
 
       next();
     };
@@ -67,9 +67,11 @@ class HttpCacheMiddleware {
         const ifNoneMatch = req.get('If-None-Match');
         
         if (ifNoneMatch) {
-          const cached = this.cache.get(cacheKey(req));
-          
-          if (cached && this.cache.etagMatches(ifNoneMatch, cached)) {
+          const key = cacheKey(req);
+          const cached = this.cache.get(key);
+
+          // etagMatches(cacheKey, incomingETag) — key first, ETag second
+          if (cached && this.cache.etagMatches(key, ifNoneMatch)) {
             return res.status(304).send();
           }
         }

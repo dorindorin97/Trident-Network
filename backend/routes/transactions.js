@@ -14,7 +14,7 @@ module.exports = fetchRpc => {
       const validation = ValidationRules.validateHash(id);
       if (!validation.valid) {
         logger.warn('Invalid transaction ID', { transactionId: id, errors: validation.errors });
-        return res.status(ERROR_CODES.INVALID_TX_HASH.status).json(ERROR_CODES.INVALID_TX_HASH);
+        return res.status(ERROR_CODES.INVALID_TX_HASH.status).json({ error: 'Invalid transaction id' });
       }
 
       const data = await fetchRpc(`/transactions/${id}`);

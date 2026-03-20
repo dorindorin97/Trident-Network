@@ -35,8 +35,10 @@ const initialState = {
   // Error state
   error: null,
 
-  // Wallet
-  wallet: typeof window !== 'undefined' && localStorage.getItem('wallet') ? JSON.parse(localStorage.getItem('wallet')) : null,
+  // Wallet — private key is never persisted; only address is restored from localStorage
+  wallet: typeof window !== 'undefined' && localStorage.getItem('walletAddress')
+    ? { address: localStorage.getItem('walletAddress'), privateKey: null }
+    : null,
   
   // Network status
   isOnline: typeof navigator !== 'undefined' ? navigator.onLine : true
@@ -161,13 +163,13 @@ export function AppContextProvider({ children }) {
     document.documentElement.setAttribute('data-theme', state.theme);
   }, []);
 
-  // Persist wallet to localStorage
+  // Persist only the wallet address to localStorage — private key is never written to storage
   React.useEffect(() => {
     try {
-      if (state.wallet) {
-        localStorage.setItem('wallet', JSON.stringify(state.wallet));
+      if (state.wallet?.address) {
+        localStorage.setItem('walletAddress', state.wallet.address);
       } else {
-        localStorage.removeItem('wallet');
+        localStorage.removeItem('walletAddress');
       }
     } catch (err) {
       try { captureException(err, { source: 'AppContext.persistWallet' }); } catch (_) { /* swallow */ }

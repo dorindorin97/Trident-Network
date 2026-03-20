@@ -15,7 +15,9 @@ async function retryWithBackoff(fn, maxRetries = 3, baseDelay = 1000) {
       lastError = error;
       
       // Don't retry on client errors (4xx) or if it's the last attempt
-      if (attempt === maxRetries || (error.message && error.message.includes('40'))) {
+      const statusMatch = error.message && error.message.match(/:\s*(\d{3})/);
+      const statusCode = statusMatch ? parseInt(statusMatch[1], 10) : null;
+      if (attempt === maxRetries || (statusCode && statusCode >= 400 && statusCode < 500)) {
         throw error;
       }
       

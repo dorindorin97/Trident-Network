@@ -526,29 +526,35 @@ function validateTxHash(hash) {
 }
 
 /**
- * Validate pagination parameters
+ * Validate and normalise pagination parameters.
+ * Takes (page, limit) — not (limit, offset) — to match route and test expectations.
+ * Returns { valid, page, limit, offset, errors } so callers can branch without try/catch.
+ * Auto-clamps in-range numeric values; rejects non-numeric string inputs.
  */
-function validatePagination(limit, offset) {
-  const lim = parseInt(limit, 10) || RULES.pagination.defaultLimit;
-  const off = parseInt(offset, 10) || RULES.pagination.minOffset;
+function validatePagination(page, limit) {
+  const pgNum = parseInt(page, 10);
+  const limNum = parseInt(limit, 10);
 
-  if (isNaN(lim) || lim < RULES.pagination.minLimit) {
-    throw new ValidationError('limit', `Limit must be at least ${RULES.pagination.minLimit}`);
+  // Reject explicitly-provided values that cannot be parsed as integers
+  if (page !== undefined && page !== null && isNaN(pgNum)) {
+    return { valid: false, errors: ['page must be a number'] };
+  }
+  if (limit !== undefined && limit !== null && isNaN(limNum)) {
+    return { valid: false, errors: ['limit must be a number'] };
   }
 
-  if (lim > RULES.pagination.maxLimit) {
-    throw new ValidationError('limit', `Limit cannot exceed ${RULES.pagination.maxLimit}`);
-  }
+  const finalPage = isNaN(pgNum) ? 1 : Math.max(1, pgNum);
+  const finalLimit = isNaN(limNum)
+    ? RULES.pagination.defaultLimit
+    : Math.max(RULES.pagination.minLimit, Math.min(limNum, RULES.pagination.maxLimit));
 
-  if (isNaN(off) || off < RULES.pagination.minOffset) {
-    throw new ValidationError('offset', `Offset must be at least ${RULES.pagination.minOffset}`);
-  }
-
-  if (off > RULES.pagination.maxOffset) {
-    throw new ValidationError('offset', `Offset cannot exceed ${RULES.pagination.maxOffset}`);
-  }
-
-  return { limit: lim, offset: off };
+  return {
+    valid: true,
+    page: finalPage,
+    limit: finalLimit,
+    offset: (finalPage - 1) * finalLimit,
+    errors: []
+  };
 }
 
 /**
@@ -605,9 +611,50 @@ function validateStatus(status) {
 }
 
 /**
+ * Namespace object used by route handlers.
+ * Returns { valid, errors, ... } rather than throwing, so routes can
+ * distinguish validation failures from unexpected errors.
+ */
+const ValidationRules = {
+  /** Delegates to the canonical validatePagination function */
+  validatePagination(page, limit) {
+    return validatePagination(page, limit);
+  },
+
+  validateNumber(value) {
+    const str = String(value || '').trim();
+    if (!RULES.block.numberPattern.test(str)) {
+      return { valid: false, errors: ['Not a valid block number'] };
+    }
+    const num = parseInt(str, 10);
+    if (num > RULES.block.maxNumber) {
+      return { valid: false, errors: [`Block number cannot exceed ${RULES.block.maxNumber}`] };
+    }
+    return { valid: true, value: num, errors: [] };
+  },
+
+  validateHash(value) {
+    const str = String(value || '').trim();
+    if (!RULES.txHash.pattern.test(str)) {
+      return { valid: false, errors: [RULES.txHash.description] };
+    }
+    return { valid: true, value: str, errors: [] };
+  },
+
+  validateAddress(value) {
+    const str = String(value || '').trim();
+    if (!RULES.address.pattern.test(str)) {
+      return { valid: false, errors: [RULES.address.description] };
+    }
+    return { valid: true, value: str, errors: [] };
+  }
+};
+
+/**
  * Export all validation utilities
  */
 module.exports = {
+  ValidationRules,
   // Core exports (backward compatible)
   RULES,
   ValidationError,

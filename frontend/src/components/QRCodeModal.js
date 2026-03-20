@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import PropTypes from 'prop-types';
 import './QRCodeModal.css';
@@ -9,6 +9,36 @@ import './QRCodeModal.css';
  */
 function QRCodeModal({ value, label, onClose }) {
   const [size, setSize] = useState(256);
+  const modalRef = useRef(null);
+  const closeBtnRef = useRef(null);
+
+  // Focus the close button when the modal opens
+  useEffect(() => {
+    closeBtnRef.current?.focus();
+  }, []);
+
+  // Close on Escape and trap focus within the modal
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+        return;
+      }
+      if (e.key === 'Tab' && modalRef.current) {
+        const focusable = modalRef.current.querySelectorAll(
+          'button, input, [tabindex]:not([tabindex="-1"])'
+        );
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey ? document.activeElement === first : document.activeElement === last) {
+          e.preventDefault();
+          (e.shiftKey ? last : first).focus();
+        }
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
 
   const handleDownload = () => {
     const svg = document.getElementById('qr-code-svg');
@@ -32,12 +62,21 @@ function QRCodeModal({ value, label, onClose }) {
     img.src = 'data:image/svg+xml;base64,' + btoa(svgData);
   };
 
+  const headingId = 'qr-modal-title';
+
   return (
     <div className="qr-modal-overlay" onClick={onClose}>
-      <div className="qr-modal-content" onClick={(e) => e.stopPropagation()}>
+      <div
+        ref={modalRef}
+        className="qr-modal-content"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={headingId}
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="qr-modal-header">
-          <h3>{label || 'QR Code'}</h3>
-          <button onClick={onClose} className="qr-close-btn" aria-label="Close">
+          <h3 id={headingId}>{label || 'QR Code'}</h3>
+          <button ref={closeBtnRef} onClick={onClose} className="qr-close-btn" aria-label="Close">
             ×
           </button>
         </div>

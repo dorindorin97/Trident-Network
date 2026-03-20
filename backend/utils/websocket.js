@@ -57,7 +57,8 @@ class WebSocketManager {
             }));
 
             // Disconnect abusive client after repeated violations
-            if (this.clientRateLimits.get(clientId).violations >= 5) {
+            const rateLimitData = this.clientRateLimits.get(clientId);
+            if (rateLimitData && rateLimitData.violations >= 5) {
               logger.warn('Disconnecting abusive WebSocket client', { clientId });
               ws.close(1008, 'Policy Violation: Rate limit exceeded');
             }
