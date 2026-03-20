@@ -72,7 +72,7 @@ describe('API routes', () => {
   });
 
   test('account by address', async () => {
-    const addr = 'T' + 'A'.repeat(39);
+    const addr = 'T' + 'A'.repeat(33);
     const res = await request(app).get('/api/v1/accounts/' + addr);
     expect(res.statusCode).toBe(200);
     expect(res.body.balance).toBe(0);
@@ -115,7 +115,7 @@ describe('API routes', () => {
   });
 
   test('valid account address with checksum', async () => {
-    const validAddr = 'T' + 'A'.repeat(39);
+    const validAddr = 'T' + 'A'.repeat(33);
     const res = await request(app).get('/api/v1/accounts/' + validAddr);
     expect(res.statusCode).toBe(200);
   });

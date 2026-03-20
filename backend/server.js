@@ -69,6 +69,17 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
+// Reject POST/PUT/PATCH requests without application/json Content-Type
+app.use('/api', (req, res, next) => {
+  if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
+    const ct = req.get('Content-Type') || '';
+    if (!ct.includes('application/json')) {
+      return res.status(415).json({ error: 'Content-Type must be application/json' });
+    }
+  }
+  next();
+});
+
 app.use(express.json({ limit: '10kb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 

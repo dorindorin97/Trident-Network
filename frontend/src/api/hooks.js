@@ -230,50 +230,44 @@ export function useInfiniteScroll(endpoint, options = {}) {
   const [loading, setLoading] = useState(false);
   const observerRef = useRef(null);
 
+  // Refs let the effect read current values without re-running on every state change,
+  // preventing the cascade: load → state change → re-run → load → ...
+  const loadingRef = useRef(false);
+  const hasMoreRef = useRef(true);
+
   useEffect(() => {
     const loadMore = async () => {
-      if (loading || !hasMore) return;
+      if (loadingRef.current || !hasMoreRef.current) return;
 
+      loadingRef.current = true;
       setLoading(true);
 
       try {
         const url = `${endpoint}?page=${page}&limit=${pageSize}`;
         const response = await apiClient.get(url);
+        const items = response.data.items || response.data;
 
-        setData(prev => [...prev, ...(response.data.items || response.data)]);
-
-        const totalItems = response.data.total || 0;
-        const loadedItems = data.length + (response.data.items || response.data).length;
-
-        setHasMore(loadedItems < totalItems);
+        setData(prev => {
+          const next = [...prev, ...items];
+          const totalItems = response.data.total || 0;
+          hasMoreRef.current = next.length < totalItems;
+          setHasMore(hasMoreRef.current);
+          return next;
+        });
       } catch (err) {
-        // Surface error through UI notification and report to centralized tracker
-        try {
-          notifyError?.(err.message || 'Failed to load more');
-        } catch (e) {
-          try {
-            captureException(e, { source: 'useInfiniteScroll.notifyErrorFallback' });
-          } catch (_) {
-            // swallow
-          }
-        }
-
-        try {
-          captureException(err, { source: 'useInfiniteScroll' });
-        } catch (_) {
-          // swallow
-        }
+        notifyError?.(err.message || 'Failed to load more');
+        captureException(err, { source: 'useInfiniteScroll' });
       } finally {
+        loadingRef.current = false;
         setLoading(false);
       }
     };
 
-    // Trigger initial load and subsequent loads
     loadMore();
 
     const observer = new IntersectionObserver(
       entries => {
-        if (entries[0].isIntersecting && hasMore && !loading) {
+        if (entries[0].isIntersecting && hasMoreRef.current && !loadingRef.current) {
           setPage(p => p + 1);
         }
       },
@@ -289,7 +283,9 @@ export function useInfiniteScroll(endpoint, options = {}) {
         observer.unobserve(observerRef.current);
       }
     };
-  }, [endpoint, pageSize, hasMore, loading, data.length, page]);
+  // Re-run only when the page advances or the endpoint/pageSize changes.
+  // loading and hasMore are read via refs to avoid cascade re-runs.
+  }, [endpoint, pageSize, page, threshold]);
 
   return {
     data,

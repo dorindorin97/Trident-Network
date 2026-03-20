@@ -17,7 +17,7 @@ module.exports = fetchRpc => {
           address: req.params.address,
           errors: validation.errors
         });
-        return res.status(ERROR_CODES.INVALID_ADDRESS.status).json(ERROR_CODES.INVALID_ADDRESS);
+        return res.status(ERROR_CODES.INVALID_ADDRESS.status).json({ error: 'Invalid address' });
       }
 
       // Pagination parameters

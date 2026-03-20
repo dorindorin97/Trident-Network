@@ -23,7 +23,7 @@ module.exports = fetchRpc => {
       const validation = ValidationRules.validatePagination(req.query.page, req.query.limit);
       if (!validation.valid) {
         logger.warn('Invalid pagination parameters', { errors: validation.errors });
-        return res.status(ERROR_CODES.INVALID_PAGINATION.status).json(ERROR_CODES.INVALID_PAGINATION);
+        return res.status(ERROR_CODES.INVALID_PAGINATION.status).json({ error: 'Invalid pagination parameters' });
       }
 
       const q = `?page=${validation.page}&limit=${validation.limit}`;
@@ -45,7 +45,7 @@ module.exports = fetchRpc => {
       const validation = ValidationRules.validateNumber(num);
       if (!validation.valid) {
         logger.warn('Invalid block number', { blockNumber: num, errors: validation.errors });
-        return res.status(ERROR_CODES.INVALID_BLOCK.status).json(ERROR_CODES.INVALID_BLOCK);
+        return res.status(ERROR_CODES.INVALID_BLOCK.status).json({ error: 'Invalid block number' });
       }
 
       const data = await fetchRpc(`/blocks/${num}`);
@@ -62,7 +62,7 @@ module.exports = fetchRpc => {
       const validation = ValidationRules.validateHash(hash);
       if (!validation.valid) {
         logger.warn('Invalid block hash', { blockHash: hash, errors: validation.errors });
-        return res.status(ERROR_CODES.INVALID_TX_HASH.status).json(ERROR_CODES.INVALID_TX_HASH);
+        return res.status(ERROR_CODES.INVALID_TX_HASH.status).json({ error: 'Invalid block hash' });
       }
 
       const data = await fetchRpc(`/blocks/hash/${hash}`);

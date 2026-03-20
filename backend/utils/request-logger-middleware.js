@@ -28,13 +28,14 @@ class RequestLogger {
       const startTime = Date.now();
       const startMemory = process.memoryUsage().heapUsed;
 
-      // Store original send
-      const originalSend = res.send;
+      // Bind to res so Express internals (this.get, this.set, etc.) work correctly
+      const originalSend = res.send.bind(res);
 
-      res.send = function(data) {
+      // Arrow function keeps `this` as RequestLogger via lexical scope
+      res.send = (data) => {
         const duration = Date.now() - startTime;
         const memoryDelta = process.memoryUsage().heapUsed - startMemory;
-        const responseSize = JSON.stringify(data).length;
+        const responseSize = typeof data === 'string' ? data.length : JSON.stringify(data).length;
 
         // Update global metrics
         this.updateMetrics(req, res, duration, responseSize, memoryDelta);
@@ -44,8 +45,8 @@ class RequestLogger {
           this.logRequest(req, res, duration, responseSize, memoryDelta);
         }
 
-        return originalSend.call(this, data);
-      }.bind(this);
+        return originalSend(data);
+      };
 
       next();
     };
